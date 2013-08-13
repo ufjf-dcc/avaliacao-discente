@@ -1,6 +1,27 @@
-<?page title="Auto Generated index.zul"?>
-<window title="Hello World!!" border="normal" width="200px">
-
-<label value="You are using: ${desktop.webApp.version}"/>
-
-</window>
+<?page title="Sistema de Avaliação Discente - Login"?>
+<zk>
+	<div style="position:absolute; top:30%; left:50%; margin-left:-150px;">
+		<panel style="text-align:center;" title="Login" border="normal" width="300px">
+			<panelchildren>
+				<grid style="margin:auto;" width="300px">
+					<columns>
+						<column width="120px" />
+					</columns>
+					<rows>
+						<row>
+							<label value="E-mail: " /><textbox constraint="no empty" width="150px" />
+						</row>
+						<row>
+							<label value="Senha: " /><textbox constraint="no empty" width="150px" type="password" />
+						</row>
+						<row>
+							<cell colspan="2">
+								<button width="60px" height="30px" label="Entrar" />			
+							</cell>
+						</row>
+					</rows>
+				</grid>			
+			</panelchildren>
+		</panel>
+	</div>
+</zk>
