@@ -19,6 +19,7 @@ public class LoginController {
 	private HttpSession session = (HttpSession) (Executions.getCurrent())
 			.getDesktop().getSession().getNativeSession();
 	private Usuario usuarioCommon;
+	private String tipoUsuario;
 
 	@Command
 	public void submit() throws HibernateException, Exception {
@@ -64,8 +65,21 @@ public class LoginController {
 	public void setUsuarioDAO(UsuarioDAO usuarioDAO) {
 		this.usuarioDAO = usuarioDAO;
 	}
-	
-	
-	
-	
+
+	public Usuario getUsuarioCommon() {
+		return usuarioCommon;
+	}
+
+	public void setUsuarioCommon(Usuario usuarioCommon) {
+		this.usuarioCommon = usuarioCommon;
+	}
+
+	public String getTipoUsuario() {
+		return tipoUsuario;
+	}
+
+	public void setTipoUsuario(String tipoUsuario) {
+		this.tipoUsuario = tipoUsuario;
+	}
+		
 }
