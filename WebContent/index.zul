@@ -1,0 +1,37 @@
+<?page title="Sistema de Avaliação Discente - Login" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<div style="position:absolute; top:30%; left:50%; margin-left:-150px;">
+	<div apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('br.ufjf.controller.LoginController')"
+		form="@id('fx') @load(vm.usuario) @save(vm.usuario, before='submit')" id="loginForm">
+		<panel style="text-align:center;" title="Login" border="normal" width="300px">
+			<panelchildren>
+				<grid style="margin:auto;" width="300px">
+					<columns>
+						<column width="120px" />
+					</columns>
+					<rows>
+						<row>
+							<label value="E-mail: " /><textbox width="150px" value="@bind(fx.email)" />
+						</row>
+						<row>
+							<label value="Senha: " /><textbox width="150px" type="password" value="@bind(fx.senha)"/>
+						</row>
+						<row spans="2">
+							<listbox width="140px" mold="select" selectedItem="@bind(vm.tipoUsuario)" >
+								<listitem label="Aluno" value="1" />
+								<listitem label="Professor" value="2" />
+								<listitem label="Coordenador" value="3" />
+							</listbox>
+						</row>
+						<row>
+							<cell colspan="2">
+								<button width="60px" height="30px" label="Entrar" onClick="@command('submit')" />			
+							</cell>
+						</row>
+					</rows>
+				</grid>
+			</panelchildren>
+		</panel>
+	</div>
+	</div>
+</zk>
