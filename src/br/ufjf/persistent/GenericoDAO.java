@@ -3,9 +3,13 @@ package br.ufjf.persistent;
 import java.util.List;
 
 import org.hibernate.HibernateException;
+import org.hibernate.Session;
+
+import br.ufjf.persistent.HibernateUtil;
 
 public class GenericoDAO implements IGenericoDAO {
 	
+	private Session session;
 	HibernateUtil hibernateUtil = new HibernateUtil();
 
 	@Override
@@ -97,6 +101,18 @@ public class GenericoDAO implements IGenericoDAO {
 			System.out.println("A lista enviada está vazia.");
 		}
 		return retorno;
+	}
+	
+	public Session getSession() throws Exception {
+		if(session == null){
+			session = HibernateUtil.getInstance();
+		}
+		else{
+			if (!session.isOpen()){
+				session = HibernateUtil.getInstance();
+			}
+		}
+		return session;
 	}
 
 }
