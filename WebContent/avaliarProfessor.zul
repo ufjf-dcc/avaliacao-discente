@@ -1,0 +1,9 @@
+<?page title="Avaliação de Professor" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<div apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AvaliarProfessorController')">
+		<include src="/menuAluno.zul" />
+		<div style="margin-left:15%; width:85%;margin-top:5px;">
+		</div>
+	</div>
+	
+</zk>

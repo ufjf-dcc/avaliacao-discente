@@ -1,0 +1,77 @@
+<?page title="Sistema de Avaliação Discente - Gerenciar Usuários" contentType="text/html;charset=UTF-8"?>
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<zk>
+	<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.UsuariosController')">
+
+		<include src="@load(vm.menu)" />
+
+		<div style="margin-left:15%; width:85%;margin-top:5px;">
+			<grid
+				model="@load(vm.usuarios) @template(each.editingStatus ? 'editable' : 'noneditable')">
+				<columns>
+					<column label="Nome" align="center"
+						sort="auto(nome)" />
+					<column label="Email" align="center"
+						sort="auto(email)" />
+					<column style="width:170px" label="Curso"
+						align="center" sort="auto(curso.nomeCurso)" />
+					<column style="width:170px" label="Tipo de Usuário"
+						align="center" sort="auto(tipoUsuario)" />
+					<column style="width:100px" label="Opções"
+						align="center" />
+				</columns>
+				<template name="editable">
+					<row>
+						<textbox
+							value="@load(each.nome) @save(each.nome, before='confirm')" />
+						<textbox
+							value="@load(each.email) @save(each.email, befora='confirm')" />
+						<combobox readonly="true" width="150px"
+							value="@load(each.curso.nomeCurso)" model="@load(vm.cursos)"
+							selectedItem="@bind(each.curso)">
+							<template name="model">
+								<comboitem
+									label="@load(each.nomeCurso)" />
+							</template>
+						</combobox>
+						<combobox readonly="true" width="150px" onSelected="@command('desabilitarEdicao', combo=self)"
+							value="@load(each.nomeTipoUsuario)" onCreate="@command('desabilitarEdicao', combo=self)"
+							selectedItem="@load(each.nomeTipoUsuario) @save(each.tipoUsuario, before='confirm')">
+							<comboitem label="Aluno" value="2" />
+							<comboitem label="Coordenador" value="0" />
+							<comboitem label="Professor" value="1" />
+						</combobox>
+						<div>
+							<button image="/img/confirm.png"
+								onClick="@command('confirm', usuario=each)" />
+							<button image="/img/cancel.png"
+								onClick="@command('changeEditableStatus', usuario=each)" />
+						</div>
+					</row>
+				</template>
+				<template name="noneditable">
+					<row>
+						<label value="@load(each.nome)" />
+						<label value="@load(each.email)" />
+						<label value="@load(each.curso.nomeCurso)" />
+						<label value="@load(each.nomeTipoUsuario)" />
+						<div>
+							<button image="/img/edit.png"
+								onClick="@command('changeEditableStatus', usuario=each)" />
+							<button image="/img/delete.png"
+								onClick="@command('exclui', usuario=each)" />
+						</div>
+					</row>
+				</template>
+			</grid>
+			<div align="center">
+				<button label="Cadastrar novo usuário"
+					onClick="@command('abreCadastro')" />
+				<button upload="true" label="Cadastrar usuarios via arquivo CSV"
+					onUpload="@command('upload', evt=event)" />
+			</div>
+		</div>
+
+	</div>
+</zk>

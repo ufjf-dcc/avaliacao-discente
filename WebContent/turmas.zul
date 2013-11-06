@@ -1,0 +1,84 @@
+<?page title="Sistema de Avaliação Discente - Gerenciar Turmas" contentType="text/html;charset=UTF-8"?>
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<zk>
+	<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.TurmasController')">
+
+		<include src="@load(vm.menu)" />
+
+		<div style="margin-left:15%; width:85%;margin-top:5px;">
+			<grid
+				model="@load(vm.turmas) @template(each.editingStatus ? 'editable' : 'noneditable')">
+				<columns>
+					<column style="width:120px;" label="Semestre"
+						align="center" sort="auto(semestre)" />
+					<column label="Disciplina" align="center"
+						sort="auto(disciplina.nomeDisciplina)" />
+					<column style="width:90px;" label="Turma"
+						align="center" sort="auto(letraTurma)" />
+					<column label="Professor" align="center"
+						sort="auto(professor.nome)" />
+					<column style="width:100px;" label="Opções"
+						align="center" />
+				</columns>
+				<template name="editable">
+					<row>
+						<combobox
+							selectedItem="@load(each.semestre) @save(each.semestre, before='confirm')"
+							readonly="true">
+							<comboitem label="2013.1" value="2013.1" />
+							<comboitem label="2013.2" value="2013.2" />
+							<comboitem label="2013.3" value="2013.3" />
+							<comboitem label="2013.4" value="2013.4" />
+						</combobox>
+						<combobox model="@load(vm.disciplinas)"
+							value="@load(each.disciplina.nomeDisciplina)"
+							selectedItem="@load(each.disciplina) @save(each.disciplina, before='confirm')"
+							autodrop="true">
+							<template name="model">
+								<comboitem
+									label="@load(each.codNomeDisciplina)" />
+							</template>
+						</combobox>
+						<textbox
+							value="@load(each.letraTurma) @save(each.letraTurma, before='confirm')" />
+						<combobox model="@load(vm.professores)"
+							value="@load(each.professor)"
+							selectedItem="@load(each.professor) @save(each.professor, before='confirm')"
+							autodrop="true">
+							<template name="model">
+								<comboitem label="@load(each.nome)" />
+							</template>
+						</combobox>
+						<div>
+							<button image="/img/confirm.png"
+								onClick="@command('confirm', turma=each)" />
+							<button image="/img/cancel.png"
+								onClick="@command('changeEditableStatus',turma=each)" />
+						</div>
+					</row>
+				</template>
+				<template name="noneditable">
+					<row>
+						<label value="@load(each.semestre)" />
+						<label
+							value="@load(each.disciplina.codNomeDisciplina)" />
+						<label value="@bind(each.letraTurma)" />
+						<label value="@load(each.professoresDaTurma)" />
+						<div>
+							<button image="/img/edit.png"
+								onClick="@command('changeEditableStatus', turma=each)" />
+							<button image="/img/delete.png"
+								onClick="@command('exclui', turma=each)" />
+						</div>
+					</row>
+				</template>
+			</grid>
+			<div align="center">
+				<button label="Cadastrar nova turma"
+					onClick="@command('abreCadastro')" />
+			</div>
+		</div>
+
+	</div>
+</zk>

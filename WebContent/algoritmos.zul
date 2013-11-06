@@ -1,0 +1,14 @@
+<?page title="new page title" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<window title="Avaliação - Algoritmos" border="normal" closable="true">
+		<vlayout apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('br.ufjf.avaliacao.test.ResultadosController')">
+	     	<flashchart id="mychart" width="500" height="250" type="pie" model="@bind(vm.model)"  />     
+		</vlayout>
+		<radiogroup onCheck="@global-command('configChanged',model=self.selectedItem.value)">
+			<vlayout>
+				<radio value="GraficoInfoDTO.getModel()" label="Pergunta 1: Horário" checked="true" />
+				<radio value="GraficoInfoDTO.getModel2()" label="Pergunta 2: Cumpre Ementa" />
+			</vlayout>
+		</radiogroup>
+	</window>
+</zk>

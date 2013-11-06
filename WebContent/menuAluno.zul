@@ -1,0 +1,24 @@
+<?page title="new page title" contentType="text/html;charset=UTF-8"?>
+<zk>
+	<div style="position:absolute; width:14%;">
+
+		<menubar scrollable="true" orient="vertical" autodrop="true"
+			style="height:100%;">
+			<menuitem label="Inicial" style="padding:10%"
+				href="/home.zul" />
+			<menu label="Avaliar" style="padding:10%">
+				<menupopup>
+					<menuitem label="Professor"
+						href="/avaliarProfessor.zul" />
+					<menuitem label="Coordenador" />
+					<menuitem label="Infraestrutura Acadêmica" />
+					<menuitem label="Autoavaliação" />
+				</menupopup>
+			</menu>
+			<menuitem label="Opções" style="padding:10%" />
+			<menuitem label="Sair" onClick="@command('exit')"
+				style="padding:10%" />
+		</menubar>
+
+	</div>
+</zk>

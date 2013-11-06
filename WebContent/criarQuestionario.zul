@@ -1,0 +1,83 @@
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<window id="win" title="Criar Questionário" border="normal" closable="true" onClose="Executions.sendRedirect(null)">
+	<div style="width:800px;" apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
+		form="@id('fm') @load(vm.questionario) @save(vm.questionario, before='cria')"
+		id="form">
+		<grid model="@load(vm.perguntas)">
+			<auxhead>
+				<auxheader label="Título:" colspan="2">
+					<textbox value="@bind(fm.tituloQuestionario)" />
+				</auxheader>
+			</auxhead>
+			<auxhead>
+				<auxheader label="Tipo:">
+					<combobox selectedItem="@bind(fm.tipoQuestionario)"
+						readonly="true">
+						<comboitem label="Avaliação de Coordenador"
+							value="0" />
+						<comboitem label="Avaliação de Professor"
+							value="1" />
+						<comboitem label="Auto-Avaliação" value="2" />
+						<comboitem label="Avaliação de Infraestrutura"
+							value="3" />
+					</combobox>
+				</auxheader>
+				<auxheader label="Data Incial:">
+					<datebox value="@bind(fm.dataInicial)"
+						format="dd/MM/yyyy" width="150px" constraint="no past" />
+				</auxheader>
+				<auxheader label="Data Final:">
+					<datebox value="@bind(fm.dataFinal)"
+						format="dd/MM/yyyy" width="150px" constraint="no past" />
+				</auxheader>
+			</auxhead>
+			<auxhead>
+				<auxheader label="Perguntas:" colspan="3" />
+			</auxhead>
+			<columns>
+				<column label="Título" />
+				<column label="Tipo" />
+				<column label="Opções" />
+			</columns>
+			<template name="model">
+				<row>
+					<label value="@load(each.tituloPergunta)" />
+					<label value="@load(each.nomeTipoPergunta)" />
+					<div style="text-align:center">
+						<button image="/img/delete.png"
+							onClick="@command('excluiPergunta',pergunta=each)" />
+						<button label="top"
+							onClick="@command('top',pergunta=each)" />
+						<button image="/img/up.png"
+							onClick="@command('up',pergunta=each)"
+							disabled="@load(not (forEachStatus.index eq forEachStatus.begin) ? 'false' : 'true')" />
+						<button image="/img/down.png"
+							onClick="@command('down',pergunta=each)"
+							disabled="@load(not (forEachStatus.index + 1 eq forEachStatus.end) ? 'false' : 'true')" />
+						<button label="bottom"
+							onClick="@command('bottom',pergunta=each)" />
+					</div>
+				</row>
+			</template>
+		</grid>
+		<div
+			form="@id('fx') @load(vm.pergunta) @save(vm.pergunta, before='adicionaPergunta')"
+			id="form2">
+			<textbox value="@bind(fx.tituloPergunta)" />
+			<combobox selectedItem="@bind(fx.tipoPergunta)"
+				readonly="true">
+				<comboitem label="Texto" value="0" />
+				<comboitem label="Escala numérica" value="1" />
+				<comboitem label="Escala conceitual" value="2" />
+				<comboitem label="Sim/Não" value="3" />
+			</combobox>
+			<button label="Adicionar Pergunta"
+				onClick="@command('adicionaPergunta')" />
+		</div>
+		<separator />
+		<checkbox label="Definir como ativo" checked="@bind(vm.ativo)" />
+		<separator />
+		<button label="Criar Questionário" onClick="@command('cria')" />
+	</div>
+</window>

@@ -19,16 +19,13 @@
 		<property name="show_sql">true</property>
 
 		<!-- Classes que irão mapear as Entidades do Banco -->
-		<mapping class="br.ufjf.model.Avaliacao" />
-		<mapping class="br.ufjf.model.Curso" />
-		<mapping class="br.ufjf.model.Disciplina" />
-		<mapping class="br.ufjf.model.Pergunta" />
-		<mapping class="br.ufjf.model.Professor" />
-		<mapping class="br.ufjf.model.Questionario" />
-		<mapping class="br.ufjf.model.Resposta" />
-		<mapping class="br.ufjf.model.TipoPergunta" />
-		<mapping class="br.ufjf.model.TipoQuestionario" />
-		<mapping class="br.ufjf.model.Turma" />
-		<mapping class="br.ufjf.model.Usuario" />
+		<mapping class="br.ufjf.avaliacao.model.Avaliacao" />
+		<mapping class="br.ufjf.avaliacao.model.Curso" />
+		<mapping class="br.ufjf.avaliacao.model.Disciplina" />
+		<mapping class="br.ufjf.avaliacao.model.Pergunta" />
+		<mapping class="br.ufjf.avaliacao.model.Questionario" />
+		<mapping class="br.ufjf.avaliacao.model.Resposta" />
+		<mapping class="br.ufjf.avaliacao.model.Turma" />
+		<mapping class="br.ufjf.avaliacao.model.Usuario" />
 	</session-factory>
 </hibernate-configuration>
