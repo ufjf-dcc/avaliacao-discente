@@ -10,6 +10,7 @@ import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zhtml.Messagebox;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zul.Label;
 import org.zkoss.zul.Window;
 
 import br.ufjf.avaliacao.business.TurmaBusiness;
@@ -141,17 +142,18 @@ public class TurmasController extends GenericController {
 	}
 
 	@Command
-	public String getProfessores(@BindingParam("turma") Turma turma ) {
-		List<Usuario> professores = (List<Usuario>) usuarioDAO.retornaProfessoresTurma(turma);
+	public void getProfessores(@BindingParam("turma") Turma turma,
+			@BindingParam("label") Label label) {
+		List<Usuario> professores = (List<Usuario>) usuarioDAO
+				.retornaProfessoresTurma(turma);
 		String profs = "";
 		if (professores == null)
 			System.out.println("Professores Vazio!");
-		for(Usuario prof : professores){
+		for (Usuario prof : professores) {
 			System.out.println(prof.getNome());
 			profs = profs.concat(prof.getNome() + ", ");
 		}
-		return profs;
+		label.setValue(profs.substring(0, profs.length() - 2));
 	}
-	
-	
+
 }

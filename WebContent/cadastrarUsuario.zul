@@ -15,7 +15,7 @@
 					<label value="Tipo de Usuário: " />
 					<combobox selectedItem="@bind(fm.tipoUsuario)"
 						readonly="true"
-						onSelect="@command('desabilita', combobox=self, combo=cmbCurso)">
+						onSelect="@command('desabilita', combobox=self)">
 						<comboitem label="Aluno" value="2"></comboitem>
 						<comboitem label="Coordenador" value="0"></comboitem>
 						<comboitem label="Professor" value="1"></comboitem>

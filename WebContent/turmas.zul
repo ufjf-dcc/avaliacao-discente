@@ -63,8 +63,9 @@
 						<label value="@load(each.semestre)" />
 						<label
 							value="@load(each.disciplina.codNomeDisciplina)" />
-						<label value="@bind(each.letraTurma)" />
-						<label value="@load(each.professoresDaTurma)" />
+						<label value="@load(each.letraTurma)" />
+						<label
+							onCreate="@command('getProfessores', turma=each, label=self)" />
 						<div>
 							<button image="/img/edit.png"
 								onClick="@command('changeEditableStatus', turma=each)" />

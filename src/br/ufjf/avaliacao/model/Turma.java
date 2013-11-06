@@ -99,6 +99,9 @@ public class Turma implements Serializable{
 	@Transient
 	private boolean editingStatus;
 	
+	@Transient
+	private String nomeProfessor;
+	
 	public int getIdTurma() {
 		return idTurma;
 	}
