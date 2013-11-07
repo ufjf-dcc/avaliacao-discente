@@ -11,43 +11,38 @@ import org.zkoss.zk.ui.Sessions;
 import br.ufjf.avaliacao.business.UsuarioBusiness;
 import br.ufjf.avaliacao.model.Usuario;
 
-
-
 public class LoginController {
-	
-	
+
 	private Usuario usuario = new Usuario();
 	private UsuarioBusiness usuarioBusiness = new UsuarioBusiness();
 	private Session session = Sessions.getCurrent();
-	
+
 	@Init
 	public void testaLogado() throws HibernateException, Exception {
 		usuarioBusiness = new UsuarioBusiness();
 		usuario = (Usuario) session.getAttribute("usuario");
 		if (usuarioBusiness.checaLogin(usuario)) {
-				Executions.sendRedirect("/home.zul");
-		}
-		else {
+			Executions.sendRedirect("/home.zul");
+		} else {
 			usuario = new Usuario();
 		}
 	}
-	
+
 	@Command
 	public void submit() throws HibernateException, Exception {
-		
-		if (usuario != null && usuario.getEmail() != null && usuario.getSenha() != null) {
+
+		if (usuario != null && usuario.getEmail() != null
+				&& usuario.getSenha() != null) {
 			if (usuarioBusiness.login(usuario.getEmail(), usuario.getSenha())) {
 				usuario = (Usuario) session.getAttribute("usuario");
 				Executions.sendRedirect("/home.zul");
-			}	
-			else {
-				Messagebox.show("Usuário ou Senha inválidos!", "Error", Messagebox.OK, Messagebox.ERROR);
+			} else {
+				Messagebox.show("Usuário ou Senha inválidos!", "Error",
+						Messagebox.OK, Messagebox.ERROR);
 			}
 		}
 	}
 
-	
-	
 	public Session getSession() {
 		return session;
 	}

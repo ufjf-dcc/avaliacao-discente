@@ -1,4 +1,4 @@
-<?page title="Sistema de Avaliação Discente - Gerenciar Turmas" contentType="text/html;charset=UTF-8"?>
+<?page title="Gerenciar Turmas" contentType="text/html;charset=UTF-8"?>
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
 <zk>
 	<div apply="org.zkoss.bind.BindComposer"
@@ -23,7 +23,7 @@
 				</columns>
 				<template name="editable">
 					<row>
-						<combobox
+						<combobox width="100%"
 							selectedItem="@load(each.semestre) @save(each.semestre, before='confirm')"
 							readonly="true">
 							<comboitem label="2013.1" value="2013.1" />
@@ -31,7 +31,8 @@
 							<comboitem label="2013.3" value="2013.3" />
 							<comboitem label="2013.4" value="2013.4" />
 						</combobox>
-						<combobox model="@load(vm.disciplinas)"
+						<combobox width="100%"
+							model="@load(vm.disciplinas)"
 							value="@load(each.disciplina.nomeDisciplina)"
 							selectedItem="@load(each.disciplina) @save(each.disciplina, before='confirm')"
 							autodrop="true">
@@ -41,11 +42,12 @@
 							</template>
 						</combobox>
 						<textbox
-							value="@load(each.letraTurma) @save(each.letraTurma, before='confirm')" />
+							value="@load(each.letraTurma) @save(each.letraTurma, before='confirm')"
+							width="100%" />
 						<combobox model="@load(vm.professores)"
 							value="@load(each.professor)"
 							selectedItem="@load(each.professor) @save(each.professor, before='confirm')"
-							autodrop="true">
+							autodrop="true" width="100%">
 							<template name="model">
 								<comboitem label="@load(each.nome)" />
 							</template>

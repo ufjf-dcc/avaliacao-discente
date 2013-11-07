@@ -147,10 +147,7 @@ public class TurmasController extends GenericController {
 		List<Usuario> professores = (List<Usuario>) usuarioDAO
 				.retornaProfessoresTurma(turma);
 		String profs = "";
-		if (professores == null)
-			System.out.println("Professores Vazio!");
 		for (Usuario prof : professores) {
-			System.out.println(prof.getNome());
 			profs = profs.concat(prof.getNome() + ", ");
 		}
 		label.setValue(profs.substring(0, profs.length() - 2));

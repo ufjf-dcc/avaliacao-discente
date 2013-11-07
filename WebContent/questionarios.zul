@@ -1,4 +1,4 @@
-<?page title="Sistema de Avaliação Discente - Gerenciar Questinarios" contentType="text/html;charset=UTF-8"?>
+<?page title="Gerenciar Questinarios" contentType="text/html;charset=UTF-8"?>
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
 <zk>
 	<div apply="org.zkoss.bind.BindComposer"
@@ -24,7 +24,7 @@
 									align="center" sort="auto(dataFinal)" />
 								<column label="Status" align="center"
 									sort="auto(ativo)" />
-								<column style="width:100px;"
+								<column style="width:150px;"
 									label="Opções" align="center" />
 							</columns>
 							<template name="model">
@@ -42,6 +42,8 @@
 											onClick="@command('exclui',questionario=each)" />
 										<button label="Ativar"
 											onClick="@command('ativa',questionario=each)" />
+										<button label="Enviar"
+											onClick="@command('enviarQuest', questionario=each)" />
 									</div>
 								</row>
 							</template>
@@ -76,6 +78,8 @@
 											onClick="@command('exclui',questionario=each)" />
 										<button label="Ativar"
 											onClick="@command('ativa',questionario=each)" />
+										<button label="Enviar"
+											onClick="@command('abrirEnvio', questionario=each)" />
 									</div>
 								</row>
 							</template>
@@ -110,6 +114,9 @@
 											onClick="@command('exclui',questionario=each)" />
 										<button label="Ativar"
 											onClick="@command('ativa',questionario=each)" />
+										<button label="Enviar"
+											onClick="@command('abrirEnvio', questionario=each)" />
+
 									</div>
 								</row>
 							</template>
@@ -144,6 +151,8 @@
 											onClick="@command('exclui',questionario=each)" />
 										<button label="Ativar"
 											onClick="@command('ativa',questionario=each)" />
+										<button label="Enviar"
+											onClick="@command('abrirEnvio', questionario=each)" />
 									</div>
 								</row>
 							</template>
@@ -152,7 +161,7 @@
 				</tabpanels>
 			</tabbox>
 			<div align="center">
-				<button label="Criar novo questionario"
+				<button label="Criar novo questionário"
 					onClick="@command('abreJanela')" />
 			</div>
 		</div>

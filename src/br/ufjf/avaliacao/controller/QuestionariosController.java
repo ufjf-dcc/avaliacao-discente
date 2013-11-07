@@ -135,6 +135,10 @@ public class QuestionariosController extends GenericController{
 		}
 	}
 	
+	@Command
+	public void enviarQuest() {
+		
+	}
 	
 	public List<Pergunta> getPerguntas() {
 		return perguntas;
@@ -228,10 +232,4 @@ public class QuestionariosController extends GenericController{
 		this.ativo = ativo;
 	}
 	
-	
-	
-	
-	
-	
-
 }
