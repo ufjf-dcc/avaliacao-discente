@@ -6,6 +6,7 @@ import org.hibernate.Query;
 
 import br.ufjf.avaliacao.model.Disciplina;
 import br.ufjf.avaliacao.model.Turma;
+import br.ufjf.avaliacao.model.Usuario;
 import br.ufjf.avaliacao.persistent.GenericoDAO;
 import br.ufjf.avaliacao.persistent.ITurmaDAO;
 
@@ -50,4 +51,23 @@ public class TurmaDAO extends GenericoDAO implements ITurmaDAO {
 		return null;
 	}
 
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Turma> getTurmasUsuario(Usuario usuario) {
+		try {
+			Query query = getSession().createQuery("SELECT t FROM Usuario AS u JOIN u.turmas as t WHERE u = :usuario");
+			query.setParameter("usuario", usuario);
+			
+			List<Turma> turmas = query.list();
+			
+			getSession().close();
+			
+			if (turmas != null)
+				return turmas;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 }

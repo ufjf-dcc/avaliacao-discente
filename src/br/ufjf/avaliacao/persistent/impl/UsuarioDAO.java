@@ -116,4 +116,23 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 		return null;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<Usuario> retornaAlunosTurma(Turma turma) {
+		try {
+			Query query = getSession().createQuery("SELECT u FROM Turma AS t JOIN t.usuarios as u WHERE t = :turma AND u.tipoUsuario = :tipoUsuario");
+			query.setParameter("turma", turma);
+			query.setParameter("tipoUsuario", 2);
+			
+			List<Usuario> usuarios = query.list();
+			
+			getSession().close();
+			
+			if (usuarios != null)
+				return usuarios;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 }

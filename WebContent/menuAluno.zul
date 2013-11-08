@@ -9,7 +9,7 @@
 			<menu label="Avaliar" style="padding:10%">
 				<menupopup>
 					<menuitem label="Professor"
-						href="/avaliarProfessor.zul" />
+						href="/avaliarProfessores.zul" />
 					<menuitem label="Coordenador" />
 					<menuitem label="Infraestrutura Acadêmica" />
 					<menuitem label="Autoavaliação" />

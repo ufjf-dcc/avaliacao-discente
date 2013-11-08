@@ -1,4 +1,4 @@
-<?page title="Sistema de Avaliação Discente - Gerenciar Disciplinas" contentType="text/html;charset=UTF-8"?>
+<?page title="Gerenciar Disciplinas" contentType="text/html;charset=UTF-8"?>
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
 <zk>
 	<div apply="org.zkoss.bind.BindComposer"
