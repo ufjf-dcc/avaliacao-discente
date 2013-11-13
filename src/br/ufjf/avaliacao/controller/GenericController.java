@@ -43,6 +43,62 @@ public class GenericController {
 		}
 	}
 	
+	public void testaPermissaoAluno() throws HibernateException, Exception {
+		usuario = (Usuario) session.getAttribute("usuario");
+		usuarioBusiness = new UsuarioBusiness();
+		if (usuarioBusiness.checaLogin(usuario)) {
+			if (usuario.getTipoUsuario() != 2) {
+				Executions.sendRedirect("/home.zul");
+			}
+		}
+		else{
+			Executions.sendRedirect("/index.zul");
+			usuario = new Usuario();
+		}
+	}
+	
+	public void testaPermissaoAdmin() throws HibernateException, Exception {
+		usuario = (Usuario) session.getAttribute("usuario");
+		usuarioBusiness = new UsuarioBusiness();
+		if (usuarioBusiness.checaLogin(usuario)) {
+			if (usuario.getTipoUsuario() != 3) {
+				Executions.sendRedirect("/home.zul");
+			}
+		}
+		else{
+			Executions.sendRedirect("/index.zul");
+			usuario = new Usuario();
+		}
+	}
+	
+	public void testaPermissaoProf() throws HibernateException, Exception {
+		usuario = (Usuario) session.getAttribute("usuario");
+		usuarioBusiness = new UsuarioBusiness();
+		if (usuarioBusiness.checaLogin(usuario)) {
+			if (usuario.getTipoUsuario() != 1) {
+				Executions.sendRedirect("/home.zul");
+			}
+		}
+		else{
+			Executions.sendRedirect("/index.zul");
+			usuario = new Usuario();
+		}
+	}
+	
+	public void testaPermissaoCoord() throws HibernateException, Exception {
+		usuario = (Usuario) session.getAttribute("usuario");
+		usuarioBusiness = new UsuarioBusiness();
+		if (usuarioBusiness.checaLogin(usuario)) {
+			if (usuario.getTipoUsuario() != 0) {
+				Executions.sendRedirect("/home.zul");
+			}
+		}
+		else{
+			Executions.sendRedirect("/index.zul");
+			usuario = new Usuario();
+		}
+	}
+	
 	public String getMenu() {
 		usuario = (Usuario) session.getAttribute("usuario");
 		if (usuario!=null) {

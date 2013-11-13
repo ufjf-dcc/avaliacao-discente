@@ -47,7 +47,7 @@ public class Avaliacao implements Serializable{
 	 * 
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "avaliando", nullable = false)
+	@JoinColumn(name = "idAvaliando", nullable = false)
 	private Usuario avaliando;
 	
 	
@@ -59,7 +59,7 @@ public class Avaliacao implements Serializable{
 	 * 
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "avaliado", nullable = true)
+	@JoinColumn(name = "idAvaliado", nullable = true)
 	private Usuario avaliado;
 	
 	/**

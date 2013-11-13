@@ -1,4 +1,6 @@
 <?page title="new page title" contentType="text/html;charset=UTF-8"?>
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+
 <zk>
 	<div style="position:absolute; width:14%;">
 
@@ -6,15 +8,7 @@
 			style="height:100%;">
 			<menuitem label="Inicial" style="padding:10%"
 				href="/home.zul" />
-			<menu label="Avaliar" style="padding:10%">
-				<menupopup>
-					<menuitem label="Professor"
-						href="/avaliarProfessores.zul" />
-					<menuitem label="Coordenador" />
-					<menuitem label="Infraestrutura Acadêmica" />
-					<menuitem label="Autoavaliação" />
-				</menupopup>
-			</menu>
+			<menuitem label="Avaliações Dísponivel" style="padding:10%" href="/avaliacoesDisponiveis.zul"/>
 			<menuitem label="Opções" style="padding:10%" />
 			<menuitem label="Sair" onClick="@command('exit')"
 				style="padding:10%" />

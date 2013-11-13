@@ -1,0 +1,123 @@
+<?page title="Avaliações Disponíves" contentType="text/html;charset=UTF-8"?>
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<zk>
+	<div style="margin-top:5px;" apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AvaliacoesDisponiveisController')">
+		<include src="@load(vm.menu)" />
+		<div style="margin-left:15%; width:85%; margin-top:5px;">
+
+			<tabbox>
+				<tabs>
+					<tab label="Avaliação de Coordenadores" />
+					<tab label="Avaliação de Professores" />
+					<tab label="Auto-Avaliação" />
+					<tab label="Avaliação de Infraestrutura" />
+				</tabs>
+				<tabpanels>
+					<tabpanel>
+						<grid model="@load(vm.questionariosCoord)">
+							<columns>
+								<column label="Título" align="center" />
+								<column label="Data Inicial"
+									align="center" />
+								<column label="Data Final"
+									align="center" />
+								<column label="Opções" align="center" />
+							</columns>
+							<template name="model">
+								<row>
+									<label
+										value="@load(each.tituloQuestionario)" />
+									<label
+										value="@load(each.dataInicialFormatada)" />
+									<label
+										value="@load(each.dataFinalFormatada)" />
+									<div>
+										<button label="Avaliar" />
+									</div>
+								</row>
+							</template>
+						</grid>
+					</tabpanel>
+					<tabpanel>
+						<grid model="@load(vm.questionariosProfs)">
+							<columns>
+								<column label="Título" align="center" />
+								<column label="Data Inicial"
+									align="center" />
+								<column label="Data Final"
+									align="center" />
+								<column label="Opções" align="center" />
+							</columns>
+							<template name="model">
+								<row>
+									<label
+										value="@load(each.tituloQuestionario)" />
+									<label
+										value="@load(each.dataInicialFormatada)" />
+									<label
+										value="@load(each.dataFinalFormatada)" />
+									<div>
+										<button label="Avaliar" />
+									</div>
+								</row>
+							</template>
+						</grid>
+					</tabpanel>
+					<tabpanel>
+						<grid model="@load(vm.questionariosAuto)">
+							<columns>
+								<column label="Título" align="center" />
+								<column label="Data Inicial"
+									align="center" />
+								<column label="Data Final"
+									align="center" />
+								<column label="Opções" align="center" />
+							</columns>
+							<template name="model">
+								<row>
+									<label
+										value="@load(each.tituloQuestionario)" />
+									<label
+										value="@load(each.dataInicialFormatada)" />
+									<label
+										value="@load(each.dataFinalFormatada)" />
+									<div>
+										<button label="Avaliar" />
+									</div>
+								</row>
+							</template>
+						</grid>
+					</tabpanel>
+					<tabpanel>
+						<grid model="@load(vm.questionariosInfra)">
+							<columns>
+								<column label="Título" align="center" />
+								<column label="Data Inicial"
+									align="center" />
+								<column label="Data Final"
+									align="center" />
+								<column label="Opções" align="center" />
+							</columns>
+							<template name="model">
+								<row>
+									<label
+										value="@load(each.tituloQuestionario)" />
+									<label
+										value="@load(each.dataInicialFormatada)" />
+									<label
+										value="@load(each.dataFinalFormatada)" />
+									<div>
+										<button label="Avaliar" />
+									</div>
+								</row>
+							</template>
+						</grid>
+					</tabpanel>
+				</tabpanels>
+
+			</tabbox>
+
+		</div>
+	</div>
+</zk>

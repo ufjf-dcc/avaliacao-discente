@@ -83,7 +83,7 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 		return null;
 	}
 	
-	
+	@Override
 	public Usuario retornaUsuarioEmail(String email) {
 		try {
 			Query query = getSession().createQuery("SELECT u FROM Usuario AS u LEFT JOIN FETCH u.curso WHERE u.email = :email");
@@ -99,6 +99,7 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 		return null;
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Usuario> retornaProfessoresTurma(Turma turma) {
 		try {
@@ -116,6 +117,7 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 		return null;
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Usuario> retornaAlunosTurma(Turma turma) {
 		try {

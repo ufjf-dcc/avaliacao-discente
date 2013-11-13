@@ -46,7 +46,7 @@ public class UsuariosController extends GenericController {
 
 	@Init
 	public void init() throws HibernateException, Exception {
-		testaPermissao(3);
+		testaPermissaoAdmin();
 	}
 
 	@Command

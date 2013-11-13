@@ -35,8 +35,7 @@ public class TurmasController extends GenericController {
 
 	@Init
 	public void init() throws HibernateException, Exception {
-		if (testaLogado())
-			testaPermissao(3);
+		testaPermissaoAdmin();
 	}
 
 	@Command
@@ -90,7 +89,6 @@ public class TurmasController extends GenericController {
 	@Command
 	public void confirm(@BindingParam("turma") Turma turma)
 			throws HibernateException, Exception {
-		TurmaBusiness turmaBusiness = new TurmaBusiness();
 		changeEditableStatus(turma);
 		TurmaDAO turmaDAO = new TurmaDAO();
 		turmaDAO.editar(turma);

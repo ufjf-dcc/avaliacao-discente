@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.HibernateException;
 
+import br.ufjf.avaliacao.model.Turma;
 import br.ufjf.avaliacao.model.Usuario;
 
 
@@ -17,5 +18,9 @@ public interface IUsuarioDAO {
 	public List<Usuario> retornaProfessores();
 
 	public List<Usuario> getTodosUsuarios();
+
+	public List<Usuario> retornaProfessoresTurma(Turma turma);
+
+	public List<Usuario> retornaAlunosTurma(Turma turma);
 
 }

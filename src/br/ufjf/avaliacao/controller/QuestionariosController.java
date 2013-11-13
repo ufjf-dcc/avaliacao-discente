@@ -33,8 +33,7 @@ public class QuestionariosController extends GenericController{
 	
 	@Init
 	public void init() throws HibernateException, Exception {
-		if(testaLogado())
-			testaPermissao(0);
+		testaPermissaoCoord();
 	}
 	
 	@Command
