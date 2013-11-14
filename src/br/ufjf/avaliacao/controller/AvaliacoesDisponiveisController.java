@@ -14,7 +14,8 @@ public class AvaliacoesDisponiveisController extends GenericController {
 	private List<Questionario> questionariosCoord = questionarioDAO.retornaQuestinariosCursoTipo(usuario.getCurso(),0);
 	private List<Questionario> questionariosProfs = questionarioDAO.retornaQuestinariosCursoTipo(usuario.getCurso(),1);
 	private List<Questionario> questionariosAuto = questionarioDAO.retornaQuestinariosCursoTipo(usuario.getCurso(),2);
-	private List<Questionario> questionariosInfra = questionarioDAO.retornaQuestinariosCursoTipo(usuario.getCurso(),3);	
+	private List<Questionario> questionariosInfra = questionarioDAO.retornaQuestinariosCursoTipo(usuario.getCurso(),3);
+	private static Questionario questionarioAtual;
 	
 	@Init
 	public void init() throws HibernateException, Exception {
@@ -51,6 +52,14 @@ public class AvaliacoesDisponiveisController extends GenericController {
 
 	public void setQuestionariosInfra(List<Questionario> questionariosInfra) {
 		this.questionariosInfra = questionariosInfra;
+	}
+
+	public static Questionario getQuestionarioAtual() {
+		return questionarioAtual;
+	}
+
+	public static void setQuestionarioAtual(Questionario questionarioAtual) {
+		AvaliacoesDisponiveisController.questionarioAtual = questionarioAtual;
 	}
 	
 }

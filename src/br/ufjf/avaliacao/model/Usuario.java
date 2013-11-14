@@ -103,7 +103,7 @@ public class Usuario implements Serializable{
 	 * quando retornarmos as {@link Usuario} .
 	 * 
 	 */
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "usuarios")
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "usuarios")
 	private List<Turma> turmas = new ArrayList<Turma>();
 	
 	@Transient

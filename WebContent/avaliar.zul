@@ -1,0 +1,2 @@
+<?page title="Avaliar" contentType="text/html;charset=UTF-8"?>
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
