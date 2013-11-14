@@ -216,7 +216,7 @@ public class Questionario implements Serializable {
 
 	@SuppressWarnings("deprecation")
 	public String getDataFinalFormatada() {
-		return (dataFinal.getDate() + "/" + dataFinal.getMonth() + "/" + (dataFinal
+		return (dataFinal.getDate() + "/" + (dataFinal.getMonth()+1) + "/" + (dataFinal
 				.getYear()+1900));
 	}
 
@@ -226,7 +226,7 @@ public class Questionario implements Serializable {
 
 	@SuppressWarnings("deprecation")
 	public String getDataInicialFormatada() {
-		return (dataInicial.getDate() + "/" + dataInicial.getMonth() + "/" + (dataInicial
+		return (dataInicial.getDate() + "/" + (dataInicial.getMonth()+1) + "/" + (dataInicial
 				.getYear()+1900));
 	}
 

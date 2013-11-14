@@ -30,7 +30,6 @@ public class LoginController {
 
 	@Command
 	public void submit() throws HibernateException, Exception {
-
 		if (usuario != null && usuario.getEmail() != null
 				&& usuario.getSenha() != null) {
 			if (usuarioBusiness.login(usuario.getEmail(), usuario.getSenha())) {

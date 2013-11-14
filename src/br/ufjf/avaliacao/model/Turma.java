@@ -19,8 +19,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
-
 
 /**
  * DTO da Tabela {@code Turma} contém os atributos e relacionamentos da

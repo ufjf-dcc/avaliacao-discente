@@ -33,7 +33,8 @@
 									<label
 										value="@load(each.dataFinalFormatada)" />
 									<div>
-										<button label="Avaliar" />
+										<button label="Avaliar"
+											onClick="@command('avaliar', questionario=each)" />
 									</div>
 								</row>
 							</template>
@@ -58,7 +59,8 @@
 									<label
 										value="@load(each.dataFinalFormatada)" />
 									<div>
-										<button label="Avaliar" />
+										<button label="Avaliar"
+											onClick="@command('avaliar', questionario=each)" />
 									</div>
 								</row>
 							</template>
@@ -83,7 +85,8 @@
 									<label
 										value="@load(each.dataFinalFormatada)" />
 									<div>
-										<button label="Avaliar" />
+										<button label="Avaliar"
+											onClick="@command('avaliar', questionario=each)" />
 									</div>
 								</row>
 							</template>
@@ -108,7 +111,8 @@
 									<label
 										value="@load(each.dataFinalFormatada)" />
 									<div>
-										<button label="Avaliar" />
+										<button label="Avaliar"
+											onClick="@command('avaliar', questionario=each)" />
 									</div>
 								</row>
 							</template>
