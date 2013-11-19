@@ -6,7 +6,9 @@ import org.hibernate.HibernateException;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.Init;
+import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zul.Row;
 import org.zkoss.zul.Window;
 
 import br.ufjf.avaliacao.model.Questionario;
@@ -33,11 +35,41 @@ public class AvaliacoesDisponiveisController extends GenericController {
 	@Command
 	@SuppressWarnings("static-access")
 	public void avaliar(@BindingParam("questionario") Questionario questionario) {
-		this.questionarioAtual=questionario;
+		this.questionarioAtual = questionario;
 		System.out.println(questionarioAtual.getDataFinal().toString());
 		Window window = (Window) Executions.createComponents("/avaliar.zul",
 				null, null);
 		window.doModal();
+	}
+
+	@Command
+	public void criarCampoResposta(@BindingParam("row") Row row,
+			@BindingParam("tipoPergunta") Integer tipoPergunta) {
+		Component component = row.getFirstChild();
+		switch (tipoPergunta) {
+		case 0:
+			component.getNextSibling().getNextSibling().getNextSibling().getNextSibling().detach();
+			component.getNextSibling().getNextSibling().getNextSibling().detach();
+			component.getNextSibling().getNextSibling().detach();
+			break;
+		case 1:
+			component.getNextSibling().getNextSibling().getNextSibling().getNextSibling().detach();
+			component.getNextSibling().getNextSibling().getNextSibling().detach();
+			component.getNextSibling().detach();
+			break;
+		case 2:
+			component.getNextSibling().getNextSibling().getNextSibling().getNextSibling().detach();
+			component.getNextSibling().getNextSibling().detach();
+			component.getNextSibling().detach();
+			break;
+		case 3:
+			component.getNextSibling().getNextSibling().getNextSibling().detach();
+			component.getNextSibling().getNextSibling().detach();
+			component.getNextSibling().detach();
+			break;
+		default:;
+			break;
+		}
 	}
 
 	public List<Questionario> getQuestionariosCoord() {

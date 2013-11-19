@@ -1,4 +1,4 @@
-<?page title="Avaliações Disponíves" contentType="text/html;charset=UTF-8"?>
+<?page title="Avaliações Disponíveis" contentType="text/html;charset=UTF-8"?>
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
 <zk>
 	<div style="margin-top:5px;" apply="org.zkoss.bind.BindComposer"

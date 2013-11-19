@@ -8,7 +8,7 @@
 			style="height:100%;">
 			<menuitem label="Inicial" style="padding:10%"
 				href="/home.zul" />
-			<menuitem label="Avaliações Dísponivel" style="padding:10%" href="/avaliacoesDisponiveis.zul"/>
+			<menuitem label="Avaliações Dísponiveis" style="padding:10%" href="/avaliacoesDisponiveis.zul"/>
 			<menuitem label="Opções" style="padding:10%" />
 			<menuitem label="Sair" onClick="@command('exit')"
 				style="padding:10%" />
