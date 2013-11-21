@@ -1,14 +1,16 @@
 <zk>
-<div style="position:absolute; width:14%;">
+
+		<div align="center">
+		  <menubar id="menubar" width="100%">
+		  
+           		<menuitem label="Inicial" href="/home.zul"/>
+ 				<menuitem label="Gerenciar Usuários"  href="/usuarios.zul"/> 
+ 				<menuitem label="Gerenciar Disciplinas" href="/disciplinas.zul"/> 
+ 				<menuitem label="Gerenciar Turmas" href="/turmas.zul"/>
+ 				<menuitem label="Opções" />
+ 				<menuitem label="Sair" onClick="@command('exit')" />
+		  
+		  </menubar>
+		</div>
 		
-		<menubar scrollable="true" orient="vertical" autodrop="true" style="height:100%;" >
- 				<menuitem label="Inicial" style="padding:10%" href="/home.zul"/>
- 				<menuitem label="Gerenciar Usuários" style="padding:10%" href="/usuarios.zul"/> 
- 				<menuitem label="Gerenciar Disciplinas" style="padding:10%" href="/disciplinas.zul"/> 
- 				<menuitem label="Gerenciar Turmas" style="padding:10%" href="/turmas.zul"/>
- 				<menuitem label="Opções" style="padding:10%"/>
- 				<menuitem label="Sair" onClick="@command('exit')" style="padding:10%"/>
-		</menubar>
-		
-</div>
 </zk>
