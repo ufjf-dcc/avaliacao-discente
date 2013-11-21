@@ -3,7 +3,7 @@
 
 <window id="win" title="Cadastro de Turma" border="normal"
 	closable="true" onClose="Executions.sendRedirect(null)">
-	<div style="width:350px;" apply="org.zkoss.bind.BindComposer"
+	<div style="width:400px;" apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.TurmasController')"
 		form="@id('fm') @load(vm.turma) @save(vm.turma, before='cadastra')"
 		id="form">

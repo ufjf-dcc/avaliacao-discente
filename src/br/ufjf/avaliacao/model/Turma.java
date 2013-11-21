@@ -100,6 +100,9 @@ public class Turma implements Serializable{
 	@Transient
 	private String nomeProfessor;
 	
+	@Transient
+	private Usuario professor;
+	
 	public int getIdTurma() {
 		return idTurma;
 	}
@@ -155,5 +158,15 @@ public class Turma implements Serializable{
 	public void setUsuarios(List<Usuario> usuarios) {
 		this.usuarios = usuarios;
 	}
+
+	public Usuario getProfessor() {
+		return professor;
+	}
+
+	public void setProfessor(Usuario professor) {
+		this.professor = professor;
+		usuarios.add(professor);
+	}
+	
 	
 }

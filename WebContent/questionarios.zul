@@ -4,166 +4,164 @@
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')">
 		<include src="@load(vm.menu)" />
-		<div style="margin-left:15%; width:85%;margin-top:5px;">
-			<tabbox>
-				<tabs>
-					<tab label="Avaliação de Coordenadores" />
-					<tab label="Avaliação de Professores" />
-					<tab label="Auto-Avaliação" />
-					<tab label="Avaliação de Infraestrutura" />
-				</tabs>
-				<tabpanels>
-					<tabpanel>
-						<grid model="@load(vm.questionariosCoord)">
-							<columns>
-								<column label="Título" align="center"
-									sort="auto(tituloQuestionario)" />
-								<column label="Data Inicial"
-									align="center" sort="auto(dataInicial)" />
-								<column label="Data Final"
-									align="center" sort="auto(dataFinal)" />
-								<column label="Status" align="center"
-									sort="auto(ativo)" />
-								<column style="width:140px;"
-									label="Opções" align="center" />
-							</columns>
-							<template name="model">
-								<row>
-									<label
-										value="@load(each.tituloQuestionario)" />
-									<label
-										value="@load(each.dataInicialFormatada)" />
-									<label
-										value="@load(each.dataFinalFormatada)" />
-									<label value="@load(each.status)" />
-									<div>
-										<button image="/img/edit.png" />
-										<button image="/img/delete.png"
-											onClick="@command('exclui',questionario=each)" />
-										<button label="Ativar"
-											onClick="@command('ativa',questionario=each)" />
-										<button label="Enviar"
-											onClick="@command('enviarQuest', questionario=each)" />
-									</div>
-								</row>
-							</template>
-						</grid>
-					</tabpanel>
-					<tabpanel>
-						<grid model="@load(vm.questionariosProf)">
-							<columns>
-								<column label="Título" align="center"
-									sort="auto(tituloQuestionario)" />
-								<column label="Data Inicial"
-									align="center" sort="auto(dataInicial)" />
-								<column label="Data Final"
-									align="center" sort="auto(dataFinal)" />
-								<column label="Status" align="center"
-									sort="auto(ativo)" />
-								<column style="width:140px;"
-									label="Opções" align="center" />
-							</columns>
-							<template name="model">
-								<row>
-									<label
-										value="@load(each.tituloQuestionario)" />
-									<label
-										value="@load(each.dataInicialFormatada)" />
-									<label
-										value="@load(each.dataFinalFormatada)" />
-									<label value="@load(each.status)" />
-									<div>
-										<button image="/img/edit.png" />
-										<button image="/img/delete.png"
-											onClick="@command('exclui',questionario=each)" />
-										<button label="Ativar"
-											onClick="@command('ativa',questionario=each)" />
-										<button label="Enviar"
-											onClick="@command('enviarQuestProfs', questionario=each)" />
-									</div>
-								</row>
-							</template>
-						</grid>
-					</tabpanel>
-					<tabpanel>
-						<grid model="@load(vm.questionariosAuto)">
-							<columns>
-								<column label="Título" align="center"
-									sort="auto(tituloQuestionario)" />
-								<column label="Data Inicial"
-									align="center" sort="auto(dataInicial)" />
-								<column label="Data Final"
-									align="center" sort="auto(dataFinal)" />
-								<column label="Status" align="center"
-									sort="auto(ativo)" />
-								<column style="width:140px;"
-									label="Opções" align="center" />
-							</columns>
-							<template name="model">
-								<row>
-									<label
-										value="@load(each.tituloQuestionario)" />
-									<label
-										value="@load(each.dataInicialFormatada)" />
-									<label
-										value="@load(each.dataFinalFormatada)" />
-									<label value="@load(each.status)" />
-									<div>
-										<button image="/img/edit.png" />
-										<button image="/img/delete.png"
-											onClick="@command('exclui',questionario=each)" />
-										<button label="Ativar"
-											onClick="@command('ativa',questionario=each)" />
-										<button label="Enviar"
-											onClick="@command('enviarQuest', questionario=each)" />
+		<tabbox>
+			<tabs>
+				<tab label="Avaliação de Coordenadores" />
+				<tab label="Avaliação de Professores" />
+				<tab label="Auto-Avaliação" />
+				<tab label="Avaliação de Infraestrutura" />
+			</tabs>
+			<tabpanels>
+				<tabpanel>
+					<grid model="@load(vm.questionariosCoord)">
+						<columns>
+							<column label="Título" align="center"
+								sort="auto(tituloQuestionario)" />
+							<column label="Data Inicial" align="center"
+								sort="auto(dataInicial)" />
+							<column label="Data Final" align="center"
+								sort="auto(dataFinal)" />
+							<column label="Status" align="center"
+								sort="auto(ativo)" />
+							<column style="width:140px;" label="Opções"
+								align="center" />
+						</columns>
+						<template name="model">
+							<row>
+								<label
+									value="@load(each.tituloQuestionario)" />
+								<label
+									value="@load(each.dataInicialFormatada)" />
+								<label
+									value="@load(each.dataFinalFormatada)" />
+								<label value="@load(each.status)" />
+								<div>
+									<button image="/img/edit.png" />
+									<button image="/img/delete.png"
+										onClick="@command('exclui',questionario=each)" />
+									<button label="Ativar"
+										onClick="@command('ativa',questionario=each)" />
+									<button label="Enviar"
+										onClick="@command('enviarQuest', questionario=each)" />
+								</div>
+							</row>
+						</template>
+					</grid>
+				</tabpanel>
+				<tabpanel>
+					<grid model="@load(vm.questionariosProf)">
+						<columns>
+							<column label="Título" align="center"
+								sort="auto(tituloQuestionario)" />
+							<column label="Data Inicial" align="center"
+								sort="auto(dataInicial)" />
+							<column label="Data Final" align="center"
+								sort="auto(dataFinal)" />
+							<column label="Status" align="center"
+								sort="auto(ativo)" />
+							<column style="width:140px;" label="Opções"
+								align="center" />
+						</columns>
+						<template name="model">
+							<row>
+								<label
+									value="@load(each.tituloQuestionario)" />
+								<label
+									value="@load(each.dataInicialFormatada)" />
+								<label
+									value="@load(each.dataFinalFormatada)" />
+								<label value="@load(each.status)" />
+								<div>
+									<button image="/img/edit.png" />
+									<button image="/img/delete.png"
+										onClick="@command('exclui',questionario=each)" />
+									<button label="Ativar"
+										onClick="@command('ativa',questionario=each)" />
+									<button label="Enviar"
+										onClick="@command('enviarQuestProfs', questionario=each)" />
+								</div>
+							</row>
+						</template>
+					</grid>
+				</tabpanel>
+				<tabpanel>
+					<grid model="@load(vm.questionariosAuto)">
+						<columns>
+							<column label="Título" align="center"
+								sort="auto(tituloQuestionario)" />
+							<column label="Data Inicial" align="center"
+								sort="auto(dataInicial)" />
+							<column label="Data Final" align="center"
+								sort="auto(dataFinal)" />
+							<column label="Status" align="center"
+								sort="auto(ativo)" />
+							<column style="width:140px;" label="Opções"
+								align="center" />
+						</columns>
+						<template name="model">
+							<row>
+								<label
+									value="@load(each.tituloQuestionario)" />
+								<label
+									value="@load(each.dataInicialFormatada)" />
+								<label
+									value="@load(each.dataFinalFormatada)" />
+								<label value="@load(each.status)" />
+								<div>
+									<button image="/img/edit.png" />
+									<button image="/img/delete.png"
+										onClick="@command('exclui',questionario=each)" />
+									<button label="Ativar"
+										onClick="@command('ativa',questionario=each)" />
+									<button label="Enviar"
+										onClick="@command('enviarQuest', questionario=each)" />
 
-									</div>
-								</row>
-							</template>
-						</grid>
-					</tabpanel>
-					<tabpanel>
-						<grid model="@load(vm.questionariosInfra)">
-							<columns>
-								<column label="Título" align="center"
-									sort="auto(tituloQuestionario)" />
-								<column label="Data Inicial"
-									align="center" sort="auto(dataInicial)" />
-								<column label="Data Final"
-									align="center" sort="auto(dataFinal)" />
-								<column label="Status" align="center"
-									sort="auto(ativo)" />
-								<column style="width:140px;"
-									label="Opções" align="center" />
-							</columns>
-							<template name="model">
-								<row>
-									<label
-										value="@load(each.tituloQuestionario)" />
-									<label
-										value="@load(each.dataInicialFormatada)" />
-									<label
-										value="@load(each.dataFinalFormatada)" />
-									<label value="@load(each.status)" />
-									<div>
-										<button image="/img/edit.png" />
-										<button image="/img/delete.png"
-											onClick="@command('exclui',questionario=each)" />
-										<button label="Ativar"
-											onClick="@command('ativa',questionario=each)" />
-										<button label="Enviar"
-											onClick="@command('enviarQuest', questionario=each)" />
-									</div>
-								</row>
-							</template>
-						</grid>
-					</tabpanel>
-				</tabpanels>
-			</tabbox>
-			<div align="center">
-				<button label="Criar novo questionário"
-					onClick="@command('abreJanela')" />
-			</div>
+								</div>
+							</row>
+						</template>
+					</grid>
+				</tabpanel>
+				<tabpanel>
+					<grid model="@load(vm.questionariosInfra)">
+						<columns>
+							<column label="Título" align="center"
+								sort="auto(tituloQuestionario)" />
+							<column label="Data Inicial" align="center"
+								sort="auto(dataInicial)" />
+							<column label="Data Final" align="center"
+								sort="auto(dataFinal)" />
+							<column label="Status" align="center"
+								sort="auto(ativo)" />
+							<column style="width:140px;" label="Opções"
+								align="center" />
+						</columns>
+						<template name="model">
+							<row>
+								<label
+									value="@load(each.tituloQuestionario)" />
+								<label
+									value="@load(each.dataInicialFormatada)" />
+								<label
+									value="@load(each.dataFinalFormatada)" />
+								<label value="@load(each.status)" />
+								<div>
+									<button image="/img/edit.png" />
+									<button image="/img/delete.png"
+										onClick="@command('exclui',questionario=each)" />
+									<button label="Ativar"
+										onClick="@command('ativa',questionario=each)" />
+									<button label="Enviar"
+										onClick="@command('enviarQuest', questionario=each)" />
+								</div>
+							</row>
+						</template>
+					</grid>
+				</tabpanel>
+			</tabpanels>
+		</tabbox>
+		<div align="center">
+			<button label="Criar novo questionário"
+				onClick="@command('abreJanela')" />
 		</div>
 	</div>
 </zk>

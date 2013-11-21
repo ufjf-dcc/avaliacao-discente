@@ -24,14 +24,15 @@ import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
 public class TurmasController extends GenericController {
 
 	private TurmaDAO turmaDAO = new TurmaDAO();
-	private DisciplinaDAO disciplinaDAO = new DisciplinaDAO();
-	private UsuarioDAO usuarioDAO = new UsuarioDAO();
 	private Turma turma = new Turma();
-	private Disciplina disciplina = new Disciplina();
-	private Usuario professor = new Usuario();
 	private List<Turma> turmas = (List<Turma>) turmaDAO.getTodasTurmas();
+	private DisciplinaDAO disciplinaDAO = new DisciplinaDAO();
+	private Disciplina disciplina = new Disciplina();
 	private List<Disciplina> disciplinas = (List<Disciplina>) disciplinaDAO
 			.getTodasDisciplinas();
+	private UsuarioDAO usuarioDAO = new UsuarioDAO();
+	private List<Usuario> professores = usuarioDAO.retornaProfessores();
+	private Usuario professor = new Usuario();
 
 	@Init
 	public void init() throws HibernateException, Exception {
@@ -123,12 +124,12 @@ public class TurmasController extends GenericController {
 		this.disciplina = disciplina;
 	}
 
-	public Usuario getProfessor() {
-		return professor;
+	public List<Usuario> getProfessores() {
+		return professores;
 	}
 
-	public void setProfessor(Usuario professor) {
-		this.professor = professor;
+	public void setProfessores(List<Usuario> professores) {
+		this.professores = professores;
 	}
 
 	public List<Disciplina> getDisciplinas() {
@@ -149,6 +150,14 @@ public class TurmasController extends GenericController {
 			profs = profs.concat(prof.getNome() + ", ");
 		}
 		label.setValue(profs.substring(0, profs.length() - 2));
+	}
+
+	public Usuario getProfessor() {
+		return professor;
+	}
+
+	public void setProfessor(Usuario professor) {
+		this.professor = professor;
 	}
 
 }

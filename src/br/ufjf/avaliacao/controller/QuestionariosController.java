@@ -13,8 +13,6 @@ import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
-import com.sun.security.ntlm.Client;
-
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.Questionario;
