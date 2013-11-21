@@ -1,7 +1,13 @@
 <zk>
-
-		<div align="center">
-		  <menubar id="menubar" width="100%">
+	<style>
+		.menubar{
+			border:1px;
+		
+		}
+	
+	</style>
+		<div  align="center">
+		  <menubar id="menubar" class="menubar" width="100%">
 		  
            		<menuitem label="Inicial" href="/home.zul"/>
  				<menuitem label="Gerenciar Usuários"  href="/usuarios.zul"/> 

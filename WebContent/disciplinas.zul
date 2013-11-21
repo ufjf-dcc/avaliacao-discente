@@ -1,12 +1,14 @@
 <?page title="Gerenciar Disciplinas" contentType="text/html;charset=UTF-8"?>
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
 <zk>
-	<div apply="org.zkoss.bind.BindComposer"
+<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.DisciplinasController')">
-		<include src="@load(vm.menu)" />
-		<div style="margin-left:15%; width:85%;margin-top:5px;">
-			<grid
-				model="@load(vm.disciplinas) @template(each.editingStatus ? 'editable' : 'noneditable')">
+
+<include src="@load(vm.menu)" />
+	
+		
+		
+			<grid model="@load(vm.disciplinas) @template(each.editingStatus ? 'editable' : 'noneditable')">
 				<columns>
 					<column style="width:150px;" label="Código"
 						align="center" sort="auto(codDisciplina)" />
@@ -42,6 +44,7 @@
 					</row>
 				</template>
 			</grid>
+			
 			<div align="center">
 				<button label="Cadastrar nova disciplina"
 					onClick="@command('abreCadastro')" />
@@ -49,6 +52,7 @@
 					label="Cadastrar disciplinas via arquivo CSV"
 					onUpload="@command('upload', evt=event)" />
 			</div>
-		</div>
+	
 	</div>
+	
 </zk>

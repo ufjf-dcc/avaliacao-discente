@@ -6,7 +6,7 @@
 
 		<include src="@load(vm.menu)" />
 
-		<div style="margin-left:15%; width:85%;margin-top:5px;">
+		
 			<grid
 				model="@load(vm.turmas) @template(each.editingStatus ? 'editable' : 'noneditable')">
 				<columns>
@@ -83,5 +83,5 @@
 			</div>
 		</div>
 
-	</div>
+	
 </zk>
