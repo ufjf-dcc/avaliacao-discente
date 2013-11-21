@@ -1,12 +1,21 @@
-<?page title="new page title" contentType="text/html;charset=UTF-8"?>
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+
 <zk>
-<div style="position:absolute; margin-right:92%; height:100%">
-		
-		<menubar scrollable="true" orient="vertical" autodrop="true" style="height:100%" >
- 				<menuitem label="Inicial" style="padding:10%" href="/home.zul"/>
- 				<menuitem label="Consultar Avaliações" style="padding:10%" onClick="@command('consultarAva')"/> 
- 				<menuitem label="Sair" onClick="@command('exit')" style="padding:10%"/>
+	<style>
+		.menubar{ border:1px;
+
+		}
+
+	</style>
+
+	<div style="position:absolute">
+
+		<menubar id="menubar" class="menubar" width="100%">
+			<menuitem label="Inicial" href="/home.zul" />
+			<menuitem label="Consultar Avaliações"
+				onClick="@command('consultarAva')" />
+			<menuitem label="Sair" onClick="@command('exit')" />
 		</menubar>
-		
-</div>
+
+	</div>
 </zk>

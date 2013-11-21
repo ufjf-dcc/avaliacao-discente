@@ -1,3 +1,5 @@
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+
 <zk>
 	<style>
 		.menubar{
