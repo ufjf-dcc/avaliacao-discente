@@ -15,7 +15,7 @@
 				</tabs>
 				<tabpanels>
 					<tabpanel>
-						<grid model="@load(vm.questionariosCoord)">
+						<grid>
 							<columns>
 								<column label="Título" align="center" />
 								<column label="Data Inicial"
@@ -41,7 +41,7 @@
 						</grid>
 					</tabpanel>
 					<tabpanel>
-						<grid model="@load(vm.questionariosProfs)">
+						<grid model="@load(vm.avaliacaoProfs)">
 							<columns>
 								<column label="Título" align="center" />
 								<column label="Data Inicial"
@@ -53,14 +53,14 @@
 							<template name="model">
 								<row>
 									<label
-										value="@load(each.tituloQuestionario)" />
+										value="@load(each.questionario.tituloQuestionario)" />
 									<label
-										value="@load(each.dataInicialFormatada)" />
+										value="@load(each.questionario.dataInicialFormatada)" />
 									<label
-										value="@load(each.dataFinalFormatada)" />
+										value="@load(each.questionario.dataFinalFormatada)" />
 									<div>
 										<button label="Avaliar"
-											onClick="@command('avaliar', questionario=each)" />
+											onClick="@command('avaliar', avaliacao=each)" />
 									</div>
 								</row>
 							</template>

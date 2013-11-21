@@ -79,7 +79,7 @@
 										<button label="Ativar"
 											onClick="@command('ativa',questionario=each)" />
 										<button label="Enviar"
-											onClick="@command('abrirEnvio', questionario=each)" />
+											onClick="@command('enviarQuestProfs', questionario=each)" />
 									</div>
 								</row>
 							</template>
@@ -115,7 +115,7 @@
 										<button label="Ativar"
 											onClick="@command('ativa',questionario=each)" />
 										<button label="Enviar"
-											onClick="@command('abrirEnvio', questionario=each)" />
+											onClick="@command('enviarQuest', questionario=each)" />
 
 									</div>
 								</row>
@@ -152,7 +152,7 @@
 										<button label="Ativar"
 											onClick="@command('ativa',questionario=each)" />
 										<button label="Enviar"
-											onClick="@command('abrirEnvio', questionario=each)" />
+											onClick="@command('enviarQuest', questionario=each)" />
 									</div>
 								</row>
 							</template>

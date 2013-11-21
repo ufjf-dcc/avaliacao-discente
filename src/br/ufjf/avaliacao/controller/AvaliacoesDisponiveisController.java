@@ -11,11 +11,16 @@ import org.zkoss.zk.ui.Executions;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.Window;
 
+import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Questionario;
+import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
 import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
 
 public class AvaliacoesDisponiveisController extends GenericController {
 
+	private AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
+	private List<Avaliacao> avaliacaoProfs = avaliacaoDAO.retornaAvaliacaoProfs(getUsuario());
+	private static Avaliacao avaliacaoAtual;
 	private QuestionarioDAO questionarioDAO = new QuestionarioDAO();
 	private List<Questionario> questionariosCoord = questionarioDAO
 			.retornaQuestinariosCursoTipo(usuario.getCurso(), 0);
@@ -34,9 +39,9 @@ public class AvaliacoesDisponiveisController extends GenericController {
 
 	@Command
 	@SuppressWarnings("static-access")
-	public void avaliar(@BindingParam("questionario") Questionario questionario) {
-		this.questionarioAtual = questionario;
-		System.out.println(questionarioAtual.getDataFinal().toString());
+	public void avaliar(@BindingParam("avaliacao") Avaliacao avaliacao) {
+		this.avaliacaoAtual = avaliacao;
+		this.questionarioAtual = avaliacaoAtual.getQuestionario();
 		Window window = (Window) Executions.createComponents("/avaliar.zul",
 				null, null);
 		window.doModal();
@@ -48,26 +53,33 @@ public class AvaliacoesDisponiveisController extends GenericController {
 		Component component = row.getFirstChild();
 		switch (tipoPergunta) {
 		case 0:
-			component.getNextSibling().getNextSibling().getNextSibling().getNextSibling().detach();
-			component.getNextSibling().getNextSibling().getNextSibling().detach();
+			component.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().detach();
+			component.getNextSibling().getNextSibling().getNextSibling()
+					.detach();
 			component.getNextSibling().getNextSibling().detach();
 			break;
 		case 1:
-			component.getNextSibling().getNextSibling().getNextSibling().getNextSibling().detach();
-			component.getNextSibling().getNextSibling().getNextSibling().detach();
+			component.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().detach();
+			component.getNextSibling().getNextSibling().getNextSibling()
+					.detach();
 			component.getNextSibling().detach();
 			break;
 		case 2:
-			component.getNextSibling().getNextSibling().getNextSibling().getNextSibling().detach();
+			component.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().detach();
 			component.getNextSibling().getNextSibling().detach();
 			component.getNextSibling().detach();
 			break;
 		case 3:
-			component.getNextSibling().getNextSibling().getNextSibling().detach();
+			component.getNextSibling().getNextSibling().getNextSibling()
+					.detach();
 			component.getNextSibling().getNextSibling().detach();
 			component.getNextSibling().detach();
 			break;
-		default:;
+		default:
+			;
 			break;
 		}
 	}
@@ -110,6 +122,22 @@ public class AvaliacoesDisponiveisController extends GenericController {
 
 	public void setQuestionarioAtual(Questionario questionarioAtual) {
 		AvaliacoesDisponiveisController.questionarioAtual = questionarioAtual;
+	}
+
+	public List<Avaliacao> getAvaliacaoProfs() {
+		return avaliacaoProfs;
+	}
+
+	public void setAvaliacaoProfs(List<Avaliacao> avaliacaoProfs) {
+		this.avaliacaoProfs = avaliacaoProfs;
+	}
+
+	public Avaliacao getAvaliacaoAtual() {
+		return avaliacaoAtual;
+	}
+
+	public void setAvaliacaoAtual(Avaliacao avaliacaoAtual) {
+		AvaliacoesDisponiveisController.avaliacaoAtual = avaliacaoAtual;
 	}
 
 }

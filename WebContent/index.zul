@@ -26,8 +26,8 @@
 							</row>
 							<row>
 								<cell colspan="2">
-									<button width="60px" height="30px"
-										label="Entrar" onClick="@command('submit')" />
+									<button label="Entrar"
+										onClick="@command('submit')" />
 								</cell>
 							</row>
 						</rows>

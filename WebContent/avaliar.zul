@@ -1,7 +1,6 @@
 <?page title="Avaliar" contentType="text/html;charset=UTF-8"?>
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
-<window title="Avaliar" border="normal" closable="true"
-	onClose="Executions.sendRedirect(null)" width="70%" >
+<window title="Avaliar" border="normal" closable="true" width="80%">
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AvaliacoesDisponiveisController')"
 		form="@id('fm') @load(vm.questionarioAtual)" id="form">
@@ -11,26 +10,27 @@
 				<column />
 			</columns>
 			<template name="model">
-				<row onCreate="@command('criarCampoResposta', row=self, tipoPergunta=each.tipoPergunta)">
+				<row
+					onCreate="@command('criarCampoResposta', row=self, tipoPergunta=each.tipoPergunta)">
 					<label value="@load(each.tituloPergunta)" />
-					<textbox cols="40" rows="5" />
+					<textbox cols="50" rows="5" />
 					<radiogroup>
-						<radio label="1" />
-						<radio label="2" />
-						<radio label="3" />
-						<radio label="4" />
-						<radio label="5" />
+						<radio label="1" value="1" />
+						<radio label="2" value="2" />
+						<radio label="3" value="3" />
+						<radio label="4" value="4" />
+						<radio label="5" value="5" />
 					</radiogroup>
 					<radiogroup orient="vertical">
-						<radio label="Muito Ruim" />
-						<radio label="Ruim" />
-						<radio label="Regular" />
-						<radio label="Bom" />
-						<radio label="Muito Bom" />
+						<radio label="Muito Ruim" value="Muito Ruim" />
+						<radio label="Ruim" value="Ruim" />
+						<radio label="Regular" value="Regular" />
+						<radio label="Bom" value="Bom" />
+						<radio label="Muito Bom" value="Muito bom" />
 					</radiogroup>
 					<radiogroup>
-						<radio label="SIM" />
-						<radio label="NÃO" />
+						<radio label="SIM" value="SIM" />
+						<radio label="NÃO" value="NAO" />
 					</radiogroup>
 				</row>
 			</template>

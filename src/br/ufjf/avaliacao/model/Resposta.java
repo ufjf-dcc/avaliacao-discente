@@ -52,7 +52,7 @@ public class Resposta implements Serializable {
 	 * quando retornarmos o {@link Resposta}.
 	 * 
 	 */
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "idPergunta", nullable = false)
 	private Pergunta pergunta;
 	

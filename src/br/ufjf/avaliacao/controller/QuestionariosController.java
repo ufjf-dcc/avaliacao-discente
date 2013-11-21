@@ -9,76 +9,98 @@ import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zk.ui.util.Clients;
+import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
+import com.sun.security.ntlm.Client;
+
+import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.Questionario;
+import br.ufjf.avaliacao.model.Turma;
+import br.ufjf.avaliacao.model.Usuario;
+import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
 import br.ufjf.avaliacao.persistent.impl.PerguntaDAO;
 import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
+import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
+import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
 
+public class QuestionariosController extends GenericController {
 
-public class QuestionariosController extends GenericController{
-	
 	private QuestionarioDAO questionarioDAO = new QuestionarioDAO();
 	private PerguntaDAO perguntaDAO = new PerguntaDAO();
 	private List<Questionario> questionarios;
-	private List<Questionario> questionariosCoord = questionarioDAO.retornaQuestinariosCursoTipo(usuario.getCurso(),0);
-	private List<Questionario> questionariosProf = questionarioDAO.retornaQuestinariosCursoTipo(usuario.getCurso(),1);
-	private List<Questionario> questionariosAuto = questionarioDAO.retornaQuestinariosCursoTipo(usuario.getCurso(),2);
-	private List<Questionario> questionariosInfra = questionarioDAO.retornaQuestinariosCursoTipo(usuario.getCurso(),3);
+	private List<Questionario> questionariosCoord = questionarioDAO
+			.retornaQuestinariosCursoTipo(usuario.getCurso(), 0);
+	private List<Questionario> questionariosProf = questionarioDAO
+			.retornaQuestinariosCursoTipo(usuario.getCurso(), 1);
+	private List<Questionario> questionariosAuto = questionarioDAO
+			.retornaQuestinariosCursoTipo(usuario.getCurso(), 2);
+	private List<Questionario> questionariosInfra = questionarioDAO
+			.retornaQuestinariosCursoTipo(usuario.getCurso(), 3);
 	private boolean ativo;
 	private List<Pergunta> perguntas = new ArrayList<Pergunta>();
 	private Pergunta pergunta = new Pergunta();
 	private Questionario questionario = new Questionario();
-	
+	private Avaliacao avaliacao = new Avaliacao();
+	private AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
+	private TurmaDAO turmaDAO = new TurmaDAO();
+	private UsuarioDAO usuarioDAO = new UsuarioDAO();
+	private List<Turma> turmas = turmaDAO.getTodasTurmas();
+	private List<Usuario> alunos = new ArrayList<Usuario>();
+
 	@Init
 	public void init() throws HibernateException, Exception {
 		testaPermissaoCoord();
 	}
-	
+
 	@Command
-	public void abreJanela(){
+	public void abreJanela() {
 		Window window = (Window) Executions.createComponents(
-                "/criarQuestionario.zul", null, null);
+				"/criarQuestionario.zul", null, null);
 		window.doModal();
 	}
 
 	@Command
-	@NotifyChange({"perguntas","pergunta"})
-	public void adicionaPergunta(){
+	@NotifyChange({ "perguntas", "pergunta" })
+	public void adicionaPergunta() {
 		perguntas.add(pergunta);
 		pergunta = new Pergunta();
 	}
-	
+
 	@Command
-	@NotifyChange({"perguntas","pergunta"})
-	public void excluiPergunta(@BindingParam("pergunta")Pergunta pergunta){
+	@NotifyChange({ "perguntas", "pergunta" })
+	public void excluiPergunta(@BindingParam("pergunta") Pergunta pergunta) {
 		perguntas.remove(pergunta);
 	}
-	
+
 	@Command
-	@NotifyChange({"questionariosCoord","questionariosProf","questionariosAuto","questionariosInfra","questionario"})
-	public void exclui(@BindingParam("questionario")Questionario questionario){
-			perguntas = questionario.getPerguntas();
-			perguntaDAO	.excluiLista(perguntas);	
-			questionarioDAO.exclui(questionario);
-			listaQuestionarios(questionario.getTipoQuestionario()).remove(questionario);
-			
+	@NotifyChange({ "questionariosCoord", "questionariosProf",
+			"questionariosAuto", "questionariosInfra", "questionario" })
+	public void exclui(@BindingParam("questionario") Questionario questionario) {
+		perguntas = questionario.getPerguntas();
+		perguntaDAO.excluiLista(perguntas);
+		questionarioDAO.exclui(questionario);
+		listaQuestionarios(questionario.getTipoQuestionario()).remove(
+				questionario);
+
 	}
-	
+
 	@Command
-	@NotifyChange({"perguntas","questionario"})
-	public void cria(){
+	@NotifyChange({ "perguntas", "questionario" })
+	public void cria() {
 		questionario.setCurso(usuario.getCurso());
-		if (isAtivo()){
-			for (Questionario q : listaQuestionarios(questionario.getTipoQuestionario())){
+		if (isAtivo()) {
+			for (Questionario q : listaQuestionarios(questionario
+					.getTipoQuestionario())) {
 				q.setAtivo(false);
 				questionarioDAO.editar(q);
 			}
 			questionario.setAtivo(true);
 		}
 		questionarioDAO.salvar(questionario);
-		for (Pergunta pergunta : perguntas){
+		for (Pergunta pergunta : perguntas) {
 			pergunta.setQuestionario(questionario);
 		}
 		perguntaDAO.salvarLista(perguntas);
@@ -86,83 +108,103 @@ public class QuestionariosController extends GenericController{
 		pergunta = new Pergunta();
 		perguntas = new ArrayList<Pergunta>();
 	}
-	
+
 	@Command
-	@NotifyChange({"perguntas","pergunta"})
-	public void top(@BindingParam("pergunta")Pergunta pergunta){
+	@NotifyChange({ "perguntas", "pergunta" })
+	public void top(@BindingParam("pergunta") Pergunta pergunta) {
 		int index = perguntas.indexOf(pergunta);
 		Pergunta aux = perguntas.get(0);
 		perguntas.set(0, pergunta);
-		perguntas.set(index,aux);
+		perguntas.set(index, aux);
 	}
-	
+
 	@Command
 	@NotifyChange("perguntas")
-	public void down(@BindingParam("pergunta")Pergunta pergunta){
+	public void down(@BindingParam("pergunta") Pergunta pergunta) {
 		int index = perguntas.indexOf(pergunta);
-		Pergunta aux = perguntas.get(index+1);
-		perguntas.set(index+1, pergunta);
-		perguntas.set(index,aux);
+		Pergunta aux = perguntas.get(index + 1);
+		perguntas.set(index + 1, pergunta);
+		perguntas.set(index, aux);
 	}
-	
+
 	@Command
-	@NotifyChange({"perguntas","pergunta"})
-	public void up(@BindingParam("pergunta")Pergunta pergunta){
+	@NotifyChange({ "perguntas", "pergunta" })
+	public void up(@BindingParam("pergunta") Pergunta pergunta) {
 		int index = perguntas.indexOf(pergunta);
-		Pergunta aux = perguntas.get(index-1);
-		perguntas.set(index-1, pergunta);
-		perguntas.set(index,aux);
+		Pergunta aux = perguntas.get(index - 1);
+		perguntas.set(index - 1, pergunta);
+		perguntas.set(index, aux);
 	}
-	
+
 	@Command
-	@NotifyChange({"perguntas","pergunta"})
-	public void bottom(@BindingParam("pergunta")Pergunta pergunta){
+	@NotifyChange({ "perguntas", "pergunta" })
+	public void bottom(@BindingParam("pergunta") Pergunta pergunta) {
 		int index = perguntas.indexOf(pergunta);
-		Pergunta aux = perguntas.get(perguntas.size()-1);
-		perguntas.set(perguntas.size()-1, pergunta);
-		perguntas.set(index,aux);
+		Pergunta aux = perguntas.get(perguntas.size() - 1);
+		perguntas.set(perguntas.size() - 1, pergunta);
+		perguntas.set(index, aux);
 	}
-	
+
 	@Command
-	@NotifyChange({"questionariosCoord","questionariosProf","questionariosAuto","questionariosInfra","questionario"})
-	public void ativa(@BindingParam("questionario")Questionario questionario){
-		for (Questionario q : listaQuestionarios(questionario.getTipoQuestionario())){
-				if (q.equals(questionario))
-					q.setAtivo(true);
-				else q.setAtivo(false);
-				questionarioDAO.editar(q);
+	@NotifyChange({ "questionariosCoord", "questionariosProf",
+			"questionariosAuto", "questionariosInfra", "questionario" })
+	public void ativa(@BindingParam("questionario") Questionario questionario) {
+		for (Questionario q : listaQuestionarios(questionario
+				.getTipoQuestionario())) {
+			if (q.equals(questionario))
+				q.setAtivo(true);
+			else
+				q.setAtivo(false);
+			questionarioDAO.editar(q);
 		}
 	}
-	
+
 	@Command
-	public void enviarQuest() {
-		
+	public void enviarQuestProfs(
+			@BindingParam("questionario") Questionario questionario) {
+		Clients.showBusy("Enviando Questionarios");
+		List<Avaliacao> avaliacoes = new ArrayList<Avaliacao>();
+		for (int i = 0; i < turmas.size(); i++) {
+			alunos = usuarioDAO.retornaAlunosTurma(turmas.get(i));
+			for (int j = 0; j < alunos.size(); j++) {
+				for (Usuario professor : usuarioDAO
+						.retornaProfessoresTurma(turmas.get(i))) {
+					avaliacao.setAvaliando(alunos.get(j));
+					avaliacao.setAvaliado(professor);
+					avaliacao.setQuestionario(questionario);
+					avaliacao.setTurma(turmas.get(i));
+					avaliacaoDAO.salvar(avaliacao);
+				}
+			}
+		}
+		Messagebox.show("Avaliacoes Enviadas");
+		Clients.clearBusy();
 	}
-	
+
 	public List<Pergunta> getPerguntas() {
 		return perguntas;
 	}
-	
+
 	public void setPerguntas(List<Pergunta> perguntas) {
 		this.perguntas = perguntas;
 	}
-	
+
 	public Pergunta getPergunta() {
 		return pergunta;
 	}
-	
+
 	public void setPergunta(Pergunta pergunta) {
 		this.pergunta = pergunta;
 	}
-	
+
 	public QuestionarioDAO getQuestionarioDAO() {
 		return questionarioDAO;
 	}
-	
+
 	public void setQuestionarioDAO(QuestionarioDAO questionarioDAO) {
 		this.questionarioDAO = questionarioDAO;
 	}
-	
+
 	public List<Questionario> listaQuestionarios(Integer tipoQuestionario) {
 		if (tipoQuestionario == 0)
 			return questionariosCoord;
@@ -173,7 +215,7 @@ public class QuestionariosController extends GenericController{
 		else
 			return questionariosInfra;
 	}
-	
+
 	public void setQuestionarios(List<Questionario> questionarios) {
 		this.questionarios = questionarios;
 	}
@@ -225,10 +267,18 @@ public class QuestionariosController extends GenericController{
 	public boolean isAtivo() {
 		return ativo;
 	}
-	
+
 	@Command
 	public void setAtivo(boolean ativo) {
 		this.ativo = ativo;
 	}
-	
+
+	public Avaliacao getAvaliacao() {
+		return avaliacao;
+	}
+
+	public void setAvaliacao(Avaliacao avaliacao) {
+		this.avaliacao = avaliacao;
+	}
+
 }
