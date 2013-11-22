@@ -26,6 +26,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "Usuario")
 public class Usuario implements Serializable{
+	public static final int COORDENADOR = 0, PROFESSOR = 1, ALUNO = 2, ADMIN = 3;
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -183,13 +184,15 @@ public class Usuario implements Serializable{
 	}
 
 	public String getNomeTipoUsuario() {
-		if(tipoUsuario==0)
+		if(tipoUsuario==COORDENADOR)
 			return "Coordenador";
-		else if (tipoUsuario==1)
+		else if (tipoUsuario==PROFESSOR)
 			return "Professor";
-		else if (tipoUsuario==2)
+		else if (tipoUsuario==ALUNO)
 			return "Aluno";
-		return "Administrador";
+		else if (tipoUsuario==ADMIN)
+			return "Administrador";
+		return null;
 	}
 
 	public void setNomeTipoUsuario(String nomeTipoUsuario) {
