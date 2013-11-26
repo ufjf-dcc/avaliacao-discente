@@ -1,45 +1,49 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
-<window width="80%" id="win" title="Editar Questionário" border="normal" closable="true" >
+<window width="80%" id="win" title="Editar Questionário" border="normal"
+	closable="true" onClose="Executions.sendRedirect(null)">
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
-		form="@id('fm') @load(vm.questionarioEditar) @save(vm.questionario, before='cria')"
+		form="@id('fm') @load(vm.questionarioEditar) @save(vm.questionarioEditar, before='salvarQuest')"
 		id="form">
 		<grid model="@load(vm.perguntas)">
 			<auxhead style="text-align:center;">
-				<auxheader label="Título do Questionário:" colspan="3">
-					<textbox value="@load(fm.tituloQuestionario) @save(fm.tituloQuestionario, before='salvarQuest')" />
+				<auxheader label="Título do Questionário:"
+					colspan="3">
+					<textbox
+						value="@load(fm.tituloQuestionario) @save(fm.tituloQuestionario, before='salvarQuest')" />
 				</auxheader>
 			</auxhead>
 			<auxhead>
 				<auxheader label="Tipo: ">
-					<combobox selectedItem="@load(fm.tipoQuestionario) @save(fm.tipoQuestionario, before='salvarQuest')"
-						readonly="true" model="@load(vm.tiposQuestionario)" >
+					<combobox>
 						<template name="model">
-							<comboitem/>
+							<comboitem />
 						</template>
 					</combobox>
 				</auxheader>
 				<auxheader label="Data Incial:">
-					<datebox value="@load(fm.dataInicial) @save(fm.dataInicial, before='salvarQuest')"
+					<datebox
+						value="@load(fm.dataInicial) @save(fm.dataInicial, before='salvarQuest')"
 						format="dd/MM/yyyy" width="150px" constraint="no past" />
 				</auxheader>
 				<auxheader label="Data Final:">
-					<datebox value="@load(fm.dataFinal) @save(fm.dataFinal, before='salvarQuest')"
+					<datebox
+						value="@load(fm.dataFinal) @save(fm.dataFinal, before='salvarQuest')"
 						format="dd/MM/yyyy" width="150px" constraint="no past" />
 				</auxheader>
 			</auxhead>
-			<auxhead style="text-align:center;" >
-				<auxheader label="Perguntas no Questionário:" colspan="3" />
+			<auxhead style="text-align:center;">
+				<auxheader label="Perguntas no Questionário:"
+					colspan="3" />
 			</auxhead>
-			<columns>
+			<columns style="text-align:center;">
 				<column label="Título" />
 				<column label="Tipo" />
 				<column label="Opções" />
 			</columns>
 			<template name="model">
-				<row>
+				<row align="center">
 					<label value="@load(each.tituloPergunta)" />
-					
 					<label value="@load(each.nomeTipoPergunta)" />
 					<div style="text-align:center">
 						<button image="/img/delete.png"
@@ -61,18 +65,18 @@
 		<div
 			form="@id('fx') @load(vm.pergunta) @save(vm.pergunta, before='adicionaPergunta')"
 			id="form2">
-			<textbox value="@bind(fx.tituloPergunta)" />
-			<combobox selectedItem="@bind(fx.tipoPergunta)"
+			<textbox width="33%" value="@bind(fx.tituloPergunta)" />
+			<combobox width="33%" selectedItem="@bind(fx.tipoPergunta)"
 				readonly="true">
 				<comboitem label="Texto" value="0" />
 				<comboitem label="Escala numérica" value="1" />
 				<comboitem label="Escala conceitual" value="2" />
 				<comboitem label="Sim/Não" value="3" />
 			</combobox>
-			<button label="Adicionar Pergunta"
+			<button width="32%" label="Adicionar Pergunta"
 				onClick="@command('adicionaPergunta')" />
 		</div>
 		<separator />
-		<button label="Salvar Alterações No Questionário"/>
+		<button label="Salvar Alterações Feitas" onClick="@command('salvarQuest')" />
 	</div>
 </window>

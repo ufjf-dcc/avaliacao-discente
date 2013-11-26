@@ -9,20 +9,14 @@ import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Executions;
-import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.Questionario;
-import br.ufjf.avaliacao.model.Turma;
-import br.ufjf.avaliacao.model.Usuario;
-import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
 import br.ufjf.avaliacao.persistent.impl.PerguntaDAO;
 import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
-import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
-import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
 
 public class QuestionariosController extends GenericController {
 
@@ -41,24 +35,22 @@ public class QuestionariosController extends GenericController {
 	private Pergunta pergunta = new Pergunta();
 	private PerguntaDAO perguntaDAO = new PerguntaDAO();
 	private Avaliacao avaliacao = new Avaliacao();
-	private AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
-	private TurmaDAO turmaDAO = new TurmaDAO();
-	private UsuarioDAO usuarioDAO = new UsuarioDAO();
-	private List<Turma> turmas = turmaDAO.getTodasTurmas();
-	private List<Usuario> alunos = new ArrayList<Usuario>();
 	private Questionario questionario = new Questionario();
 	private static Questionario questionarioEditar = new Questionario();
-	private static List<Pergunta> perguntasEditar = new ArrayList<Pergunta>();
 	private List<Integer> tiposQuestionario = new ArrayList<Integer>();
 
 	@Init
 	public void init() throws HibernateException, Exception {
 		testaPermissaoCoord();
-		perguntas = perguntasEditar;
+		if(questionarioEditar.getPerguntas().isEmpty())
+			perguntas = new ArrayList<Pergunta>();
+		else
+			perguntas = questionarioEditar.getPerguntas();
 	}
 
 	@Command
-	public void abreJanela() {
+	public void criarQuest() {
+		QuestionariosController.questionarioEditar = new Questionario();		
 		Window window = (Window) Executions.createComponents(
 				"/criarQuestionario.zul", null, null);
 		window.doModal();
@@ -67,17 +59,11 @@ public class QuestionariosController extends GenericController {
 	@Command
 	public void editarQuest(@BindingParam("questionario") Questionario questionario) {
 		QuestionariosController.questionarioEditar = questionario;
-		QuestionariosController.perguntasEditar = QuestionariosController.questionarioEditar.getPerguntas();
 		Window window = (Window) Executions.createComponents(
 				"/editarQuestionario.zul", null, null);
 		window.doModal();
 	}
-	
-	@Command
-	public void copiaPerguntasStatic() {
-		perguntas = perguntasEditar;		
-	}
-	
+		
 	@Command
 	@NotifyChange({ "perguntas", "pergunta" })
 	public void adicionaPergunta() {
@@ -100,7 +86,6 @@ public class QuestionariosController extends GenericController {
 		questionarioDAO.exclui(questionario);
 		listaQuestionarios(questionario.getTipoQuestionario()).remove(
 				questionario);
-
 	}
 
 	@Command
@@ -176,27 +161,18 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	public void enviarQuestProfs(
-			@BindingParam("questionario") Questionario questionario) {
-		Clients.showBusy("Enviando Questionarios");
-		List<Avaliacao> avaliacoes = new ArrayList<Avaliacao>();
-		for (int i = 0; i < turmas.size(); i++) {
-			alunos = usuarioDAO.retornaAlunosTurma(turmas.get(i));
-			for (int j = 0; j < alunos.size(); j++) {
-				for (Usuario professor : usuarioDAO
-						.retornaProfessoresTurma(turmas.get(i))) {
-					avaliacao.setAvaliando(alunos.get(j));
-					avaliacao.setAvaliado(professor);
-					avaliacao.setQuestionario(questionario);
-					avaliacao.setTurma(turmas.get(i));
-					avaliacaoDAO.salvar(avaliacao);
-				}
+	public void salvarQuest() {
+		if(questionarioDAO.editar(questionarioEditar)) {
+			for (Pergunta pergunta : perguntas) {
+				pergunta.setQuestionario(questionarioEditar);
+				perguntaDAO.salvaOuEdita(pergunta);
 			}
+			pergunta = new Pergunta();
+			perguntas = new ArrayList<Pergunta>();
+			Messagebox.show("Questionário Salvo");
 		}
-		Messagebox.show("Avaliacoes Enviadas");
-		Clients.clearBusy();
 	}
-
+	
 	public List<Pergunta> getPerguntas() {
 		return perguntas;
 	}
@@ -311,14 +287,6 @@ public class QuestionariosController extends GenericController {
 
 	public void setTiposQuestionario(List<Integer> tiposQuestionario) {
 		this.tiposQuestionario = tiposQuestionario;
-	}
-
-	public List<Pergunta> getPerguntasEditar() {
-		return perguntasEditar;
-	}
-
-	public void setPerguntasEditar(List<Pergunta> perguntasEditar) {
-		QuestionariosController.perguntasEditar = perguntasEditar;
 	}
 
 }

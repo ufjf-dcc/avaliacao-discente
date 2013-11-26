@@ -161,7 +161,7 @@
 		</tabbox>
 		<div align="center">
 			<button label="Criar novo questionário"
-				onClick="@command('abreJanela')" />
+				onClick="@command('criarQuest')" />
 		</div>
 	</div>
 </zk>
