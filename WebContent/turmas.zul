@@ -80,6 +80,8 @@
 			<div align="center">
 				<button label="Cadastrar nova turma"
 					onClick="@command('abreCadastro')" />
+					<button label="Cadastrar nova turma via CSV"
+					onClick="@command('abreCadastroTurma')" />
 			</div>
 		</div>
 

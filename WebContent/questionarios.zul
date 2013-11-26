@@ -36,7 +36,7 @@
 									value="@load(each.dataFinalFormatada)" />
 								<label value="@load(each.status)" />
 								<div>
-									<button image="/img/edit.png" />
+									<button image="/img/edit.png" onClick="@command('editarQuest',questionario=each)" />
 									<button image="/img/delete.png"
 										onClick="@command('exclui',questionario=each)" />
 									<button label="Ativar"

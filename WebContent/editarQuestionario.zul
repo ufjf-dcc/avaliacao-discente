@@ -1,32 +1,35 @@
-<?page title="new page title" contentType="text/html;charset=UTF-8"?>
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
-<window id="win" title="Editar Questionário" border="normal">
-	<div style="width:650px;" apply="org.zkoss.bind.BindComposer"
+<window width="80%" id="win" title="Editar Questionário" border="normal" closable="true" >
+	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
-		form="@id('fm') @load(vm.pergunta) @save(vm.pergunta, before='adicionaPergunta')"
+		form="@id('fm') @load(vm.questionarioEditar) @save(vm.questionario, before='cria')"
 		id="form">
 		<grid model="@load(vm.perguntas)">
-			<auxhead>
-				<auxheader label="Título:" colspan="2">
-					<textbox
-						value="@bind(vm.questionario.tituloQuestionario)" />
-				</auxheader>
-				<auxheader label="Tipo:">
-					<combobox
-						selectedItem="@bind(vm.questionario.tipoQuestionario)"
-						readonly="true">
-						<comboitem label="Avaliação de Coordenador"
-							value="0" />
-						<comboitem label="Avaliação de Professor"
-							value="1" />
-						<comboitem label="Auto-Avaliação" value="2" />
-						<comboitem label="Avaliação de Infraestrutura"
-							value="3" />
-					</combobox>
+			<auxhead style="text-align:center;">
+				<auxheader label="Título do Questionário:" colspan="3">
+					<textbox value="@load(fm.tituloQuestionario) @save(fm.tituloQuestionario, before='salvarQuest')" />
 				</auxheader>
 			</auxhead>
 			<auxhead>
-				<auxheader label="Perguntas:" colspan="3" />
+				<auxheader label="Tipo: ">
+					<combobox selectedItem="@load(fm.tipoQuestionario) @save(fm.tipoQuestionario, before='salvarQuest')"
+						readonly="true" model="@load(vm.tiposQuestionario)" >
+						<template name="model">
+							<comboitem/>
+						</template>
+					</combobox>
+				</auxheader>
+				<auxheader label="Data Incial:">
+					<datebox value="@load(fm.dataInicial) @save(fm.dataInicial, before='salvarQuest')"
+						format="dd/MM/yyyy" width="150px" constraint="no past" />
+				</auxheader>
+				<auxheader label="Data Final:">
+					<datebox value="@load(fm.dataFinal) @save(fm.dataFinal, before='salvarQuest')"
+						format="dd/MM/yyyy" width="150px" constraint="no past" />
+				</auxheader>
+			</auxhead>
+			<auxhead style="text-align:center;" >
+				<auxheader label="Perguntas no Questionário:" colspan="3" />
 			</auxhead>
 			<columns>
 				<column label="Título" />
@@ -36,25 +39,40 @@
 			<template name="model">
 				<row>
 					<label value="@load(each.tituloPergunta)" />
+					
 					<label value="@load(each.nomeTipoPergunta)" />
-					<button image="/img/delete.png"
-						onClick="@command('excluiPergunta',pergunta=each)" />
+					<div style="text-align:center">
+						<button image="/img/delete.png"
+							onClick="@command('excluiPergunta',pergunta=each)" />
+						<button label="top"
+							onClick="@command('top',pergunta=each)" />
+						<button image="/img/up.png"
+							onClick="@command('up',pergunta=each)"
+							disabled="@load(not (forEachStatus.index eq forEachStatus.begin) ? 'false' : 'true')" />
+						<button image="/img/down.png"
+							onClick="@command('down',pergunta=each)"
+							disabled="@load(not (forEachStatus.index + 1 eq forEachStatus.end) ? 'false' : 'true')" />
+						<button label="bottom"
+							onClick="@command('bottom',pergunta=each)" />
+					</div>
 				</row>
 			</template>
 		</grid>
-		<textbox value="@bind(fm.tituloPergunta)" />
-		<combobox selectedItem="@bind(fm.tipoPergunta)"
-			readonly="true">
-			<comboitem label="Texto" value="0" />
-			<comboitem label="Escala numérica" value="1" />
-			<comboitem label="Escala conceitual" value="2" />
-			<comboitem label="Sim/Não" value="3" />
-		</combobox>
-		<button label="Adicionar Pergunta"
-			onClick="@command('adicionaPergunta')" />
+		<div
+			form="@id('fx') @load(vm.pergunta) @save(vm.pergunta, before='adicionaPergunta')"
+			id="form2">
+			<textbox value="@bind(fx.tituloPergunta)" />
+			<combobox selectedItem="@bind(fx.tipoPergunta)"
+				readonly="true">
+				<comboitem label="Texto" value="0" />
+				<comboitem label="Escala numérica" value="1" />
+				<comboitem label="Escala conceitual" value="2" />
+				<comboitem label="Sim/Não" value="3" />
+			</combobox>
+			<button label="Adicionar Pergunta"
+				onClick="@command('adicionaPergunta')" />
+		</div>
 		<separator />
-		<button label="Criar Questionário" onClick="@command('cria')" />
-		<button label="Cancelar"
-			onClick="@command('cancela',window=win)" />
+		<button label="Salvar Alterações No Questionário"/>
 	</div>
 </window>

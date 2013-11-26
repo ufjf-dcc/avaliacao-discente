@@ -1,0 +1,27 @@
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+
+<window width="70%" title="Cadastro de Nova Turma via Arquivo .CSV" border="normal" closable="true">
+	<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.TurmasController')"
+		form="@id('fm') @load(vm.turma) @save(vm.turma, before='cadastra')"
+		id="form">
+		<grid>
+			<auxhead style="text-align:center;">
+				<auxheader colspan="2" label="Cadastro De Turmas" />
+			</auxhead>
+			<auxhead>
+				<auxheader label="Código da Disciplina: ">
+					<textbox />
+				</auxheader>
+				<auxheader label="Nome da Disciplina: ">
+					<textbox />
+				</auxheader>
+			</auxhead>
+			<columns>
+				<column />
+				<column />
+			</columns>
+			
+		</grid>
+	</div>
+</window>

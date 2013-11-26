@@ -27,7 +27,6 @@ import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
 public class QuestionariosController extends GenericController {
 
 	private QuestionarioDAO questionarioDAO = new QuestionarioDAO();
-	private PerguntaDAO perguntaDAO = new PerguntaDAO();
 	private List<Questionario> questionarios;
 	private List<Questionario> questionariosCoord = questionarioDAO
 			.retornaQuestinariosCursoTipo(usuario.getCurso(), 0);
@@ -40,17 +39,22 @@ public class QuestionariosController extends GenericController {
 	private boolean ativo;
 	private List<Pergunta> perguntas = new ArrayList<Pergunta>();
 	private Pergunta pergunta = new Pergunta();
-	private Questionario questionario = new Questionario();
+	private PerguntaDAO perguntaDAO = new PerguntaDAO();
 	private Avaliacao avaliacao = new Avaliacao();
 	private AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
 	private TurmaDAO turmaDAO = new TurmaDAO();
 	private UsuarioDAO usuarioDAO = new UsuarioDAO();
 	private List<Turma> turmas = turmaDAO.getTodasTurmas();
 	private List<Usuario> alunos = new ArrayList<Usuario>();
+	private Questionario questionario = new Questionario();
+	private static Questionario questionarioEditar = new Questionario();
+	private static List<Pergunta> perguntasEditar = new ArrayList<Pergunta>();
+	private List<Integer> tiposQuestionario = new ArrayList<Integer>();
 
 	@Init
 	public void init() throws HibernateException, Exception {
 		testaPermissaoCoord();
+		perguntas = perguntasEditar;
 	}
 
 	@Command
@@ -60,6 +64,20 @@ public class QuestionariosController extends GenericController {
 		window.doModal();
 	}
 
+	@Command
+	public void editarQuest(@BindingParam("questionario") Questionario questionario) {
+		QuestionariosController.questionarioEditar = questionario;
+		QuestionariosController.perguntasEditar = QuestionariosController.questionarioEditar.getPerguntas();
+		Window window = (Window) Executions.createComponents(
+				"/editarQuestionario.zul", null, null);
+		window.doModal();
+	}
+	
+	@Command
+	public void copiaPerguntasStatic() {
+		perguntas = perguntasEditar;		
+	}
+	
 	@Command
 	@NotifyChange({ "perguntas", "pergunta" })
 	public void adicionaPergunta() {
@@ -277,6 +295,30 @@ public class QuestionariosController extends GenericController {
 
 	public void setAvaliacao(Avaliacao avaliacao) {
 		this.avaliacao = avaliacao;
+	}
+
+	public Questionario getQuestionarioEditar() {
+		return questionarioEditar;
+	}
+
+	public void setQuestionarioEditar(Questionario questionarioEditar) {
+		QuestionariosController.questionarioEditar = questionarioEditar;
+	}
+
+	public List<Integer> getTiposQuestionario() {
+		return tiposQuestionario;
+	}
+
+	public void setTiposQuestionario(List<Integer> tiposQuestionario) {
+		this.tiposQuestionario = tiposQuestionario;
+	}
+
+	public List<Pergunta> getPerguntasEditar() {
+		return perguntasEditar;
+	}
+
+	public void setPerguntasEditar(List<Pergunta> perguntasEditar) {
+		QuestionariosController.perguntasEditar = perguntasEditar;
 	}
 
 }

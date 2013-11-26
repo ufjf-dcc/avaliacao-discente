@@ -38,11 +38,21 @@ public class TurmasController extends GenericController {
 	public void init() throws HibernateException, Exception {
 		testaPermissaoAdmin();
 	}
+	
+	
 
 	@Command
 	public void abreCadastro() {
 		Window window = (Window) Executions.createComponents(
 				"/cadastrarTurma.zul", null, null);
+		window.doModal();
+		System.out.println();
+	}
+	
+	@Command
+	public void abreCadastroTurma() {
+		Window window = (Window) Executions.createComponents(
+				"/cadastrarTurmaCsv.zul", null, null);
 		window.doModal();
 		System.out.println();
 	}
