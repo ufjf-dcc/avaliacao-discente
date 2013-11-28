@@ -1,6 +1,7 @@
 package br.ufjf.avaliacao.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.hibernate.HibernateException;
@@ -9,6 +10,8 @@ import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zk.ui.event.Event;
+import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
@@ -32,38 +35,44 @@ public class QuestionariosController extends GenericController {
 			.retornaQuestinariosCursoTipo(usuario.getCurso(), 3);
 	private boolean ativo;
 	private List<Pergunta> perguntas = new ArrayList<Pergunta>();
+	private List<Pergunta> perguntasAntigas = new ArrayList<Pergunta>();
 	private Pergunta pergunta = new Pergunta();
 	private PerguntaDAO perguntaDAO = new PerguntaDAO();
 	private Avaliacao avaliacao = new Avaliacao();
 	private Questionario questionario = new Questionario();
 	private static Questionario questionarioEditar = new Questionario();
-	private List<Integer> tiposQuestionario = new ArrayList<Integer>();
+	private List<Integer> tiposQuestionario = Arrays.asList(0, 1, 2, 3);
 
 	@Init
 	public void init() throws HibernateException, Exception {
 		testaPermissaoCoord();
-		if(questionarioEditar.getPerguntas().isEmpty())
+		if (QuestionariosController.questionarioEditar.getPerguntas().isEmpty())
 			perguntas = new ArrayList<Pergunta>();
-		else
-			perguntas = questionarioEditar.getPerguntas();
+		else {
+			perguntas = perguntaDAO
+					.getPerguntasQuestionario(QuestionariosController.questionarioEditar);
+			perguntasAntigas = perguntaDAO
+					.getPerguntasQuestionario(QuestionariosController.questionarioEditar);
+		}
 	}
 
 	@Command
 	public void criarQuest() {
-		QuestionariosController.questionarioEditar = new Questionario();		
+		QuestionariosController.questionarioEditar = new Questionario();
 		Window window = (Window) Executions.createComponents(
 				"/criarQuestionario.zul", null, null);
 		window.doModal();
 	}
 
 	@Command
-	public void editarQuest(@BindingParam("questionario") Questionario questionario) {
+	public void editarQuest(
+			@BindingParam("questionario") Questionario questionario) {
 		QuestionariosController.questionarioEditar = questionario;
 		Window window = (Window) Executions.createComponents(
 				"/editarQuestionario.zul", null, null);
 		window.doModal();
 	}
-		
+
 	@Command
 	@NotifyChange({ "perguntas", "pergunta" })
 	public void adicionaPergunta() {
@@ -92,22 +101,25 @@ public class QuestionariosController extends GenericController {
 	@NotifyChange({ "perguntas", "questionario" })
 	public void cria() {
 		questionario.setCurso(usuario.getCurso());
-		if (isAtivo()) {
-			for (Questionario q : listaQuestionarios(questionario
-					.getTipoQuestionario())) {
-				q.setAtivo(false);
-				questionarioDAO.editar(q);
+		if (questionarioDAO.salvar(questionario)) {
+			if (isAtivo()) {
+				for (Questionario q : listaQuestionarios(questionario
+						.getTipoQuestionario())) {
+					q.setAtivo(false);
+					questionarioDAO.editar(q);
+				}
+				questionario.setAtivo(true);
 			}
-			questionario.setAtivo(true);
+			for (Pergunta pergunta : perguntas) {
+				pergunta.setQuestionario(questionario);
+			}
+			if (perguntaDAO.salvarLista(perguntas)) {
+				
+				questionario = new Questionario();
+				pergunta = new Pergunta();
+				perguntas = new ArrayList<Pergunta>();
+			}
 		}
-		questionarioDAO.salvar(questionario);
-		for (Pergunta pergunta : perguntas) {
-			pergunta.setQuestionario(questionario);
-		}
-		perguntaDAO.salvarLista(perguntas);
-		questionario = new Questionario();
-		pergunta = new Pergunta();
-		perguntas = new ArrayList<Pergunta>();
 	}
 
 	@Command
@@ -162,17 +174,28 @@ public class QuestionariosController extends GenericController {
 
 	@Command
 	public void salvarQuest() {
-		if(questionarioDAO.editar(questionarioEditar)) {
-			for (Pergunta pergunta : perguntas) {
-				pergunta.setQuestionario(questionarioEditar);
-				perguntaDAO.salvaOuEdita(pergunta);
+		if (perguntas.size() > 1) {
+			if (questionarioDAO.editar(questionarioEditar)) {
+				if (perguntaDAO.excluiLista(perguntasAntigas)) {
+					for (Pergunta pergunta : perguntas) {
+						pergunta.setQuestionario(questionarioEditar);
+					}
+					if (perguntaDAO.salvarLista(perguntas)) {
+						Messagebox.show("Questionário Salvo", "Concluído",
+								Messagebox.OK, Messagebox.INFORMATION,
+								new EventListener<Event>() {
+									@Override
+									public void onEvent(Event event)
+											throws Exception {
+										Executions.sendRedirect(null);
+									}
+								});
+					}
+				}
 			}
-			pergunta = new Pergunta();
-			perguntas = new ArrayList<Pergunta>();
-			Messagebox.show("Questionário Salvo");
 		}
 	}
-	
+
 	public List<Pergunta> getPerguntas() {
 		return perguntas;
 	}
@@ -274,7 +297,7 @@ public class QuestionariosController extends GenericController {
 	}
 
 	public Questionario getQuestionarioEditar() {
-		return questionarioEditar;
+		return QuestionariosController.questionarioEditar;
 	}
 
 	public void setQuestionarioEditar(Questionario questionarioEditar) {
@@ -287,6 +310,14 @@ public class QuestionariosController extends GenericController {
 
 	public void setTiposQuestionario(List<Integer> tiposQuestionario) {
 		this.tiposQuestionario = tiposQuestionario;
+	}
+
+	public List<Pergunta> getPerguntasAntigas() {
+		return perguntasAntigas;
+	}
+
+	public void setPerguntasAntigas(List<Pergunta> perguntasAntigas) {
+		this.perguntasAntigas = perguntasAntigas;
 	}
 
 }

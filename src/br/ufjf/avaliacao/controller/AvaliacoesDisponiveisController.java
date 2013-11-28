@@ -13,19 +13,15 @@ import org.zkoss.zul.Window;
 
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Questionario;
-import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
 import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
 
 public class AvaliacoesDisponiveisController extends GenericController {
 
-	private AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
-	private List<Avaliacao> avaliacaoProfs = avaliacaoDAO.retornaAvaliacaoProfs(getUsuario());
+	private List<Avaliacao> avaliacaoProfs;
 	private static Avaliacao avaliacaoAtual;
 	private QuestionarioDAO questionarioDAO = new QuestionarioDAO();
-	private List<Questionario> questionariosCoord = questionarioDAO
-			.retornaQuestinariosCursoTipo(usuario.getCurso(), 0);
-	private List<Questionario> questionariosProfs = questionarioDAO
-			.retornaQuestinariosCursoTipo(usuario.getCurso(), 1);
+	private List<Questionario> questionariosCoord = questionarioDAO.retornaQuestinariosParaUsuario(usuario);
+	private List<Questionario> questionariosProfs = questionarioDAO.retornaQuestinariosParaUsuario(usuario);
 	private List<Questionario> questionariosAuto = questionarioDAO
 			.retornaQuestinariosCursoTipo(usuario.getCurso(), 2);
 	private List<Questionario> questionariosInfra = questionarioDAO

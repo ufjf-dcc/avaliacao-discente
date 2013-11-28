@@ -80,7 +80,7 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 		try {
 			Query query = getSession()
 					.createQuery(
-							"SELECT q FROM Questionario as q LEFT JOIN FETCH q.avaliacoes as a WHERE q.curso = :curso AND q.ativo = :ativo AND a.avaliando = :usuario");
+							"SELECT q FROM Questionario as q WHERE q.curso = :curso AND q.ativo = :ativo");
 			query.setParameter("curso", usuario.getCurso());
 			query.setParameter("usuario", usuario);
 			query.setParameter("ativo", true);

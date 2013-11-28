@@ -1,5 +1,4 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
-<<<<<<< HEAD
 <window width="80%" id="win" title="Editar Questionário" border="normal"
 	closable="true" onClose="Executions.sendRedirect(null)">
 	<div apply="org.zkoss.bind.BindComposer"
@@ -12,36 +11,20 @@
 					colspan="3">
 					<textbox
 						value="@load(fm.tituloQuestionario) @save(fm.tituloQuestionario, before='salvarQuest')" />
-=======
-<window width="80%" id="win" title="Editar Questionário" border="normal" closable="true" >
-	<div apply="org.zkoss.bind.BindComposer"
-		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
-		form="@id('fm') @load(vm.questionarioEditar) @save(vm.questionario, before='cria')"
-		id="form">
-		<grid model="@load(vm.perguntas)">
-			<auxhead style="text-align:center;">
-				<auxheader label="Título do Questionário:" colspan="3">
-					<textbox value="@load(fm.tituloQuestionario) @save(fm.tituloQuestionario, before='salvarQuest')" />
->>>>>>> 21ae811... Começo da edição de questionário e envio de arquivo CSV para cadastro de turma e seus usuários
 				</auxheader>
 			</auxhead>
 			<auxhead>
 				<auxheader label="Tipo: ">
-<<<<<<< HEAD
-					<combobox>
+					<combobox model="@load(vm.tiposQuestionario)"
+						value="@load(fm.nomeTipoQuestionario)"
+						selectedItem="@load(fm.tipoQuestionario) @save(fm.tipoQuestionario, before='salvarQuest')">
 						<template name="model">
-							<comboitem />
-=======
-					<combobox selectedItem="@load(fm.tipoQuestionario) @save(fm.tipoQuestionario, before='salvarQuest')"
-						readonly="true" model="@load(vm.tiposQuestionario)" >
-						<template name="model">
-							<comboitem/>
->>>>>>> 21ae811... Começo da edição de questionário e envio de arquivo CSV para cadastro de turma e seus usuários
+							<comboitem
+								label="@load(each eq 0 ? 'Avalição de Coordenador' : each eq 1 ? 'Avaliação de Professor' : each eq 2 ? 'Autoavaliação' : 'Avaliação de Infrestrutura')" />
 						</template>
 					</combobox>
 				</auxheader>
 				<auxheader label="Data Incial:">
-<<<<<<< HEAD
 					<datebox
 						value="@load(fm.dataInicial) @save(fm.dataInicial, before='salvarQuest')"
 						format="dd/MM/yyyy" width="150px" constraint="no past" />
@@ -55,18 +38,6 @@
 			<auxhead style="text-align:center;">
 				<auxheader label="Perguntas no Questionário:"
 					colspan="3" />
-=======
-					<datebox value="@load(fm.dataInicial) @save(fm.dataInicial, before='salvarQuest')"
-						format="dd/MM/yyyy" width="150px" constraint="no past" />
-				</auxheader>
-				<auxheader label="Data Final:">
-					<datebox value="@load(fm.dataFinal) @save(fm.dataFinal, before='salvarQuest')"
-						format="dd/MM/yyyy" width="150px" constraint="no past" />
-				</auxheader>
-			</auxhead>
-			<auxhead style="text-align:center;" >
-				<auxheader label="Perguntas no Questionário:" colspan="3" />
->>>>>>> 21ae811... Começo da edição de questionário e envio de arquivo CSV para cadastro de turma e seus usuários
 			</auxhead>
 			<columns style="text-align:center;">
 				<column label="Título" />
@@ -76,7 +47,6 @@
 			<template name="model">
 				<row align="center">
 					<label value="@load(each.tituloPergunta)" />
-					
 					<label value="@load(each.nomeTipoPergunta)" />
 					<div style="text-align:center">
 						<button image="/img/delete.png"
@@ -97,32 +67,20 @@
 		</grid>
 		<div
 			form="@id('fx') @load(vm.pergunta) @save(vm.pergunta, before='adicionaPergunta')"
-			id="form2">
-<<<<<<< HEAD
-			<textbox width="33%" value="@bind(fx.tituloPergunta)" />
-			<combobox width="33%" selectedItem="@bind(fx.tipoPergunta)"
-=======
+			id="form2" align="center">
 			<textbox value="@bind(fx.tituloPergunta)" />
 			<combobox selectedItem="@bind(fx.tipoPergunta)"
->>>>>>> 21ae811... Começo da edição de questionário e envio de arquivo CSV para cadastro de turma e seus usuários
 				readonly="true">
 				<comboitem label="Texto" value="0" />
 				<comboitem label="Escala numérica" value="1" />
 				<comboitem label="Escala conceitual" value="2" />
 				<comboitem label="Sim/Não" value="3" />
 			</combobox>
-<<<<<<< HEAD
-			<button width="32%" label="Adicionar Pergunta"
-				onClick="@command('adicionaPergunta')" />
-		</div>
-		<separator />
-		<button label="Salvar Alterações Feitas" onClick="@command('salvarQuest')" />
-=======
 			<button label="Adicionar Pergunta"
 				onClick="@command('adicionaPergunta')" />
 		</div>
 		<separator />
-		<button label="Salvar Alterações No Questionário"/>
->>>>>>> 21ae811... Começo da edição de questionário e envio de arquivo CSV para cadastro de turma e seus usuários
+		<button label="Salvar Alterações Feitas"
+			onClick="@command('salvarQuest')" />
 	</div>
 </window>

@@ -64,7 +64,7 @@ public class Resposta implements Serializable {
 	 * 
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "idAvliacao", nullable = false)
+	@JoinColumn(name = "idAvaliacao", nullable = false)
 	private Avaliacao avaliacao;
 
 	public int getIdResposta() {

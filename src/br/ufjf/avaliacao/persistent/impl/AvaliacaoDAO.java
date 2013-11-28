@@ -31,13 +31,12 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Avaliacao> retornaAvaliacaoProfs(Usuario avaliando) {
+	public List<Avaliacao> retornaAvaliacoes(Usuario avaliando) {
 		try {
 			Query query = getSession()
 					.createQuery(
-							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.questionario AS q WHERE a.avaliando = :avaliando AND q.tipoQuestionario = :tipoQuestionario");
+							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.questionario AS q WHERE a.avaliando = :avaliando");
 			query.setParameter("avaliando", avaliando);
-			query.setParameter("tipoQuestionario", 1);
 
 			List<Avaliacao> avaliacao = query.list();
 
