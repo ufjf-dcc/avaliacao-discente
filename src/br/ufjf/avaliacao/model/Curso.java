@@ -23,6 +23,10 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "Curso")
 public class Curso implements Serializable{
 	
+	public Curso(String nomeCurso) {
+		this.nomeCurso = nomeCurso;
+	}
+	
 	private static final long serialVersionUID = 1L;
 
 	/**

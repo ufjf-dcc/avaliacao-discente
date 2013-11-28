@@ -20,6 +20,7 @@ import org.zkoss.zul.Window;
 import org.zkoss.zul.Messagebox.ClickEvent;
 
 import br.ufjf.avaliacao.business.TurmaBusiness;
+import br.ufjf.avaliacao.model.Curso;
 import br.ufjf.avaliacao.model.Disciplina;
 import br.ufjf.avaliacao.model.Turma;
 import br.ufjf.avaliacao.model.Usuario;
@@ -55,6 +56,7 @@ public class TurmasController extends GenericController {
 		window.doModal();
 		System.out.println();
 	}
+
 	
 	@Command
 	public void abreCadastroTurma() {
@@ -64,6 +66,153 @@ public class TurmasController extends GenericController {
 		System.out.println();
 	}
 
+	@Command("uploadTurmas")
+	public void uploadTurmas(@BindingParam("evt") UploadEvent evt) throws IOException {
+		Media media = evt.getMedia();
+		if (!media.getName().contains(".csv")) {
+			Messagebox
+					.show("Este não é um arquivo válido! Apenas CSV são aceitos.");
+			return;
+		}
+		
+		
+		
+		try {
+			
+			BufferedReader in = new BufferedReader(media.getReaderData());
+			String linha;
+			Turma turma;
+			Usuario professor;
+			Disciplina disciplina;
+			List<Turma> nturmas = new ArrayList<Turma>();
+			
+			while ((linha = in.readLine()) != null) {
+				
+				String conteudo[] = linha.split(";");
+				// Verifica se possui professor
+				if(usuarioDAO.retornaUsuario(conteudo[3])!=null){
+					professor = usuarioDAO.retornaUsuario(conteudo[3]);
+				}
+				else{
+					professor = new Usuario(conteudo[3],conteudo[4], conteudo[5]);
+				}
+				// Verifica se possui a disciplina
+				if(disciplinaDAO.retornaDisciplinaCod(conteudo[0])!=null){
+					disciplina = disciplinaDAO.retornaDisciplinaCod(conteudo[0]);
+				}
+				else{
+					disciplina = new Disciplina(conteudo[0],"semestre");
+				}
+				
+				turma = new Turma(disciplinaDAO.retornaDisciplinaCod(conteudo[0]),conteudo[1],conteudo[2],professor);
+				nturmas.add(turma);
+			}
+			
+			if (turmaDAO.salvarLista(nturmas))
+				Messagebox.show("Usuarios cadastrados com sucesso", null,
+						new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
+					public void onEvent(ClickEvent e) {
+						if (e.getButton() == Messagebox.Button.OK)
+							Executions.sendRedirect(null);
+						else
+							Executions.sendRedirect(null);
+					}
+				});
+		} 
+			
+		catch (IllegalStateException e) {
+			String csv = new String(media.getByteData());
+			String linhas[] = csv.split("\\r?\\n");
+			Turma turma;
+			Usuario professor;
+			List<Turma> nturmas = new ArrayList<Turma>();
+			
+			for (String linha : linhas) {
+				String conteudo[] = linha.split(",|;|:");
+				// Verifica se possui professor
+				if(usuarioDAO.retornaUsuario(conteudo[3])!=null){
+					professor = usuarioDAO.retornaUsuario(conteudo[3]);
+				}
+				else{
+					professor = new Usuario(conteudo[3],conteudo[4], conteudo[5]);
+				}
+				// Verifica se possui a disciplina
+				if(disciplinaDAO.retornaDisciplinaCod(conteudo[0])!=null){
+					disciplina = disciplinaDAO.retornaDisciplinaCod(conteudo[0]);
+				}
+				else{
+					disciplina = new Disciplina(conteudo[0],"semestre");
+				}
+				
+				turma = new Turma(disciplinaDAO.retornaDisciplinaCod(conteudo[0]),conteudo[1],conteudo[2],professor);
+				nturmas.add(turma);
+			}
+			if (turmaDAO.salvarLista(nturmas))
+				Messagebox.show("Usuarios cadastrados com sucesso", null,
+						new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
+					public void onEvent(ClickEvent e) {
+						if (e.getButton() == Messagebox.Button.OK)
+							Executions.sendRedirect(null);
+						else
+							Executions.sendRedirect(null);
+					}
+				});
+
+		}
+	}
+
+
+	@Command("uploadAlunos")
+	public void uploadAlunos(@BindingParam("evt") UploadEvent evt) throws IOException {
+		Media media = evt.getMedia();
+		if (!media.getName().contains(".csv")) {
+			Messagebox
+					.show("Este não é um arquivo válido! Apenas CSV são aceitos.");
+			return;
+		}
+		
+		
+		
+		try {
+			
+			
+			// Leitura com o BufferReader que é mais rápido
+			
+			BufferedReader in = new BufferedReader(media.getReaderData());
+			String linha;
+			Usuario usuario;
+			CursoDAO cursoDAO = new CursoDAO();
+			List<Usuario> usuarios = new ArrayList<Usuario>();
+			while ((linha = in.readLine()) != null) {
+				String conteudo[] = linha.split(";");
+				
+				// verifica se o curso está cadastrado, se não ele cria
+				if(cursoDAO.getCursoNome(conteudo[4])==null){
+					Curso curso = new Curso(conteudo[4]);
+					cursoDAO.salvar(curso);
+				}
+				
+				usuario = new Usuario(conteudo[0], conteudo[1], conteudo[2],cursoDAO.getCursoNome(conteudo[4]),
+						Integer.parseInt(conteudo[3]));
+				usuarios.add(usuario);
+			
+			if (usuarioDAO.salvarLista(usuarios))
+				Messagebox.show("Usuarios cadastrados com sucesso", null,
+						new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
+					public void onEvent(ClickEvent e) {
+						if (e.getButton() == Messagebox.Button.OK)
+							Executions.sendRedirect(null);
+						else
+							Executions.sendRedirect(null);
+					}
+				});
+		} 
+		
+	}
+		finally{}
+			
+		}
+	
 	@Command
 	@NotifyChange("turmas")
 	public void edita(@BindingParam("turma") Turma turma) {
@@ -177,75 +326,8 @@ public class TurmasController extends GenericController {
 		this.professor = professor;
 	}
 
-	@Command("uploadTurmas")
-	public void upload(@BindingParam("evt") UploadEvent evt) throws IOException {
-		Media media = evt.getMedia();
-		if (!media.getName().contains(".csv")) {
-			Messagebox
-					.show("Este não é um arquivo válido! Apenas CSV são aceitos.");
-			return;
-		}
-		
-		
-		
-		try {
-			
-			BufferedReader in = new BufferedReader(media.getReaderData());
-			String linha;
-			Turma turma;
-			CursoDAO cursoDAO = new CursoDAO();
-			List<Turma> nturmas = new ArrayList<Turma>();
-			while ((linha = in.readLine()) != null) {
-				String conteudo[] = linha.split(";");
-				turma = new Turma();
-				turma.setLetraTurma(conteudo[1]);
-				turma.setSemestre(conteudo[2]);
-				turma.setDisciplina(disciplinaDAO.retornaDisciplinaCod(conteudo[0]));
-				nturmas.add(turma);
-			}
-			
-			if (turmaDAO.salvarLista(nturmas))
-				Messagebox.show("Usuarios cadastrados com sucesso", null,
-						new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
-					public void onEvent(ClickEvent e) {
-						if (e.getButton() == Messagebox.Button.OK)
-							Executions.sendRedirect(null);
-						else
-							Executions.sendRedirect(null);
-					}
-				});
-		} 
-			
-		catch (IllegalStateException e) {
-			String csv = new String(media.getByteData());
-			String linhas[] = csv.split("\\r?\\n");
-			Turma turma;
-			CursoDAO cursoDAO = new CursoDAO();
-			List<Turma> nturmas = new ArrayList<Turma>();
-			
 
-			
-			for (String linha : linhas) {
-				String conteudo[] = linha.split(",|;|:");
-				turma = new Turma();
-				turma.setLetraTurma(conteudo[1]);
-				turma.setSemestre(conteudo[2]);
-				turma.setDisciplina(disciplinaDAO.retornaDisciplinaCod(conteudo[0]));
-				nturmas.add(turma);
-			}
-
-			if (turmaDAO.salvarLista(nturmas))
-				Messagebox.show("Usuarios cadastrados com sucesso", null,
-						new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
-					public void onEvent(ClickEvent e) {
-						if (e.getButton() == Messagebox.Button.OK)
-							Executions.sendRedirect(null);
-						else
-							Executions.sendRedirect(null);
-					}
-				});
-		
-		}
-	}
-	
 }
+	
+	
+

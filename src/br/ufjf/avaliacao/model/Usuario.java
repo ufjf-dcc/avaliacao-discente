@@ -126,6 +126,16 @@ public class Usuario implements Serializable{
 		this.curso = curso;
 		this.tipoUsuario = tipoUsuario;
 	}
+	
+	public Usuario(String nome, String email, String senha){//para professores
+		
+		this.nome = nome;
+		this.email = email;
+		this.senha = senha;
+		this.curso = null;
+		this.tipoUsuario = PROFESSOR;
+		
+	}
 
 	public int getIdUsuario() {
 		return idUsuario;

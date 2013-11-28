@@ -19,6 +19,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
+
 
 /**
  * DTO da Tabela {@code Turma} contém os atributos e relacionamentos da
@@ -29,6 +31,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "Turma")
 public class Turma implements Serializable{
 	
+
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -102,6 +105,15 @@ public class Turma implements Serializable{
 	
 	@Transient
 	private Usuario professor;
+	
+	public Turma(){}
+	
+	public Turma(Disciplina disciplina, String letraTurma, String semestre, Usuario professor) {
+		this.disciplina = disciplina;
+		this.letraTurma = letraTurma;
+		this.semestre = semestre;
+		this.professor = professor;
+	}
 	
 	public int getIdTurma() {
 		return idTurma;
