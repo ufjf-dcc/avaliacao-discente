@@ -82,8 +82,29 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 					.createQuery(
 							"SELECT q FROM Questionario as q WHERE q.curso = :curso AND q.ativo = :ativo");
 			query.setParameter("curso", usuario.getCurso());
-			query.setParameter("usuario", usuario);
 			query.setParameter("ativo", true);
+
+			List<Questionario> questionario = query.list();
+
+			getSession().close();
+
+			if (questionario != null)
+				return questionario;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Questionario> retornaQuestinariosParaUsuarioCoord(Usuario usuario) {
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT q FROM Questionario as q WHERE q.curso = :curso AND q.ativo = :ativo AND q.tipoQuestionario = :tipoQuestionario");
+			query.setParameter("curso", usuario.getCurso());
+			query.setParameter("ativo", true);
+			query.setParameter("tipoQuestionario", 0);
 
 			List<Questionario> questionario = query.list();
 

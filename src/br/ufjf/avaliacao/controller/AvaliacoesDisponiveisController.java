@@ -20,7 +20,7 @@ public class AvaliacoesDisponiveisController extends GenericController {
 	private List<Avaliacao> avaliacaoProfs;
 	private static Avaliacao avaliacaoAtual;
 	private QuestionarioDAO questionarioDAO = new QuestionarioDAO();
-	private List<Questionario> questionariosCoord = questionarioDAO.retornaQuestinariosParaUsuario(usuario);
+	private List<Questionario> questionariosCoord = questionarioDAO.retornaQuestinariosParaUsuarioCoord(usuario);
 	private List<Questionario> questionariosProfs = questionarioDAO.retornaQuestinariosParaUsuario(usuario);
 	private List<Questionario> questionariosAuto = questionarioDAO
 			.retornaQuestinariosCursoTipo(usuario.getCurso(), 2);
