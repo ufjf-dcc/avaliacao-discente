@@ -23,10 +23,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "Curso")
 public class Curso implements Serializable{
 	
-	public Curso(String nomeCurso) {
-		this.nomeCurso = nomeCurso;
-	}
-	
+		
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -62,6 +59,13 @@ public class Curso implements Serializable{
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "curso")
 	private List<Questionario> questionarios = new ArrayList<Questionario>();
 
+	public Curso(String nomeCurso) {
+		this.nomeCurso = nomeCurso;
+	}
+	
+	public Curso() {
+		
+	}
 
 	public int getIdCurso() {
 		return idCurso;
