@@ -35,32 +35,17 @@ public class QuestionariosController extends GenericController {
 	private Pergunta pergunta = new Pergunta();
 	private PerguntaDAO perguntaDAO = new PerguntaDAO();
 	private Avaliacao avaliacao = new Avaliacao();
-<<<<<<< HEAD
 	private Questionario questionario = new Questionario();
 	private static Questionario questionarioEditar = new Questionario();
-=======
-	private AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
-	private TurmaDAO turmaDAO = new TurmaDAO();
-	private UsuarioDAO usuarioDAO = new UsuarioDAO();
-	private List<Turma> turmas = turmaDAO.getTodasTurmas();
-	private List<Usuario> alunos = new ArrayList<Usuario>();
-	private Questionario questionario = new Questionario();
-	private static Questionario questionarioEditar = new Questionario();
-	private static List<Pergunta> perguntasEditar = new ArrayList<Pergunta>();
->>>>>>> 21ae811... Começo da edição de questionário e envio de arquivo CSV para cadastro de turma e seus usuários
 	private List<Integer> tiposQuestionario = new ArrayList<Integer>();
 
 	@Init
 	public void init() throws HibernateException, Exception {
 		testaPermissaoCoord();
-<<<<<<< HEAD
 		if(questionarioEditar.getPerguntas().isEmpty())
 			perguntas = new ArrayList<Pergunta>();
 		else
 			perguntas = questionarioEditar.getPerguntas();
-=======
-		perguntas = perguntasEditar;
->>>>>>> 21ae811... Começo da edição de questionário e envio de arquivo CSV para cadastro de turma e seus usuários
 	}
 
 	@Command
@@ -74,24 +59,11 @@ public class QuestionariosController extends GenericController {
 	@Command
 	public void editarQuest(@BindingParam("questionario") Questionario questionario) {
 		QuestionariosController.questionarioEditar = questionario;
-<<<<<<< HEAD
-=======
-		QuestionariosController.perguntasEditar = QuestionariosController.questionarioEditar.getPerguntas();
->>>>>>> 21ae811... Começo da edição de questionário e envio de arquivo CSV para cadastro de turma e seus usuários
 		Window window = (Window) Executions.createComponents(
 				"/editarQuestionario.zul", null, null);
 		window.doModal();
 	}
-<<<<<<< HEAD
 		
-=======
-	
-	@Command
-	public void copiaPerguntasStatic() {
-		perguntas = perguntasEditar;		
-	}
-	
->>>>>>> 21ae811... Começo da edição de questionário e envio de arquivo CSV para cadastro de turma e seus usuários
 	@Command
 	@NotifyChange({ "perguntas", "pergunta" })
 	public void adicionaPergunta() {
@@ -317,15 +289,4 @@ public class QuestionariosController extends GenericController {
 		this.tiposQuestionario = tiposQuestionario;
 	}
 
-<<<<<<< HEAD
-=======
-	public List<Pergunta> getPerguntasEditar() {
-		return perguntasEditar;
-	}
-
-	public void setPerguntasEditar(List<Pergunta> perguntasEditar) {
-		QuestionariosController.perguntasEditar = perguntasEditar;
-	}
-
->>>>>>> 21ae811... Começo da edição de questionário e envio de arquivo CSV para cadastro de turma e seus usuários
 }

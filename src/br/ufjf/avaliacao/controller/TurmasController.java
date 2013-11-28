@@ -1,5 +1,8 @@
 package br.ufjf.avaliacao.controller;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.HibernateException;
@@ -8,15 +11,19 @@ import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
+import org.zkoss.util.media.Media;
 import org.zkoss.zhtml.Messagebox;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zk.ui.event.UploadEvent;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Window;
+import org.zkoss.zul.Messagebox.ClickEvent;
 
 import br.ufjf.avaliacao.business.TurmaBusiness;
 import br.ufjf.avaliacao.model.Disciplina;
 import br.ufjf.avaliacao.model.Turma;
 import br.ufjf.avaliacao.model.Usuario;
+import br.ufjf.avaliacao.persistent.impl.CursoDAO;
 import br.ufjf.avaliacao.persistent.impl.DisciplinaDAO;
 import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
@@ -170,4 +177,75 @@ public class TurmasController extends GenericController {
 		this.professor = professor;
 	}
 
+	@Command("uploadTurmas")
+	public void upload(@BindingParam("evt") UploadEvent evt) throws IOException {
+		Media media = evt.getMedia();
+		if (!media.getName().contains(".csv")) {
+			Messagebox
+					.show("Este não é um arquivo válido! Apenas CSV são aceitos.");
+			return;
+		}
+		
+		
+		
+		try {
+			
+			BufferedReader in = new BufferedReader(media.getReaderData());
+			String linha;
+			Turma turma;
+			CursoDAO cursoDAO = new CursoDAO();
+			List<Turma> nturmas = new ArrayList<Turma>();
+			while ((linha = in.readLine()) != null) {
+				String conteudo[] = linha.split(";");
+				turma = new Turma();
+				turma.setLetraTurma(conteudo[1]);
+				turma.setSemestre(conteudo[2]);
+				turma.setDisciplina(disciplinaDAO.retornaDisciplinaCod(conteudo[0]));
+				nturmas.add(turma);
+			}
+			
+			if (turmaDAO.salvarLista(nturmas))
+				Messagebox.show("Usuarios cadastrados com sucesso", null,
+						new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
+					public void onEvent(ClickEvent e) {
+						if (e.getButton() == Messagebox.Button.OK)
+							Executions.sendRedirect(null);
+						else
+							Executions.sendRedirect(null);
+					}
+				});
+		} 
+			
+		catch (IllegalStateException e) {
+			String csv = new String(media.getByteData());
+			String linhas[] = csv.split("\\r?\\n");
+			Turma turma;
+			CursoDAO cursoDAO = new CursoDAO();
+			List<Turma> nturmas = new ArrayList<Turma>();
+			
+
+			
+			for (String linha : linhas) {
+				String conteudo[] = linha.split(",|;|:");
+				turma = new Turma();
+				turma.setLetraTurma(conteudo[1]);
+				turma.setSemestre(conteudo[2]);
+				turma.setDisciplina(disciplinaDAO.retornaDisciplinaCod(conteudo[0]));
+				nturmas.add(turma);
+			}
+
+			if (turmaDAO.salvarLista(nturmas))
+				Messagebox.show("Usuarios cadastrados com sucesso", null,
+						new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
+					public void onEvent(ClickEvent e) {
+						if (e.getButton() == Messagebox.Button.OK)
+							Executions.sendRedirect(null);
+						else
+							Executions.sendRedirect(null);
+					}
+				});
+		
+		}
+	}
+	
 }
