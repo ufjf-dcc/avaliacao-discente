@@ -56,7 +56,11 @@ public class LoginController {
 											"Usuário ou Senha inválidos!",
 											"Error", Messagebox.OK,
 											Messagebox.ERROR);
+<<<<<<< HEAD
 								}			
+=======
+								}
+>>>>>>> 21ae811... Começo da edição de questionário e envio de arquivo CSV para cadastro de turma e seus usuários
 							}
 						}
 					});
