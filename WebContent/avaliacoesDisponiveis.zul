@@ -5,7 +5,6 @@
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AvaliacoesDisponiveisController')">
 		<include src="@load(vm.menu)" />
 
-
 		<tabbox>
 			<tabs width="100%">
 				<tab label="Avaliação de Coordenadores" />
@@ -40,7 +39,7 @@
 					</grid>
 				</tabpanel>
 				<tabpanel>
-					<grid model="@load(vm.avaliacaoProfs)">
+					<grid>
 						<columns>
 							<column label="Título" align="center" />
 							<column label="Data Inicial" align="center" />
