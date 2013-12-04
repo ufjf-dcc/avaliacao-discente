@@ -101,10 +101,12 @@ public class TurmasController extends GenericController {
 					disciplinaDAO.salvar(d);
 				}
 
+				if(turmaDAO.retornaTurma(conteudo[2], conteudo[3], disciplinaDAO.retornaDisciplinaCod(conteudo[0]))==null){
 				turma = new Turma(
 						disciplinaDAO.retornaDisciplinaCod(conteudo[0]),
 						conteudo[2], conteudo[3], professor);
 				nturmas.add(turma);
+				}
 			}
 
 			if (turmaDAO.salvarLista(nturmas))
@@ -145,10 +147,12 @@ public class TurmasController extends GenericController {
 					disciplinaDAO.salvar(d);
 				}
 
+				if(turmaDAO.retornaTurma(conteudo[2], conteudo[3], disciplinaDAO.retornaDisciplinaCod(conteudo[0]))==null){
 				turma = new Turma(
 						disciplinaDAO.retornaDisciplinaCod(conteudo[0]),
 						conteudo[2], conteudo[3], professor);
 				nturmas.add(turma);
+				}
 			}
 
 			if (turmaDAO.salvarLista(nturmas))
@@ -203,11 +207,11 @@ public class TurmasController extends GenericController {
 					usuarioDAO.salvar(nusuario);
 				}
 
-				Turma t = turmaDAO.retornaTurma(conteudo[6], conteudo[7],
-						disciplinaDAO.retornaDisciplinaCod(conteudo[5]));
-				nusuario.getTurmas().add(t);
-				usuarioDAO.salvar(nusuario);
-				// turma.setUsuarios(usuarios);
+				turma = turmaDAO.retornaTurma(conteudo[6], conteudo[7], disciplinaDAO.retornaDisciplinaCod(conteudo[5]));
+				List<Usuario> users = usuarioDAO.retornaAlunosTurma(turma);
+				users.add(nusuario);
+				turma.setUsuarios(users);
+				turmaDAO.editar(turma);
 			}
 
 			if (true)
@@ -249,8 +253,6 @@ public class TurmasController extends GenericController {
 				}
 				
 				turma = turmaDAO.retornaTurma(conteudo[6], conteudo[7], disciplinaDAO.retornaDisciplinaCod(conteudo[5]));
-				//nusuario.addTurmas(turma); essa querry nao ta funcionando
-				//usuarioDAO.salvaOuEdita(nusuario);
 				List<Usuario> users = usuarioDAO.retornaAlunosTurma(turma);
 				users.add(nusuario);
 				turma.setUsuarios(users);
