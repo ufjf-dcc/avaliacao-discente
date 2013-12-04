@@ -64,6 +64,8 @@ public class TurmasController extends GenericController {
 	}
 
 	@Command("uploadTurmas")
+	// FORMATO DE ENTRADA: código da disciplina, turma,semestre, nome do prof,
+	// email, código de usuario do professor.
 	public void uploadTurmas(@BindingParam("evt") UploadEvent evt)
 			throws IOException {
 		Media media = evt.getMedia();
@@ -101,11 +103,16 @@ public class TurmasController extends GenericController {
 					disciplinaDAO.salvar(d);
 				}
 
-				if(turmaDAO.retornaTurma(conteudo[2], conteudo[3], disciplinaDAO.retornaDisciplinaCod(conteudo[0]))==null){
-				turma = new Turma(
-						disciplinaDAO.retornaDisciplinaCod(conteudo[0]),
-						conteudo[2], conteudo[3], professor);
-				nturmas.add(turma);
+				if (turmaDAO.retornaTurma(conteudo[2], conteudo[3],
+						disciplinaDAO.retornaDisciplinaCod(conteudo[0])) == null) {
+					turma = new Turma(
+							disciplinaDAO.retornaDisciplinaCod(conteudo[0]),
+							conteudo[2], conteudo[3], professor);
+					List<Usuario> users = new ArrayList<Usuario>();
+					users.add(professor);
+					turma.setUsuarios(users);
+					nturmas.add(turma);
+
 				}
 			}
 
@@ -147,11 +154,18 @@ public class TurmasController extends GenericController {
 					disciplinaDAO.salvar(d);
 				}
 
-				if(turmaDAO.retornaTurma(conteudo[2], conteudo[3], disciplinaDAO.retornaDisciplinaCod(conteudo[0]))==null){
-				turma = new Turma(
-						disciplinaDAO.retornaDisciplinaCod(conteudo[0]),
-						conteudo[2], conteudo[3], professor);
-				nturmas.add(turma);
+				if (turmaDAO.retornaTurma(conteudo[2], conteudo[3],
+						disciplinaDAO.retornaDisciplinaCod(conteudo[0])) == null) {
+					turma = new Turma(
+							disciplinaDAO.retornaDisciplinaCod(conteudo[0]),
+							conteudo[2], conteudo[3], professor);
+
+					List<Usuario> users = new ArrayList<Usuario>();
+					users.add(professor);
+					turma.setUsuarios(users);
+
+					nturmas.add(turma);
+
 				}
 			}
 
@@ -170,6 +184,8 @@ public class TurmasController extends GenericController {
 	}
 
 	@Command("uploadAlunos")
+	// FORMATO DE ENTRADA:nome, email, senha, tipo de usuario, id curso, código
+	// da disciplina,letra da turma, semestre
 	public void uploadAlunos(@BindingParam("evt") UploadEvent evt)
 			throws IOException {
 		Media media = evt.getMedia();
@@ -207,7 +223,8 @@ public class TurmasController extends GenericController {
 					usuarioDAO.salvar(nusuario);
 				}
 
-				turma = turmaDAO.retornaTurma(conteudo[6], conteudo[7], disciplinaDAO.retornaDisciplinaCod(conteudo[5]));
+				turma = turmaDAO.retornaTurma(conteudo[6], conteudo[7],
+						disciplinaDAO.retornaDisciplinaCod(conteudo[5]));
 				List<Usuario> users = usuarioDAO.retornaAlunosTurma(turma);
 				users.add(nusuario);
 				turma.setUsuarios(users);
@@ -251,14 +268,14 @@ public class TurmasController extends GenericController {
 					usuarioDAO.salvar(nusuario);
 
 				}
-				
-				turma = turmaDAO.retornaTurma(conteudo[6], conteudo[7], disciplinaDAO.retornaDisciplinaCod(conteudo[5]));
+
+				turma = turmaDAO.retornaTurma(conteudo[6], conteudo[7],
+						disciplinaDAO.retornaDisciplinaCod(conteudo[5]));
 				List<Usuario> users = usuarioDAO.retornaAlunosTurma(turma);
 				users.add(nusuario);
 				turma.setUsuarios(users);
 				turmaDAO.editar(turma);
-				
-				
+
 			}
 			if (true)
 				Messagebox.show("Usuarios cadastrados com sucesso", null,
