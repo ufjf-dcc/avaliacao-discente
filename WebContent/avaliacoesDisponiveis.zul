@@ -34,8 +34,7 @@
 									value="@load(each.dataFinalFormatada)" />
 								<div>
 									<button
-										disabled="@load(vm.jaAvaliouCoord eq true ? true : false)"
-										label="@load(vm.jaAvaliouCoord eq false ? 'Avaliar' : 'Já Avaliado')"
+										onCreate="@command('disponibilidade', button=self, questionario=each)"
 										onClick="@command('avaliar', questionario=each)" />
 								</div>
 							</row>

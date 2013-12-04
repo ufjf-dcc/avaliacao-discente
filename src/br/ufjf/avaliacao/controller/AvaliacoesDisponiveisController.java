@@ -1,6 +1,7 @@
 package br.ufjf.avaliacao.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.HibernateException;
@@ -12,6 +13,7 @@ import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.Clients;
+import org.zkoss.zul.Button;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
@@ -43,12 +45,32 @@ public class AvaliacoesDisponiveisController extends GenericController {
 	private Resposta resposta = new Resposta();
 	private List<Resposta> respostas = new ArrayList<Resposta>();
 	private Usuario coordAvaliado = usuarioDAO.retornaCoordAvaliado(usuario);
-	private boolean jaAvaliouCoord = new AvaliacaoDAO().jaAvaliou(usuario,
-			new QuestionarioDAO().getQuestCoord(usuario));
+	private boolean jaAvaliouCoord = false;
 
 	@Init
 	public void init() throws HibernateException, Exception {
 		testaPermissaoAluno();
+		jaAvaliouCoord = new AvaliacaoDAO().jaAvaliou(usuario,
+				new QuestionarioDAO().getQuestCoord(usuario));
+
+	}
+
+	@Command
+	public void disponibilidade(@BindingParam("button") Button b, @BindingParam("questionario") Questionario quest) {
+		if (new Date().before(quest.getDataFinal())
+				&& new Date().after(quest.getDataInicial())
+				&& !jaAvaliouCoord) {
+			b.setLabel("Avaliar");
+			b.setDisabled(false);
+		}
+		else if (jaAvaliouCoord) {
+			b.setLabel("Já Avaliado");
+			b.setDisabled(true);
+		} else {
+			b.setLabel("Não Disponível");
+			b.setDisabled(true);
+		}
+			
 	}
 
 	@Command
@@ -143,10 +165,11 @@ public class AvaliacoesDisponiveisController extends GenericController {
 		respostas.add(resposta);
 		resposta = new Resposta();
 	}
-	
+
 	@Command
 	public void avaliado(@BindingParam("label") Label l) {
-		l.setValue(coordAvaliado.getNome() + " - " + "Coordenador " + coordAvaliado.getCurso().getNomeCurso());
+		l.setValue(coordAvaliado.getNome() + " - " + "Coordenador "
+				+ coordAvaliado.getCurso().getNomeCurso());
 	}
 
 	public List<Questionario> getQuestionariosProfs() {
