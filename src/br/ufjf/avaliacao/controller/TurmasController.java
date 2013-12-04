@@ -95,8 +95,7 @@ public class TurmasController extends GenericController {
 				}
 				// Verifica se possui a disciplina
 				if (disciplinaDAO.retornaDisciplinaCod(conteudo[0]) != null) {
-					d = disciplinaDAO
-							.retornaDisciplinaCod(conteudo[0]);
+					d = disciplinaDAO.retornaDisciplinaCod(conteudo[0]);
 				} else {
 					d = new Disciplina(conteudo[0], conteudo[1]);
 					disciplinaDAO.salvar(d);
@@ -140,8 +139,7 @@ public class TurmasController extends GenericController {
 				}
 				// Verifica se possui a disciplina
 				if (disciplinaDAO.retornaDisciplinaCod(conteudo[0]) != null) {
-					d = disciplinaDAO
-							.retornaDisciplinaCod(conteudo[0]);
+					d = disciplinaDAO.retornaDisciplinaCod(conteudo[0]);
 				} else {
 					d = new Disciplina(conteudo[0], conteudo[1]);
 					disciplinaDAO.salvar(d);
@@ -166,21 +164,21 @@ public class TurmasController extends GenericController {
 
 		}
 	}
-	
+
 	@Command("uploadAlunos")
-	public void uploadAlunos(@BindingParam("evt") UploadEvent evt) throws IOException {
+	public void uploadAlunos(@BindingParam("evt") UploadEvent evt)
+			throws IOException {
 		Media media = evt.getMedia();
 		if (!media.getName().contains(".csv")) {
 			Messagebox
 					.show("Este não é um arquivo válido! Apenas CSV são aceitos.");
 			return;
 		}
-		
-		
+
 		try {
-			
+
 			// Leitura com o BufferReader que e mais rapido
-			
+
 			BufferedReader in = new BufferedReader(media.getReaderData());
 			String linha;
 			Usuario nusuario;
@@ -188,91 +186,91 @@ public class TurmasController extends GenericController {
 			CursoDAO cursoDAO = new CursoDAO();
 			while ((linha = in.readLine()) != null) {
 				String conteudo[] = linha.split(";");
-				
+
 				// verifica se o curso esta cadastrado, se nao ele cria
-				if(cursoDAO.getCursoNome(conteudo[4])!=null){
+				if (cursoDAO.getCursoNome(conteudo[4]) != null) {
 					curso = cursoDAO.getCursoNome(conteudo[4]);
-				}
-				else{
+				} else {
 					curso = new Curso(conteudo[4]);
 					cursoDAO.salvar(curso);
 				}
-				if(usuarioDAO.retornaUsuario(conteudo[1])!=null){
+				if (usuarioDAO.retornaUsuario(conteudo[1]) != null) {
 					nusuario = usuarioDAO.retornaUsuario(conteudo[1]);
-				}	
-				else{
-				nusuario = new Usuario(conteudo[0], conteudo[1], conteudo[2],cursoDAO.getCursoNome(conteudo[4]),
-						Integer.parseInt(conteudo[3]));
+				} else {
+					nusuario = new Usuario(conteudo[0], conteudo[1],
+							conteudo[2], cursoDAO.getCursoNome(conteudo[4]),
+							Integer.parseInt(conteudo[3]));
 					usuarioDAO.salvar(nusuario);
 				}
-				
-				Turma t = turmaDAO.retornaTurma(conteudo[6], conteudo[7], disciplinaDAO.retornaDisciplinaCod(conteudo[5]));
+
+				Turma t = turmaDAO.retornaTurma(conteudo[6], conteudo[7],
+						disciplinaDAO.retornaDisciplinaCod(conteudo[5]));
 				nusuario.getTurmas().add(t);
 				usuarioDAO.salvar(nusuario);
-				//turma.setUsuarios(usuarios);
+				// turma.setUsuarios(usuarios);
 			}
-				
+
 			if (true)
 				Messagebox.show("Usuarios cadastrados com sucesso", null,
 						new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
-					public void onEvent(ClickEvent e) {
-						if (e.getButton() == Messagebox.Button.OK)
-							Executions.sendRedirect(null);
-						else
-							Executions.sendRedirect(null);
-					}
-				});
-		
-		
-	}
-		catch (IllegalStateException e) {
+							public void onEvent(ClickEvent e) {
+								if (e.getButton() == Messagebox.Button.OK)
+									Executions.sendRedirect(null);
+								else
+									Executions.sendRedirect(null);
+							}
+						});
+
+		} catch (IllegalStateException e) {
 			String csv = new String(media.getByteData());
 			String linhas[] = csv.split("\\r?\\n");
 			Usuario nusuario;
 			Curso curso;
+			Turma turma;
 			CursoDAO cursoDAO = new CursoDAO();
-			
+
 			for (String linha : linhas) {
 				String conteudo[] = linha.split(",|;|:");
 				// verifica se o curso está cadastrado, se não ele cria
-				if(cursoDAO.getCursoNome(conteudo[4])!=null){
+				if (cursoDAO.getCursoNome(conteudo[4]) != null) {
 					curso = cursoDAO.getCursoNome(conteudo[4]);
-				}
-				else{
+				} else {
 					curso = new Curso(conteudo[4]);
 					cursoDAO.salvar(curso);
 				}
-				if(usuarioDAO.retornaUsuarioEmail(conteudo[1])!=null){
-					nusuario = usuarioDAO.retornaUsuarioEmail(conteudo[1]);
-				}	
-				else{
-					nusuario = new Usuario(conteudo[0], conteudo[1], conteudo[2],cursoDAO.getCursoNome(conteudo[4]),
-						Integer.parseInt(conteudo[3]));
+				if (usuarioDAO.retornaUsuario(conteudo[0]) != null) {
+					nusuario = usuarioDAO.retornaUsuario(conteudo[0]);
+				} else {
+					nusuario = new Usuario(conteudo[0], conteudo[1],
+							conteudo[2], cursoDAO.getCursoNome(conteudo[4]),
+							Integer.parseInt(conteudo[3]));
 					usuarioDAO.salvar(nusuario);
+
 				}
 				
-				Turma t = turmaDAO.retornaTurma(conteudo[6], conteudo[7], disciplinaDAO.retornaDisciplinaCod(conteudo[5]));
-				System.out.println(t);
-
-				nusuario.getTurmas().add(t);
-				usuarioDAO.salvar(nusuario);
-				//turma.setUsuarios(usuarios);
+				turma = turmaDAO.retornaTurma(conteudo[6], conteudo[7], disciplinaDAO.retornaDisciplinaCod(conteudo[5]));
+				//nusuario.addTurmas(turma); essa querry nao ta funcionando
+				//usuarioDAO.salvaOuEdita(nusuario);
+				List<Usuario> users = usuarioDAO.retornaAlunosTurma(turma);
+				users.add(nusuario);
+				turma.setUsuarios(users);
+				turmaDAO.editar(turma);
+				
 				
 			}
 			if (true)
 				Messagebox.show("Usuarios cadastrados com sucesso", null,
 						new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
-					public void onEvent(ClickEvent e) {
-						if (e.getButton() == Messagebox.Button.OK)
-							Executions.sendRedirect(null);
-						else
-							Executions.sendRedirect(null);
-					}
-				});
+							public void onEvent(ClickEvent e) {
+								if (e.getButton() == Messagebox.Button.OK)
+									Executions.sendRedirect(null);
+								else
+									Executions.sendRedirect(null);
+							}
+						});
 
 		}
 	}
-
 
 	@Command
 	@NotifyChange("turmas")
@@ -374,7 +372,6 @@ public class TurmasController extends GenericController {
 		} else {
 			label.setValue("Sem professor");
 		}
-		
 
 	}
 

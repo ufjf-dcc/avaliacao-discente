@@ -170,6 +170,11 @@ public class Turma implements Serializable{
 	public void setUsuarios(List<Usuario> usuarios) {
 		this.usuarios = usuarios;
 	}
+	
+	//adiciona apenas um usuario a List de usuarios.
+	public void addUsuario(Usuario usuario) {
+		this.usuarios.add(usuario);
+	}
 
 	public Usuario getProfessor() {
 		return professor;

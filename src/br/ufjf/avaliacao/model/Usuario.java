@@ -224,6 +224,10 @@ public class Usuario implements Serializable{
 	public void setTurmas(List<Turma> turmas) {
 		this.turmas = turmas;
 	}
+	
+	public void addTurmas(Turma turma) {
+		this.turmas.add(turma);
+	}
 
 	public void setIdUsuario(Integer idUsuario) {
 		this.idUsuario = idUsuario;

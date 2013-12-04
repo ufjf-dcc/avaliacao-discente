@@ -156,4 +156,6 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 		return null;
 	}
 	
+	
+	
 }
