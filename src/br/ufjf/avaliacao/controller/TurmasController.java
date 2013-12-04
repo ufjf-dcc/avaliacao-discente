@@ -166,6 +166,7 @@ public class TurmasController extends GenericController {
 
 		}
 	}
+	
 	@Command("uploadAlunos")
 	public void uploadAlunos(@BindingParam("evt") UploadEvent evt) throws IOException {
 		Media media = evt.getMedia();
@@ -178,18 +179,17 @@ public class TurmasController extends GenericController {
 		
 		try {
 			
-			// Leitura com o BufferReader que é mais rápido
+			// Leitura com o BufferReader que e mais rapido
 			
 			BufferedReader in = new BufferedReader(media.getReaderData());
 			String linha;
 			Usuario nusuario;
 			Curso curso;
 			CursoDAO cursoDAO = new CursoDAO();
-			List<Usuario> usuarios = new ArrayList<Usuario>();
 			while ((linha = in.readLine()) != null) {
 				String conteudo[] = linha.split(";");
 				
-				// verifica se o curso está cadastrado, se não ele cria
+				// verifica se o curso esta cadastrado, se nao ele cria
 				if(cursoDAO.getCursoNome(conteudo[4])!=null){
 					curso = cursoDAO.getCursoNome(conteudo[4]);
 				}
@@ -206,13 +206,11 @@ public class TurmasController extends GenericController {
 					usuarioDAO.salvar(nusuario);
 				}
 				
-				ArrayList<Turma> ts = new ArrayList<Turma>();
 				Turma t = turmaDAO.retornaTurma(conteudo[6], conteudo[7], disciplinaDAO.retornaDisciplinaCod(conteudo[5]));
-				ts.add(t);
-				nusuario.setTurmas(ts);
+				nusuario.getTurmas().add(t);
 				usuarioDAO.salvar(nusuario);
 				//turma.setUsuarios(usuarios);
-				
+			}
 				
 			if (true)
 				Messagebox.show("Usuarios cadastrados com sucesso", null,
@@ -224,7 +222,7 @@ public class TurmasController extends GenericController {
 							Executions.sendRedirect(null);
 					}
 				});
-		} 
+		
 		
 	}
 		catch (IllegalStateException e) {
@@ -233,7 +231,6 @@ public class TurmasController extends GenericController {
 			Usuario nusuario;
 			Curso curso;
 			CursoDAO cursoDAO = new CursoDAO();
-			List<Usuario> usuarios = new ArrayList<Usuario>();
 			
 			for (String linha : linhas) {
 				String conteudo[] = linha.split(",|;|:");
@@ -245,8 +242,8 @@ public class TurmasController extends GenericController {
 					curso = new Curso(conteudo[4]);
 					cursoDAO.salvar(curso);
 				}
-				if(usuarioDAO.retornaUsuario(conteudo[1])!=null){
-					nusuario = usuarioDAO.retornaUsuario(conteudo[1]);
+				if(usuarioDAO.retornaUsuarioEmail(conteudo[1])!=null){
+					nusuario = usuarioDAO.retornaUsuarioEmail(conteudo[1]);
 				}	
 				else{
 					nusuario = new Usuario(conteudo[0], conteudo[1], conteudo[2],cursoDAO.getCursoNome(conteudo[4]),
@@ -255,12 +252,13 @@ public class TurmasController extends GenericController {
 				}
 				
 				Turma t = turmaDAO.retornaTurma(conteudo[6], conteudo[7], disciplinaDAO.retornaDisciplinaCod(conteudo[5]));
-				ArrayList<Turma> nturmas = new ArrayList<Turma>();
-				nturmas.add(t);
-				nusuario.setTurmas(nturmas);
+				System.out.println(t);
+
+				nusuario.getTurmas().add(t);
+				usuarioDAO.salvar(nusuario);
 				//turma.setUsuarios(usuarios);
-			
-			
+				
+			}
 			if (true)
 				Messagebox.show("Usuarios cadastrados com sucesso", null,
 						new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
@@ -272,7 +270,7 @@ public class TurmasController extends GenericController {
 					}
 				});
 
-		}}
+		}
 	}
 
 

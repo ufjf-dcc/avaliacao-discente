@@ -17,7 +17,7 @@ public class TurmaDAO extends GenericoDAO implements ITurmaDAO {
 		try {
 			Query query = getSession()
 					.createQuery(
-							"SELECT turma FROM Turma AS turma LEFT JOIN FETCH turma.professor JOIN FETCH turma.disciplina WHERE turma.letraTurma = :letraTurma AND u.semestre = :semestre AND u.disciplina = :disciplina");
+							"SELECT turma FROM Turma AS turma LEFT JOIN FETCH turma.disciplina AS d WHERE turma.letraTurma = :letraTurma AND turma.semestre = :semestre AND d = :disciplina");
 			query.setParameter("letraTurma", letraTurma);
 			query.setParameter("semestre", semestre);
 			query.setParameter("disciplina", disciplina);
