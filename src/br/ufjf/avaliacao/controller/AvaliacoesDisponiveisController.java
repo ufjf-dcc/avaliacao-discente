@@ -11,6 +11,8 @@ import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
+import org.zkoss.zk.ui.util.Clients;
+import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.Window;
@@ -19,11 +21,16 @@ import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.Questionario;
 import br.ufjf.avaliacao.model.Resposta;
+import br.ufjf.avaliacao.model.Usuario;
+import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
 import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
+import br.ufjf.avaliacao.persistent.impl.RespostaDAO;
+import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
 
 public class AvaliacoesDisponiveisController extends GenericController {
 
 	private QuestionarioDAO questionarioDAO = new QuestionarioDAO();
+	private UsuarioDAO usuarioDAO = new UsuarioDAO();
 	private List<Questionario> questionariosCoord = questionarioDAO
 			.retornaQuestinariosParaUsuarioCoord(usuario);
 	private List<Questionario> questionariosProfs = questionarioDAO
@@ -33,9 +40,11 @@ public class AvaliacoesDisponiveisController extends GenericController {
 	private List<Questionario> questionariosInfra = questionarioDAO
 			.retornaQuestinariosCursoTipo(usuario.getCurso(), 3);
 	private static Questionario questionarioAtual = new Questionario();
-	private Avaliacao avaliacao = new Avaliacao();
 	private Resposta resposta = new Resposta();
 	private List<Resposta> respostas = new ArrayList<Resposta>();
+	private Usuario coordAvaliado = usuarioDAO.retornaCoordAvaliado(usuario);
+	private boolean jaAvaliouCoord = new AvaliacaoDAO().jaAvaliou(usuario,
+			new QuestionarioDAO().getQuestCoord(usuario));
 
 	@Init
 	public void init() throws HibernateException, Exception {
@@ -89,24 +98,33 @@ public class AvaliacoesDisponiveisController extends GenericController {
 
 	@Command
 	public void terminarAvaliacao() {
-		
-		if(respostas.size()!=questionarioAtual.getPerguntas().size()) {
+		Clients.showBusy("Salvando avaliação..");
+		if (respostas.size() != questionarioAtual.getPerguntas().size()) {
 			Messagebox.show("Responda todas as perguntas antes de finalizar!");
 		} else {
+			Avaliacao avaliacao = new Avaliacao();
+			avaliacao.setAvaliando(usuario);
+			avaliacao.setQuestionario(questionarioAtual);
+			avaliacao.setAvaliado(coordAvaliado);
+			new AvaliacaoDAO().salvar(avaliacao);
+
 			for (Resposta r : respostas) {
-				System.out.println(r.getResposta());
+				r.setAvaliacao(avaliacao);
 			}
+
+			new RespostaDAO().salvarLista(respostas);
+
+			Clients.clearBusy();
 			Messagebox.show("Avaliação Salva com Sucesso", "Concluído",
 					Messagebox.OK, Messagebox.INFORMATION,
 					new EventListener<Event>() {
 						@Override
-						public void onEvent(Event event)
-								throws Exception {
+						public void onEvent(Event event) throws Exception {
 							Executions.sendRedirect(null);
 						}
 					});
 		}
-		
+
 	}
 
 	@Command
@@ -116,7 +134,7 @@ public class AvaliacoesDisponiveisController extends GenericController {
 		resposta.setResposta(escolha);
 		resposta.setPergunta(perg);
 
-		for (int i = 0; i < respostas.size() ; i++)
+		for (int i = 0; i < respostas.size(); i++)
 			if (respostas.get(i).getPergunta() == resposta.getPergunta()) {
 				respostas.remove(respostas.get(i));
 				break;
@@ -125,13 +143,10 @@ public class AvaliacoesDisponiveisController extends GenericController {
 		respostas.add(resposta);
 		resposta = new Resposta();
 	}
-
-	public List<Questionario> getQuestionariosCoord() {
-		return questionariosCoord;
-	}
-
-	public void setQuestionariosCoord(List<Questionario> questionariosCoord) {
-		this.questionariosCoord = questionariosCoord;
+	
+	@Command
+	public void avaliado(@BindingParam("label") Label l) {
+		l.setValue(coordAvaliado.getNome() + " - " + "Coordenador " + coordAvaliado.getCurso().getNomeCurso());
 	}
 
 	public List<Questionario> getQuestionariosProfs() {
@@ -166,14 +181,6 @@ public class AvaliacoesDisponiveisController extends GenericController {
 		AvaliacoesDisponiveisController.questionarioAtual = questionarioAtual;
 	}
 
-	public Avaliacao getAvaliacao() {
-		return avaliacao;
-	}
-
-	public void setAvaliacao(Avaliacao avaliacao) {
-		this.avaliacao = avaliacao;
-	}
-
 	public Resposta getResposta() {
 		return resposta;
 	}
@@ -188,6 +195,22 @@ public class AvaliacoesDisponiveisController extends GenericController {
 
 	public void setRespostas(List<Resposta> respostas) {
 		this.respostas = respostas;
+	}
+
+	public boolean isJaAvaliouCoord() {
+		return jaAvaliouCoord;
+	}
+
+	public void setJaAvaliouCoord(boolean jaAvaliouCoord) {
+		this.jaAvaliouCoord = jaAvaliouCoord;
+	}
+
+	public List<Questionario> getQuestionariosCoord() {
+		return questionariosCoord;
+	}
+
+	public void setQuestionariosCoord(List<Questionario> questionariosCoord) {
+		this.questionariosCoord = questionariosCoord;
 	}
 
 }

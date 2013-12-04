@@ -5,47 +5,30 @@ import java.util.List;
 import org.hibernate.Query;
 
 import br.ufjf.avaliacao.model.Avaliacao;
+import br.ufjf.avaliacao.model.Questionario;
 import br.ufjf.avaliacao.model.Usuario;
 import br.ufjf.avaliacao.persistent.GenericoDAO;
 import br.ufjf.avaliacao.persistent.IAvalicaoDAO;
 
 public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 
-	public Avaliacao retornaAvaliacaoCoord(Usuario usuario) {
-		try {
-			Query query = getSession()
-					.createQuery(
-							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.questionario AS q WHERE a.avaliando = :usuario AND q.tipoQuestionario = :tipoQuestionario");
-			query.setParameter("avaliando", usuario);
-			query.setParameter("tipoQuestionario", 0);
-
-			Avaliacao avaliacao = (Avaliacao) query.uniqueResult();
-
-			getSession().close();
-			if (avaliacao != null)
-				return avaliacao;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
 	@SuppressWarnings("unchecked")
-	public List<Avaliacao> retornaAvaliacoes(Usuario avaliando) {
+	public boolean jaAvaliou(Usuario user, Questionario quest) {
+		
 		try {
-			Query query = getSession()
-					.createQuery(
-							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.questionario AS q WHERE a.avaliando = :avaliando");
-			query.setParameter("avaliando", avaliando);
-
-			List<Avaliacao> avaliacao = query.list();
-
-			getSession().close();
-			if (avaliacao != null)
-				return avaliacao;
+			Query query = getSession().createQuery("SELECT a FROM Avaliacao AS a WHERE a.questionario =:questionario AND a.avaliando =:user");
+			query.setParameter("questionario", quest);
+			query.setParameter("user", user);
+			
+			List<Avaliacao> avaliacao = (List<Avaliacao>) query.list();
+			
+			if(!avaliacao.isEmpty())
+				return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return false;
 	}
+	
+	
 }

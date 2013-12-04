@@ -23,4 +23,6 @@ public interface IUsuarioDAO {
 
 	public List<Usuario> retornaAlunosTurma(Turma turma);
 
+	public Usuario retornaCoordAvaliado(Usuario usuario);
+
 }

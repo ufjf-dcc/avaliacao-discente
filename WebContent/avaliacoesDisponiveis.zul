@@ -4,7 +4,6 @@
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AvaliacoesDisponiveisController')">
 		<include src="@load(vm.menu)" />
-
 		<tabbox>
 			<tabs width="100%">
 				<tab label="Avaliação de Coordenadores" />
@@ -17,21 +16,26 @@
 					<grid model="@load(vm.questionariosCoord)">
 						<columns>
 							<column label="Título" align="center" />
+							<column label="Coord. Avaliado"
+								align="center" />
 							<column label="Data Inicial" align="center" />
 							<column label="Data Final" align="center" />
 							<column label="Opções" align="center" />
-
 						</columns>
 						<template name="model">
 							<row>
 								<label
 									value="@load(each.tituloQuestionario)" />
 								<label
+									onCreate="@command('avaliado', label=self)" />
+								<label
 									value="@load(each.dataInicialFormatada)" />
 								<label
 									value="@load(each.dataFinalFormatada)" />
 								<div>
-									<button label="Avaliar"
+									<button
+										disabled="@load(vm.jaAvaliouCoord eq true ? true : false)"
+										label="@load(vm.jaAvaliouCoord eq false ? 'Avaliar' : 'Já Avaliado')"
 										onClick="@command('avaliar', questionario=each)" />
 								</div>
 							</row>
@@ -111,9 +115,6 @@
 					</grid>
 				</tabpanel>
 			</tabpanels>
-
 		</tabbox>
-
 	</div>
-
 </zk>

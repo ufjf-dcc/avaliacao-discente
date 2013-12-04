@@ -1,24 +1,18 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
 
 <zk>
-	<style>
-		.menubar{
-			border:1px;
-		
-		}
-	
-	</style>
-		<div  align="center">
-		  <menubar id="menubar" class="menubar" width="100%">
-		  
-           		<menuitem label="Inicial" href="/home.zul"/>
- 				<menuitem label="Gerenciar Usuários"  href="/usuarios.zul"/> 
- 				<menuitem label="Gerenciar Disciplinas" href="/disciplinas.zul"/> 
- 				<menuitem label="Gerenciar Turmas" href="/turmas.zul"/>
- 				<menuitem label="Opções" />
- 				<menuitem label="Sair" onClick="@command('exit')" />
-		  
-		  </menubar>
-		</div>
-		
+	<style>.menubar{ border:1px; } .menu { margin-bottom:5px; }</style>
+	<div class="menu" align="center">
+		<menubar id="menubar" class="menubar" width="100%">
+			<menuitem label="Inicial" href="/home.zul" />
+			<menuitem label="Gerenciar Usuários" href="/usuarios.zul" />
+			<menuitem label="Gerenciar Disciplinas"
+				href="/disciplinas.zul" />
+			<menuitem label="Gerenciar Turmas" href="/turmas.zul" />
+			<menuitem label="Opções" />
+			<menuitem label="Sair" onClick="@command('exit')" />
+
+		</menubar>
+	</div>
+
 </zk>

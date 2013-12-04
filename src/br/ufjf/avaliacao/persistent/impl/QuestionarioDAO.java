@@ -96,7 +96,6 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 		return null;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public List<Questionario> retornaQuestinariosParaUsuarioCoord(Usuario usuario) {
 		try {
 			Query query = getSession()
@@ -106,7 +105,29 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 			query.setParameter("ativo", true);
 			query.setParameter("tipoQuestionario", 0);
 
-			List<Questionario> questionario = query.list();
+			@SuppressWarnings("unchecked")
+			List<Questionario> questionarios = query.list();
+
+			getSession().close();
+
+			if (questionarios != null)
+				return questionarios;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public Questionario getQuestCoord(Usuario usuario) {
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT q FROM Questionario as q WHERE q.curso = :curso AND q.ativo = :ativo AND q.tipoQuestionario = :tipoQuestionario");
+			query.setParameter("curso", usuario.getCurso());
+			query.setParameter("ativo", true);
+			query.setParameter("tipoQuestionario", 0);
+
+			Questionario questionario = (Questionario) query.uniqueResult();
 
 			getSession().close();
 

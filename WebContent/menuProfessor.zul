@@ -1,15 +1,8 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
 
 <zk>
-	<style>
-		.menubar{ border:1px;
-
-		}
-
-	</style>
-
-	<div style="position:absolute">
-
+	<style>.menubar{ border:1px; }</style>
+	<div class="menu" style="position:absolute">
 		<menubar id="menubar" class="menubar" width="100%">
 			<menuitem label="Inicial" href="/home.zul" />
 			<menuitem label="Consultar Avaliações"
