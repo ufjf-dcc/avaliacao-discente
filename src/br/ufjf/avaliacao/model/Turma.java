@@ -19,8 +19,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
-
 
 /**
  * DTO da Tabela {@code Turma} contém os atributos e relacionamentos da
@@ -49,8 +47,8 @@ public class Turma implements Serializable{
 	
 	/**
 	 * Campo com a letra da turma. Relaciona com a coluna
-	 * {@code turma} do banco através da anotação
-	 * {@code @Column(name = "turma", length = 45, nullable = false)}
+	 * {@code letraTurma} do banco através da anotação
+	 * {@code @Column(name = "letraTurma", length = 45, nullable = false)}
 	 * .
 	 */
 	@Column(name = "letraTurma", length = 45, nullable = false)
@@ -99,20 +97,13 @@ public class Turma implements Serializable{
 	
 	@Transient
 	private boolean editingStatus;
-	
-	@Transient
-	private String nomeProfessor;
-	
-	@Transient
-	private Usuario professor;
-	
+		
 	public Turma(){}
 	
-	public Turma(Disciplina disciplina, String letraTurma, String semestre, Usuario professor) {
+	public Turma(Disciplina disciplina, String letraTurma, String semestre) {
 		this.disciplina = disciplina;
 		this.letraTurma = letraTurma;
 		this.semestre = semestre;
-		this.professor = professor;
 	}
 	
 	public int getIdTurma() {
@@ -172,18 +163,8 @@ public class Turma implements Serializable{
 	}
 	
 	//adiciona apenas um usuario a List de usuarios.
-	public void addUsuario(Usuario usuario) {
-		this.usuarios.add(usuario);
+		public void addUsuario(Usuario usuario) {
+			this.usuarios.add(usuario);
 	}
 
-	public Usuario getProfessor() {
-		return professor;
-	}
-
-	public void setProfessor(Usuario professor) {
-		this.professor = professor;
-		usuarios.add(professor);
-	}
-	
-	
 }
