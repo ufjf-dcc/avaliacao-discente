@@ -80,19 +80,7 @@ public class PrazoQuestionario {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "idQuestionario", nullable = false)
 	private Questionario questionario;
-		
-	
-	/**
-	 * Relacionamento N para 1 entre prazoQuestionario e usuario. Mapeando
-	 * {@link Usuario} na variável {@code usuario} e retorno do tipo
-	 * {@code LAZY} que indica que não será carregado automáticamente este dado
-	 * quando retornarmos o {@link PrazoQuestionario}.
-	 * 
-	 */
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "idUsuario", nullable = false)
-	private Usuario usuario;
-	
+			
 	@Transient
 	private String dataFinalFormatada;
 
@@ -138,14 +126,6 @@ public class PrazoQuestionario {
 
 	public void setQuestionario(Questionario questionario) {
 		this.questionario = questionario;
-	}
-
-	public Usuario getUsuario() {
-		return usuario;
-	}
-
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
 	}
 
 	@SuppressWarnings("deprecation")
