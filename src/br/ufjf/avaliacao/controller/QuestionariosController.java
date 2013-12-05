@@ -17,8 +17,10 @@ import org.zkoss.zul.Window;
 
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Pergunta;
+import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
 import br.ufjf.avaliacao.persistent.impl.PerguntaDAO;
+import br.ufjf.avaliacao.persistent.impl.PrazoQuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
 
 public class QuestionariosController extends GenericController {
@@ -42,6 +44,9 @@ public class QuestionariosController extends GenericController {
 	private Questionario questionario = new Questionario();
 	private static Questionario questionarioEditar = new Questionario();
 	private List<Integer> tiposQuestionario = Arrays.asList(0, 1, 2, 3);
+	private PrazoQuestionario prazo = new PrazoQuestionario();
+	private List<PrazoQuestionario> prazos = new ArrayList<PrazoQuestionario>();
+	private PrazoQuestionarioDAO prazoDAO = new PrazoQuestionarioDAO();
 
 	@Init
 	public void init() throws HibernateException, Exception {
@@ -100,7 +105,10 @@ public class QuestionariosController extends GenericController {
 	@Command
 	@NotifyChange({ "perguntas", "questionario" })
 	public void cria() {
+		prazoDAO.salvar(prazo);
+		prazos.add(prazo);
 		questionario.setCurso(usuario.getCurso());
+		questionario.setPrazos(prazos);
 		if (questionarioDAO.salvar(questionario)) {
 			if (isAtivo()) {
 				for (Questionario q : listaQuestionarios(questionario
@@ -114,12 +122,15 @@ public class QuestionariosController extends GenericController {
 				pergunta.setQuestionario(questionario);
 			}
 			if (perguntaDAO.salvarLista(perguntas)) {
-				
+
 				questionario = new Questionario();
 				pergunta = new Pergunta();
 				perguntas = new ArrayList<Pergunta>();
 			}
 		}
+		System.out.println(prazo.getDataInicial());
+		System.out.println(prazo.getDataFinalFormatada());
+		System.out.println(prazo.getSemestre());
 	}
 
 	@Command
@@ -318,6 +329,22 @@ public class QuestionariosController extends GenericController {
 
 	public void setPerguntasAntigas(List<Pergunta> perguntasAntigas) {
 		this.perguntasAntigas = perguntasAntigas;
+	}
+
+	public PrazoQuestionario getPrazo() {
+		return prazo;
+	}
+
+	public void setPrazo(PrazoQuestionario prazo) {
+		this.prazo = prazo;
+	}
+
+	public List<PrazoQuestionario> getPrazos() {
+		return prazos;
+	}
+
+	public void setPrazos(List<PrazoQuestionario> prazos) {
+		this.prazos = prazos;
 	}
 
 }

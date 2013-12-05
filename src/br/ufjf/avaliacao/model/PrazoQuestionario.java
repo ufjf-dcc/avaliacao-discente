@@ -61,16 +61,6 @@ public class PrazoQuestionario {
 	
 	
 	/**
-	 * Campo com o semestre do questionario. Relaciona com a coluna
-	 * {@code semestre} do banco através da anotação
-	 * {@code @Column(name = "semestre", length = 45, nullable = false)}
-	 * .
-	 */
- 	@Column(name = "semestre", length = 45, nullable = false)
-	private String semestre;
-	
-	
-	/**
 	 * Relacionamento N para 1 entre prazoQuestionario e questionario. Mapeando
 	 * {@link Questionario} na variável {@code questionario} e retorno do tipo
 	 * {@code EAGER} que indica que será carregado automáticamente este dado

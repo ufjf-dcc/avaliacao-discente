@@ -6,11 +6,9 @@
 		id="form">
 		<grid model="@load(vm.perguntas)">
 			<auxhead>
-				<auxheader label="Título:" colspan="2">
+				<auxheader style="text-align:center" label="Título:" colspan="2">
 					<textbox value="@bind(fm.tituloQuestionario)" />
 				</auxheader>
-			</auxhead>
-			<auxhead>
 				<auxheader label="Tipo:">
 					<combobox selectedItem="@bind(fm.tipoQuestionario)"
 						readonly="true">
@@ -23,13 +21,18 @@
 							value="3" />
 					</combobox>
 				</auxheader>
-				<auxheader label="Data Incial:">
-					<datebox value="@bind(fm.dataInicial)"
+			</auxhead>
+			<auxhead>				
+				<auxheader label="Data Incial: ">
+					<datebox value="@bind(vm.prazo.dataInicial)"
 						format="dd/MM/yyyy" width="150px" constraint="no past" />
 				</auxheader>
-				<auxheader label="Data Final:">
-					<datebox value="@bind(fm.dataFinal)"
+				<auxheader label="Data Final: ">
+					<datebox value="@bind(vm.prazo.dataFinal)"
 						format="dd/MM/yyyy" width="150px" constraint="no past" />
+				</auxheader>
+				<auxheader label="Semestre: ">
+					<textbox value="@bind(vm.prazo.semestre)" />				
 				</auxheader>
 			</auxhead>
 			<auxhead>
