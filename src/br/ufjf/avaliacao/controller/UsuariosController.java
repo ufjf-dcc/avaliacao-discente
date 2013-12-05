@@ -30,8 +30,7 @@ public class UsuariosController extends GenericController {
 	private UsuarioDAO usuarioDAO = new UsuarioDAO();
 	private Usuario usuario = new Usuario();
 	private CursoDAO cursoDAO = new CursoDAO();
-	private List<Usuario> usuarios = usuarioDAO
-			.getTodosUsuarios();
+	private List<Usuario> usuarios = usuarioDAO.getTodosUsuarios();
 	private List<Curso> cursos = (List<Curso>) cursoDAO.getTodosCursos();
 	private Combobox cmbCurso;
 
@@ -130,7 +129,8 @@ public class UsuariosController extends GenericController {
 				.contains("Professor"));
 	}
 
-	@Command("upload")// FORMATO ARQUIVO: String nome, String email, String senha, Curso curso,Integer tipoUsuario
+	@Command("upload")
+	// FORMATO ARQUIVO: nome,email,codigo do curso, tipo de usuario
 	public void upload(@BindingParam("evt") UploadEvent evt) {
 		Media media = evt.getMedia();
 		if (!media.getName().contains(".csv")) {
@@ -146,26 +146,28 @@ public class UsuariosController extends GenericController {
 			List<Usuario> usuarios = new ArrayList<Usuario>();
 			while ((linha = in.readLine()) != null) {
 				String conteudo[] = linha.split(";");
-				usuario = new Usuario(conteudo[0], conteudo[1], "12345",
-						cursoDAO.getCursoNome(conteudo[2]),
-						Integer.parseInt(conteudo[3]));
-				usuarios.add(usuario);
+				if (usuarioDAO.retornaUsuario(conteudo[0]) == null) {
+					usuario = new Usuario(conteudo[0], conteudo[1], "12345",
+							cursoDAO.getCursoNome(conteudo[2]),
+							Integer.parseInt(conteudo[3]));
+					usuarios.add(usuario);
+				}
 			}
 			if (usuarioDAO.salvarLista(usuarios))
 				Messagebox.show("Usuarios cadastrados com sucesso", null,
 						new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
-					public void onEvent(ClickEvent e) {
-						if (e.getButton() == Messagebox.Button.OK)
-							Executions.sendRedirect(null);
-						else
-							Executions.sendRedirect(null);
-					}
-				});
+							public void onEvent(ClickEvent e) {
+								if (e.getButton() == Messagebox.Button.OK)
+									Executions.sendRedirect(null);
+								else
+									Executions.sendRedirect(null);
+							}
+						});
 
-		} 
-		
+		}
+
 		catch (IllegalStateException e) {
-			
+
 			Usuario usuario;
 			CursoDAO cursoDAO = new CursoDAO();
 			List<Usuario> usuarios = new ArrayList<Usuario>();
@@ -173,24 +175,26 @@ public class UsuariosController extends GenericController {
 			String linhas[] = csv.split("\\r?\\n");
 			for (String linha : linhas) {
 				String conteudo[] = linha.split(";");
-				usuario = new Usuario(conteudo[0], conteudo[1], "12345",
-						cursoDAO.getCursoNome(conteudo[2]),
-						Integer.parseInt(conteudo[3]));
-				usuarios.add(usuario);
+				if (usuarioDAO.retornaUsuario(conteudo[0]) == null) {
+					usuario = new Usuario(conteudo[0], conteudo[1], "12345",
+							cursoDAO.getCursoNome(conteudo[2]),
+							Integer.parseInt(conteudo[3]));
+					usuarios.add(usuario);
+				}
 			}
-			
+
 			if (usuarioDAO.salvarLista(usuarios))
 				Messagebox.show("Usuarios cadastrados com sucesso", null,
 						new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
-					public void onEvent(ClickEvent e) {
-						if (e.getButton() == Messagebox.Button.OK)
-							Executions.sendRedirect(null);
-						else
-							Executions.sendRedirect(null);
-					}
-				});
+							public void onEvent(ClickEvent e) {
+								if (e.getButton() == Messagebox.Button.OK)
+									Executions.sendRedirect(null);
+								else
+									Executions.sendRedirect(null);
+							}
+						});
 		}
-		
+
 		catch (IOException e) {
 			e.printStackTrace();
 		}
