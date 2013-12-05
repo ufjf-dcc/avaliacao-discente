@@ -107,7 +107,7 @@ public class TurmasController extends GenericController {
 						disciplinaDAO.retornaDisciplinaCod(conteudo[0])) == null) {
 					turma = new Turma(
 							disciplinaDAO.retornaDisciplinaCod(conteudo[0]),
-							conteudo[2], conteudo[3], professor);
+							conteudo[2], conteudo[3]);
 					List<Usuario> users = new ArrayList<Usuario>();
 					users.add(professor);
 					turma.setUsuarios(users);
@@ -158,7 +158,7 @@ public class TurmasController extends GenericController {
 						disciplinaDAO.retornaDisciplinaCod(conteudo[0])) == null) {
 					turma = new Turma(
 							disciplinaDAO.retornaDisciplinaCod(conteudo[0]),
-							conteudo[2], conteudo[3], professor);
+							conteudo[2], conteudo[3]);
 
 					List<Usuario> users = new ArrayList<Usuario>();
 					users.add(professor);
