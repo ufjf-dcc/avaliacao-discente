@@ -17,10 +17,9 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 		try {
 			Query query = getSession()
 					.createQuery(
-							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.questionario AS q WHERE q =:questionario AND a.avaliando =:user AND q.dataInicial =:dataInicial ");
+							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.questionario AS q WHERE q =:questionario AND a.avaliando =:user");
 			query.setParameter("questionario", quest);
 			query.setParameter("user", user);
-			query.setParameter("dataInicial", quest.getDataInicial());
 
 			List<Avaliacao> avaliacao = (List<Avaliacao>) query.list();
 

@@ -108,6 +108,16 @@ public class Usuario implements Serializable{
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "usuarios")
 	private List<Turma> turmas = new ArrayList<Turma>();
 	
+	/**
+	 * Relacionamento 1 para N entre questionario e prazoQuestionario. Mapeada em
+	 * {@link PrazoQuestionario} pela variável {@code questionario} e retorno do tipo
+	 * {@code LAZY} que indica que não será carregado automáticamente este dado
+	 * quando retornarmos a {@link Questionario} .
+	 * 
+	 */
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario")
+	private List<PrazoQuestionario> prazos = new ArrayList<PrazoQuestionario>();
+	
 	@Transient
 	private String nomeTipoUsuario;
 	
@@ -233,8 +243,14 @@ public class Usuario implements Serializable{
 	public void setIdUsuario(Integer idUsuario) {
 		this.idUsuario = idUsuario;
 	}
+
+	public List<PrazoQuestionario> getPrazos() {
+		return prazos;
+	}
+
+	public void setPrazos(List<PrazoQuestionario> prazos) {
+		this.prazos = prazos;
+	}
 	
-	
-	
-	
+		
 }

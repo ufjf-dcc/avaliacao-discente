@@ -57,7 +57,7 @@ public class AvaliacoesDisponiveisController extends GenericController {
 
 	@Command
 	public void disponibilidade(@BindingParam("button") Button b, @BindingParam("questionario") Questionario quest) {
-		if (new Date().before(quest.getDataFinal())
+		if (new Date().before(quest.getPrazos().)
 				&& new Date().after(quest.getDataInicial())
 				&& !jaAvaliouCoord) {
 			b.setLabel("Avaliar");

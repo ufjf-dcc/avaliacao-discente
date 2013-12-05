@@ -49,17 +49,22 @@ public class Disciplina implements Serializable{
 	@Column(name = "nomeDisciplina", length = 45, nullable = false)
 	private String nomeDisciplina;
 	
+	/**
+	 * Campo com o código da disciplina. Relaciona com a coluna
+	 * {@code codDisciplina} do banco através da anotação
+	 * {@code @Column(name = "codDisciplina", length = 45, nullable = false)}.
+	 */	
 	@Column(name = "codDisciplina", length = 45, nullable = false)
 	private String codDisciplina;
 	
 	/**
 	 * Relacionamento 1 para N entre disciplina e turma. Mapeada em
 	 * {@link Turma} pela variável {@code disciplina} e retorno do tipo
-	 * {@code LAZY} que indica que não será carregado automáticamente este dado
+	 * {@code LAZY} que indica que não será carregado automaticamente este dado
 	 * quando retornarmos a {@link Disciplina} .
 	 * 
 	 */
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "disciplina")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "disciplina")
 	private List<Turma> turmas = new ArrayList<Turma>();
 	
 	@Transient

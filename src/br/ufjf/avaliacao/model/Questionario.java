@@ -2,7 +2,6 @@ package br.ufjf.avaliacao.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -87,11 +86,15 @@ public class Questionario implements Serializable {
 	@JoinColumn(name = "idCurso", nullable = false)
 	private Curso curso;
 
-	@Column(name = "dataInicial", nullable = false)
-	private Date dataInicial;
-
-	@Column(name = "dataFinal", nullable = false)
-	private Date dataFinal;
+	/**
+	 * Relacionamento 1 para N entre questionario e prazoQuestionario. Mapeada em
+	 * {@link PrazoQuestionario} pela variável {@code questionario} e retorno do tipo
+	 * {@code LAZY} que indica que não será carregado automáticamente este dado
+	 * quando retornarmos a {@link Questionario} .
+	 * 
+	 */
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "questionario")
+	private List<PrazoQuestionario> prazos = new ArrayList<PrazoQuestionario>();
 
 	@Transient
 	private String nomeTipoQuestionario;
@@ -102,12 +105,8 @@ public class Questionario implements Serializable {
 	@Transient
 	private String status;
 
-	@Transient
-	private String dataFinalFormatada;
-
-	@Transient
-	private String dataInicialFormatada;
-
+	
+	
 	public int getIdQuestionario() {
 		return idQuestionario;
 	}
@@ -198,40 +197,12 @@ public class Questionario implements Serializable {
 		this.status = status;
 	}
 
-	public Date getDataInicial() {
-		return dataInicial;
+	public List<PrazoQuestionario> getPrazos() {
+		return prazos;
 	}
 
-	public void setDataInicial(Date dataInicial) {
-		this.dataInicial = dataInicial;
-	}
-
-	public Date getDataFinal() {
-		return dataFinal;
-	}
-
-	public void setDataFinal(Date dataFinal) {
-		this.dataFinal = dataFinal;
-	}
-
-	@SuppressWarnings("deprecation")
-	public String getDataFinalFormatada() {
-		return (dataFinal.getDate() + "/" + (dataFinal.getMonth() + 1) + "/" + (dataFinal
-				.getYear() + 1900));
-	}
-
-	public void setDataFinalFormatada(String dataFinalFormatada) {
-		this.dataFinalFormatada = dataFinalFormatada;
-	}
-
-	@SuppressWarnings("deprecation")
-	public String getDataInicialFormatada() {
-		return (dataInicial.getDate() + "/" + (dataInicial.getMonth() + 1)
-				+ "/" + (dataInicial.getYear() + 1900));
-	}
-
-	public void setDataInicialFormatada(String dataInicialFormatada) {
-		this.dataInicialFormatada = dataInicialFormatada;
+	public void setPrazos(List<PrazoQuestionario> prazos) {
+		this.prazos = prazos;
 	}
 
 }
