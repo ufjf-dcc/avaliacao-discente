@@ -137,7 +137,7 @@ public class TurmasController extends GenericController {
 			List<Turma> nturmas = new ArrayList<Turma>();
 
 			for (String linha : linhas) {
-				String conteudo[] = linha.split(",|;|:");
+				String conteudo[] = linha.split(";");
 				// Verifica se possui professor
 				if (usuarioDAO.retornaUsuario(conteudo[4]) != null) {
 					professor = usuarioDAO.retornaUsuario(conteudo[4]);
@@ -181,11 +181,15 @@ public class TurmasController extends GenericController {
 						});
 
 		}
+		catch(Exception e){
+			Messagebox.show("Erro");
+
+			
+		}
 	}
 
 	@Command("uploadAlunos")
-	// FORMATO DE ENTRADA:nome, email, senha, tipo de usuario, id curso, código
-	// da disciplina,letra da turma, semestre
+	// FORMATO DE ENTRADA:nome, email, senha, tipo de usuario, id curso, código da disciplina,letra da turma, semestre
 	public void uploadAlunos(@BindingParam("evt") UploadEvent evt)
 			throws IOException {
 		Media media = evt.getMedia();
@@ -194,7 +198,8 @@ public class TurmasController extends GenericController {
 					.show("Este não é um arquivo válido! Apenas CSV são aceitos.");
 			return;
 		}
-
+		boolean operacao =  false;
+		
 		try {
 
 			// Leitura com o BufferReader que e mais rapido
@@ -228,10 +233,10 @@ public class TurmasController extends GenericController {
 				List<Usuario> users = usuarioDAO.retornaAlunosTurma(turma);
 				users.add(nusuario);
 				turma.setUsuarios(users);
-				turmaDAO.editar(turma);
+				operacao = turmaDAO.editar(turma);
 			}
 
-			if (true)
+			if (operacao)
 				Messagebox.show("Usuarios cadastrados com sucesso", null,
 						new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
 							public void onEvent(ClickEvent e) {
@@ -241,7 +246,8 @@ public class TurmasController extends GenericController {
 									Executions.sendRedirect(null);
 							}
 						});
-
+			
+		
 		} catch (IllegalStateException e) {
 			String csv = new String(media.getByteData());
 			String linhas[] = csv.split("\\r?\\n");
@@ -251,7 +257,7 @@ public class TurmasController extends GenericController {
 			CursoDAO cursoDAO = new CursoDAO();
 
 			for (String linha : linhas) {
-				String conteudo[] = linha.split(",|;|:");
+				String conteudo[] = linha.split(";");
 				// verifica se o curso está cadastrado, se não ele cria
 				if (cursoDAO.getCursoNome(conteudo[4]) != null) {
 					curso = cursoDAO.getCursoNome(conteudo[4]);
@@ -274,10 +280,10 @@ public class TurmasController extends GenericController {
 				List<Usuario> users = usuarioDAO.retornaAlunosTurma(turma);
 				users.add(nusuario);
 				turma.setUsuarios(users);
-				turmaDAO.editar(turma);
+				operacao = turmaDAO.editar(turma);
 
 			}
-			if (true)
+			if (operacao)
 				Messagebox.show("Usuarios cadastrados com sucesso", null,
 						new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
 							public void onEvent(ClickEvent e) {

@@ -124,7 +124,33 @@ public class DisciplinasController extends GenericController{
 						}
 					});
 
-			} catch (IOException e) {
+			}
+			
+			catch (IllegalStateException g) {
+			
+				Disciplina disciplina;
+				List<Disciplina> disciplinas = new ArrayList<Disciplina>();
+				String csv = new String(media.getByteData());
+				String linhas[] = csv.split("\\r?\\n");
+				for (String linha : linhas) {
+					String conteudo[] = linha.split(";");
+					disciplina = new Disciplina(conteudo[0],conteudo[1]);
+					disciplinas.add(disciplina);
+				}
+				if (disciplinaDAO.salvarLista(disciplinas))
+					Messagebox.show("Disciplinas cadastradas com sucesso", null,
+							new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
+						public void onEvent(ClickEvent e) {
+							if (e.getButton() == Messagebox.Button.OK)
+								Executions.sendRedirect(null);
+							else
+								Executions.sendRedirect(null);
+						}
+					});
+				
+			}
+			
+			catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
