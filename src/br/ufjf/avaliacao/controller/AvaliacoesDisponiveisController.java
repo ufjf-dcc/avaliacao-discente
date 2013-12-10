@@ -1,7 +1,6 @@
 package br.ufjf.avaliacao.controller;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.hibernate.HibernateException;
@@ -13,7 +12,6 @@ import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.Clients;
-import org.zkoss.zul.Button;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
@@ -21,10 +19,12 @@ import org.zkoss.zul.Window;
 
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Pergunta;
+import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
 import br.ufjf.avaliacao.model.Resposta;
 import br.ufjf.avaliacao.model.Usuario;
 import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
+import br.ufjf.avaliacao.persistent.impl.PrazoQuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.RespostaDAO;
 import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
@@ -33,28 +33,29 @@ public class AvaliacoesDisponiveisController extends GenericController {
 
 	private QuestionarioDAO questionarioDAO = new QuestionarioDAO();
 	private UsuarioDAO usuarioDAO = new UsuarioDAO();
-	private List<Questionario> questionariosCoord = questionarioDAO
-			.retornaQuestinariosParaUsuarioCoord(usuario);
+	private Questionario questionarioCoord = questionarioDAO
+			.retornaQuestinarioParaUsuarioCoord(usuario);
+	private List<PrazoQuestionario> prazoCoord = new PrazoQuestionarioDAO()
+			.questionarioDisponivel(questionarioCoord);
 	private List<Questionario> questionariosProfs = questionarioDAO
 			.retornaQuestinariosParaUsuario(usuario);
-	private List<Questionario> questionariosAuto = questionarioDAO
-			.retornaQuestinariosCursoTipo(usuario.getCurso(), 2);
-	private List<Questionario> questionariosInfra = questionarioDAO
-			.retornaQuestinariosCursoTipo(usuario.getCurso(), 3);
+	private Questionario questionarioAuto = questionarioDAO
+			.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario);
+	private List<PrazoQuestionario> prazoAuto = new PrazoQuestionarioDAO()
+	.questionarioDisponivel(questionarioAuto);
+	private Questionario questionarioInfra = questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario);
+	private List<PrazoQuestionario> prazoInfra = new PrazoQuestionarioDAO()
+	.questionarioDisponivel(questionarioInfra);
 	private static Questionario questionarioAtual = new Questionario();
 	private Resposta resposta = new Resposta();
 	private List<Resposta> respostas = new ArrayList<Resposta>();
 	private Usuario coordAvaliado = usuarioDAO.retornaCoordAvaliado(usuario);
-	private boolean jaAvaliouCoord = false;
 
 	@Init
 	public void init() throws HibernateException, Exception {
 		testaPermissaoAluno();
-		jaAvaliouCoord = new AvaliacaoDAO().jaAvaliou(usuario,
-				new QuestionarioDAO().getQuestCoord(usuario));
 
 	}
-
 
 	@Command
 	public void avaliar(@BindingParam("questionario") Questionario questionario) {
@@ -163,22 +164,6 @@ public class AvaliacoesDisponiveisController extends GenericController {
 		this.questionariosProfs = questionariosProfs;
 	}
 
-	public List<Questionario> getQuestionariosAuto() {
-		return questionariosAuto;
-	}
-
-	public void setQuestionariosAuto(List<Questionario> questionariosAuto) {
-		this.questionariosAuto = questionariosAuto;
-	}
-
-	public List<Questionario> getQuestionariosInfra() {
-		return questionariosInfra;
-	}
-
-	public void setQuestionariosInfra(List<Questionario> questionariosInfra) {
-		this.questionariosInfra = questionariosInfra;
-	}
-
 	public Questionario getQuestionarioAtual() {
 		return questionarioAtual;
 	}
@@ -203,20 +188,52 @@ public class AvaliacoesDisponiveisController extends GenericController {
 		this.respostas = respostas;
 	}
 
-	public boolean isJaAvaliouCoord() {
-		return jaAvaliouCoord;
+	public Questionario getQuestionarioCoord() {
+		return questionarioCoord;
 	}
 
-	public void setJaAvaliouCoord(boolean jaAvaliouCoord) {
-		this.jaAvaliouCoord = jaAvaliouCoord;
+	public void setQuestionarioCoord(Questionario questionarioCoord) {
+		this.questionarioCoord = questionarioCoord;
 	}
 
-	public List<Questionario> getQuestionariosCoord() {
-		return questionariosCoord;
+	public List<PrazoQuestionario> getPrazoCoord() {
+		return prazoCoord;
 	}
 
-	public void setQuestionariosCoord(List<Questionario> questionariosCoord) {
-		this.questionariosCoord = questionariosCoord;
+	public void setPrazoCoord(List<PrazoQuestionario> prazoCoord) {
+		this.prazoCoord = prazoCoord;
+	}
+
+	public List<PrazoQuestionario> getPrazoAuto() {
+		return prazoAuto;
+	}
+
+	public void setPrazoAuto(List<PrazoQuestionario> prazoAuto) {
+		this.prazoAuto = prazoAuto;
+	}
+
+	public List<PrazoQuestionario> getPrazoInfra() {
+		return prazoInfra;
+	}
+
+	public void setPrazoInfra(List<PrazoQuestionario> prazoInfra) {
+		this.prazoInfra = prazoInfra;
+	}
+
+	public Questionario getQuestionarioAuto() {
+		return questionarioAuto;
+	}
+
+	public void setQuestionarioAuto(Questionario questionarioAuto) {
+		this.questionarioAuto = questionarioAuto;
+	}
+
+	public Questionario getQuestionarioInfra() {
+		return questionarioInfra;
+	}
+
+	public void setQuestionarioInfra(Questionario questionarioInfra) {
+		this.questionarioInfra = questionarioInfra;
 	}
 
 }

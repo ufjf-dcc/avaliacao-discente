@@ -1,5 +1,6 @@
 package br.ufjf.avaliacao.persistent.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -32,4 +33,28 @@ public class PrazoQuestionarioDAO extends GenericoDAO implements
 		}
 		return null;
 	}
+	
+	public List<PrazoQuestionario> questionarioDisponivel(Questionario questionario) {
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT p FROM PrazoQuestionario AS p LEFT JOIN FETCH p.questionario AS q WHERE q = :questionario AND :dataAtual BETWEEN p.dataInicial AND p.dataFinal");
+			query.setParameter("dataAtual", new Date());
+			query.setParameter("questionario", questionario);
+
+			@SuppressWarnings("unchecked")
+			List<PrazoQuestionario> prazos = query.list();
+
+			getSession().close();
+
+			if (prazos!=null) {
+				return prazos;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
 }

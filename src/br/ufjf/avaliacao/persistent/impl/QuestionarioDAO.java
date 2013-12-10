@@ -96,36 +96,14 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 		return null;
 	}
 	
-	public List<Questionario> retornaQuestinariosParaUsuarioCoord(Usuario usuario) {
+	public Questionario retornaQuestinarioParaUsuarioCoord(Usuario usuario) {
 		try {
 			Query query = getSession()
 					.createQuery(
-							"SELECT q FROM Questionario as q WHERE q.curso = :curso AND q.ativo = :ativo AND q.tipoQuestionario = :tipoQuestionario");
+							"SELECT q FROM Questionario AS q LEFT JOIN FETCH q.prazos WHERE q.curso = :curso AND q.ativo = :ativo AND q.tipoQuestionario = :tipoQuestionario");
 			query.setParameter("curso", usuario.getCurso());
 			query.setParameter("ativo", true);
-			query.setParameter("tipoQuestionario", 0);
-
-			@SuppressWarnings("unchecked")
-			List<Questionario> questionarios = query.list();
-
-			getSession().close();
-
-			if (questionarios != null)
-				return questionarios;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public Questionario getQuestCoord(Usuario usuario) {
-		try {
-			Query query = getSession()
-					.createQuery(
-							"SELECT q FROM Questionario as q WHERE q.curso = :curso AND q.ativo = :ativo AND q.tipoQuestionario = :tipoQuestionario");
-			query.setParameter("curso", usuario.getCurso());
-			query.setParameter("ativo", true);
-			query.setParameter("tipoQuestionario", 0);
+			query.setParameter("tipoQuestionario", Questionario.COORD);
 
 			Questionario questionario = (Questionario) query.uniqueResult();
 
@@ -138,4 +116,47 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 		}
 		return null;
 	}
+	
+	public Questionario retornaQuestinarioParaUsuarioAutoAvaliacao(Usuario usuario) {
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT q FROM Questionario AS q LEFT JOIN FETCH q.prazos WHERE q.curso = :curso AND q.ativo = :ativo AND q.tipoQuestionario = :tipoQuestionario");
+			query.setParameter("curso", usuario.getCurso());
+			query.setParameter("ativo", true);
+			query.setParameter("tipoQuestionario", Questionario.AUTO);
+
+			Questionario questionario = (Questionario) query.uniqueResult();
+
+			getSession().close();
+
+			if (questionario != null)
+				return questionario;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public Questionario retornaQuestinarioParaUsuarioInfra(Usuario usuario) {
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT q FROM Questionario AS q LEFT JOIN FETCH q.prazos WHERE q.curso = :curso AND q.ativo = :ativo AND q.tipoQuestionario = :tipoQuestionario");
+			query.setParameter("curso", usuario.getCurso());
+			query.setParameter("ativo", true);
+			query.setParameter("tipoQuestionario", Questionario.INFRA);
+
+			Questionario questionario = (Questionario) query.uniqueResult();
+
+			getSession().close();
+
+			if (questionario != null)
+				return questionario;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 }

@@ -17,6 +17,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import br.ufjf.avaliacao.persistent.impl.PrazoQuestionarioDAO;
+
 /**
  * DTO da Tabela {@code Questionario} contém os atributos e relacionamentos da
  * mesma.
@@ -25,6 +27,7 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "Questionario")
 public class Questionario implements Serializable {
+	public static final int COORD = 0, PROF = 1, AUTO = 2, INFRA = 3;
 
 	private static final long serialVersionUID = 1L;
 
@@ -87,10 +90,10 @@ public class Questionario implements Serializable {
 	private Curso curso;
 
 	/**
-	 * Relacionamento 1 para N entre questionario e prazoQuestionario. Mapeada em
-	 * {@link PrazoQuestionario} pela variável {@code questionario} e retorno do tipo
-	 * {@code LAZY} que indica que não será carregado automáticamente este dado
-	 * quando retornarmos a {@link Questionario} .
+	 * Relacionamento 1 para N entre questionario e prazoQuestionario. Mapeada
+	 * em {@link PrazoQuestionario} pela variável {@code questionario} e retorno
+	 * do tipo {@code LAZY} que indica que não será carregado automáticamente
+	 * este dado quando retornarmos a {@link Questionario} .
 	 * 
 	 */
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "questionario")
@@ -105,8 +108,6 @@ public class Questionario implements Serializable {
 	@Transient
 	private String status;
 
-	
-	
 	public int getIdQuestionario() {
 		return idQuestionario;
 	}
@@ -198,7 +199,7 @@ public class Questionario implements Serializable {
 	}
 
 	public List<PrazoQuestionario> getPrazos() {
-		return prazos;
+		return (new PrazoQuestionarioDAO().getPrazo(this));
 	}
 
 	public void setPrazos(List<PrazoQuestionario> prazos) {

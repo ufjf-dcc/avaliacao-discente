@@ -1,6 +1,6 @@
 <?page title="Avaliar" contentType="text/html;charset=UTF-8"?>
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
-<window title="Avaliar" border="normal" closable="true" width="80%">
+<window title="Avaliar" border="normal" closable="true" width="80%" >
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AvaliacoesDisponiveisController')"
 		form="@id('fm') @load(vm.questionarioAtual)" id="form">
@@ -14,9 +14,9 @@
 					onCreate="@command('criarCampoResposta', row=self, tipoPergunta=each.tipoPergunta)">
 					<label value="@load(each.tituloPergunta)" />
 					<div>
-						<textbox maxlength="145" cols="50" rows="5"
+						<textbox maxlength="250" cols="60" rows="6"
 						onBlur="@command('escolha', string=self.value, pergunta=each)" />
-						<label value="*145 caracteres" />
+						<label value="*250 caracteres" />
 					</div>
 					<radiogroup
 						onCheck="@command('escolha', string=self.selectedItem.value, pergunta=each)">

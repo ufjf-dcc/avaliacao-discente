@@ -13,7 +13,7 @@
 			</tabs>
 			<tabpanels>
 				<tabpanel>
-					<grid model="@load(vm.questionariosCoord)">
+					<grid model="@load(vm.prazoCoord)">
 						<columns>
 							<column label="Título" align="center" />
 							<column label="Coord. Avaliado"
@@ -25,16 +25,16 @@
 						<template name="model">
 							<row>
 								<label
-									value="@load(each.tituloQuestionario)" />
+									value="@load(vm.questionarioCoord.tituloQuestionario)" />
 								<label
 									onCreate="@command('avaliado', label=self)" />
 								<label
-									value="" />
+									value="@load(each.dataInicialFormatada)" />
 								<label
-									value="" />
+									value="@load(each.dataFinalFormatada)" />
 								<div>
 									<button label="Avaliar"
-										onClick="@command('avaliar', questionario=each)" />
+										onClick="@command('avaliar', questionario=vm.questionarioCoord)" />
 								</div>
 							</row>
 						</template>
@@ -52,10 +52,8 @@
 							<row>
 								<label
 									value="@load(each.questionario.tituloQuestionario)" />
-								<label
-									value="" />
-								<label
-									value="" />
+								<label value="" />
+								<label value="" />
 								<div>
 									<button label="Avaliar"
 										onClick="@command('avaliar', questionario=each)" />
@@ -65,7 +63,7 @@
 					</grid>
 				</tabpanel>
 				<tabpanel>
-					<grid model="@load(vm.questionariosAuto)">
+					<grid model="@load(vm.prazoAuto)">
 						<columns>
 							<column label="Título" align="center" />
 							<column label="Data Inicial" align="center" />
@@ -75,21 +73,19 @@
 						<template name="model">
 							<row>
 								<label
-									value="@load(each.tituloQuestionario)" />
-								<label
-									value="" />
-								<label
-									value="" />
+									value="@load(vm.questionarioAuto.tituloQuestionario)" />
+								<label value="@load(each.dataInicialFormatada)" />
+								<label value="@load(each.dataFinalFormatada)" />
 								<div>
 									<button label="Avaliar"
-										onClick="@command('avaliar', questionario=each)" />
+										onClick="@command('avaliar', questionario=vm.questionarioAuto)" />
 								</div>
 							</row>
 						</template>
 					</grid>
 				</tabpanel>
 				<tabpanel>
-					<grid model="@load(vm.questionariosInfra)">
+					<grid model="@load(vm.prazoInfra)">
 						<columns>
 							<column label="Título" align="center" />
 							<column label="Data Inicial" align="center" />
@@ -98,12 +94,9 @@
 						</columns>
 						<template name="model">
 							<row>
-								<label
-									value="" />
-								<label
-									value="" />
-								<label
-									value="" />
+								<label value="@load(vm.questionarioInfra.tituloQuestionario)" />
+								<label value="@load(each.dataInicialFormatada)" />
+								<label value="@load(each.dataFinalFormatada)" />
 								<div>
 									<button label="Avaliar"
 										onClick="@command('avaliar', questionario=each)" />
