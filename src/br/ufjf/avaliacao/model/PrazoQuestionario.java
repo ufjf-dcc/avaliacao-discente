@@ -101,14 +101,7 @@ public class PrazoQuestionario {
 	public void setDataFinal(Date dataFinal) {
 		this.dataFinal = dataFinal;
 	}
-
-	public String getSemestre() {
-		return semestre;
-	}
-
-	public void setSemestre(String semestre) {
-		this.semestre = semestre;
-	}
+	
 
 	public Questionario getQuestionario() {
 		return questionario;

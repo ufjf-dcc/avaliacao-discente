@@ -17,33 +17,18 @@
 						<columns>
 							<column label="Título" align="center"
 								sort="auto(tituloQuestionario)" />
-							<column label="Data Inicial" align="center"
-								sort="auto(dataInicial)" />
-							<column label="Data Final" align="center"
-								sort="auto(dataFinal)" />
 							<column label="Status" align="center"
 								sort="auto(ativo)" />
-							<column style="width:140px;" label="Opções"
-								align="center" />
+							<column label="Opções" align="center" />
 						</columns>
 						<template name="model">
 							<row>
 								<label
 									value="@load(each.tituloQuestionario)" />
-								<label
-									value="@load(each.dataInicialFormatada)" />
-								<label
-									value="@load(each.dataFinalFormatada)" />
 								<label value="@load(each.status)" />
 								<div>
-									<button image="/img/edit.png"
-										onClick="@command('editarQuest',questionario=each)" />
-									<button image="/img/delete.png"
-										onClick="@command('exclui',questionario=each)" />
-									<button label="Ativar"
-										onClick="@command('ativa',questionario=each)" />
-									<button label="Enviar"
-										onClick="@command('enviarQuest', questionario=each)" />
+									<button label="Ver"
+										onClick="@command('verQuest',questionario=each)" />
 								</div>
 							</row>
 						</template>

@@ -13,8 +13,11 @@
 				<row
 					onCreate="@command('criarCampoResposta', row=self, tipoPergunta=each.tipoPergunta)">
 					<label value="@load(each.tituloPergunta)" />
-					<textbox maxlength="200" cols="50" rows="5"
+					<div>
+						<textbox maxlength="145" cols="50" rows="5"
 						onBlur="@command('escolha', string=self.value, pergunta=each)" />
+						<label value="*145 caracteres" />
+					</div>
 					<radiogroup
 						onCheck="@command('escolha', string=self.selectedItem.value, pergunta=each)">
 						<radio label="1" value="1" />

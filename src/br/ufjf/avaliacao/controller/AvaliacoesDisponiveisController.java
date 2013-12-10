@@ -55,23 +55,6 @@ public class AvaliacoesDisponiveisController extends GenericController {
 
 	}
 
-	@Command
-	public void disponibilidade(@BindingParam("button") Button b, @BindingParam("questionario") Questionario quest) {
-		if (new Date().before(quest.getPrazos().)
-				&& new Date().after(quest.getDataInicial())
-				&& !jaAvaliouCoord) {
-			b.setLabel("Avaliar");
-			b.setDisabled(false);
-		}
-		else if (jaAvaliouCoord) {
-			b.setLabel("Já Avaliado");
-			b.setDisabled(true);
-		} else {
-			b.setLabel("Não Disponível");
-			b.setDisabled(true);
-		}
-			
-	}
 
 	@Command
 	public void avaliar(@BindingParam("questionario") Questionario questionario) {

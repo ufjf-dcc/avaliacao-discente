@@ -1,22 +1,20 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
 <window width="80%" id="win" title="Editar Questionário" border="normal"
-	closable="true" onClose="Executions.sendRedirect(null)">
+	closable="true">
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
 		form="@id('fm') @load(vm.questionarioEditar) @save(vm.questionarioEditar, before='salvarQuest')"
 		id="form">
-		<grid model="@load(vm.perguntas)">
+		<grid model="@load(vm.prazos)">
 			<auxhead style="text-align:center;">
-				<auxheader label="Título do Questionário:"
-					colspan="3">
-					<textbox
+				<auxheader colspan="2"
+					label="Título do Questionario: ">
+					<textbox width="70%"
 						value="@load(fm.tituloQuestionario) @save(fm.tituloQuestionario, before='salvarQuest')" />
 				</auxheader>
-			</auxhead>
-			<auxhead>
 				<auxheader label="Tipo: ">
 					<combobox model="@load(vm.tiposQuestionario)"
-						value="@load(fm.nomeTipoQuestionario)"
+						value="@load(fm.nomeTipoQuestionario)" width="70%" readonly="true"
 						selectedItem="@load(fm.tipoQuestionario) @save(fm.tipoQuestionario, before='salvarQuest')">
 						<template name="model">
 							<comboitem
@@ -24,17 +22,31 @@
 						</template>
 					</combobox>
 				</auxheader>
-				<auxheader label="Data Incial:">
-					<datebox
-						value="@load(fm.dataInicial) @save(fm.dataInicial, before='salvarQuest')"
-						format="dd/MM/yyyy" width="150px" constraint="no past" />
-				</auxheader>
-				<auxheader label="Data Final:">
-					<datebox
-						value="@load(fm.dataFinal) @save(fm.dataFinal, before='salvarQuest')"
-						format="dd/MM/yyyy" width="150px" constraint="no past" />
-				</auxheader>
 			</auxhead>
+			<columns>
+				<column align="center" label="Data Inicial" />
+				<column align="center" label="Data Final" />
+				<column align="center" label="Opções" />
+			</columns>
+			<template name="model">
+				<row>
+					<datebox format="dd/MM/yyyy" width="150px"
+						constraint="no past"
+						value="@load(each.dataInicial) @save(each.dataInicial, before='salvarQuest')" />
+					<datebox format="dd/MM/yyyy" width="150px"
+						constraint="no past"
+						value="@load(each.dataFinal) @save(each.dataFinal, before='salvarQuest')" />
+					<button label="Excluir" />
+				</row>
+			</template>
+		</grid>
+		<div form="@id('fx') @load(vm.prazo) @save(vm.prazo, before='adicionaPrazo')" align="center">
+			<datebox value="@bind(fx.dataInicial)" format="dd/MM/yyyy" width="150px" constraint="no past"/>
+			<datebox value="@bind(fx.dataFinal)" format="dd/MM/yyyy" width="150px" constraint="no past"/>
+			<button label="Adicionar Prazo"
+				onClick="@command('adicionaPrazo')" />
+		</div>
+		<grid model="@load(vm.perguntas)">
 			<auxhead style="text-align:center;">
 				<auxheader label="Perguntas no Questionário:"
 					colspan="3" />
@@ -46,8 +58,12 @@
 			</columns>
 			<template name="model">
 				<row align="center">
-					<label value="@load(each.tituloPergunta)" />
-					<label value="@load(each.nomeTipoPergunta)" />
+					<textbox value="@load(each.tituloPergunta) @bind(each.tituloPergunta)" />
+					<combobox value="@load(each.nomeTipoPergunta)" selectedItem="@load(each.tipoPergunta) @bind(each.tipoPergunta)" model="@load(vm.tiposPergunta)" readonly="true" width="70%">
+						<template name="model">
+							<comboitem label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Escala Numérica' : each eq 2 ? 'Escala Conceitual' : 'Sim/Não')" />
+						</template>
+					</combobox>
 					<div style="text-align:center">
 						<button image="/img/delete.png"
 							onClick="@command('excluiPergunta',pergunta=each)" />

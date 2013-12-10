@@ -29,12 +29,11 @@
 								<label
 									onCreate="@command('avaliado', label=self)" />
 								<label
-									value="@load(each.dataInicialFormatada)" />
+									value="" />
 								<label
-									value="@load(each.dataFinalFormatada)" />
+									value="" />
 								<div>
-									<button
-										onCreate="@command('disponibilidade', button=self, questionario=each)"
+									<button label="Avaliar"
 										onClick="@command('avaliar', questionario=each)" />
 								</div>
 							</row>
@@ -54,12 +53,12 @@
 								<label
 									value="@load(each.questionario.tituloQuestionario)" />
 								<label
-									value="@load(each.questionario.dataInicialFormatada)" />
+									value="" />
 								<label
-									value="@load(each.questionario.dataFinalFormatada)" />
+									value="" />
 								<div>
 									<button label="Avaliar"
-										onClick="@command('avaliar', avaliacao=each)" />
+										onClick="@command('avaliar', questionario=each)" />
 								</div>
 							</row>
 						</template>
@@ -78,9 +77,9 @@
 								<label
 									value="@load(each.tituloQuestionario)" />
 								<label
-									value="@load(each.dataInicialFormatada)" />
+									value="" />
 								<label
-									value="@load(each.dataFinalFormatada)" />
+									value="" />
 								<div>
 									<button label="Avaliar"
 										onClick="@command('avaliar', questionario=each)" />
@@ -100,11 +99,11 @@
 						<template name="model">
 							<row>
 								<label
-									value="@load(each.tituloQuestionario)" />
+									value="" />
 								<label
-									value="@load(each.dataInicialFormatada)" />
+									value="" />
 								<label
-									value="@load(each.dataFinalFormatada)" />
+									value="" />
 								<div>
 									<button label="Avaliar"
 										onClick="@command('avaliar', questionario=each)" />

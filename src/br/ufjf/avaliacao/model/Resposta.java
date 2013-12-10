@@ -42,7 +42,7 @@ public class Resposta implements Serializable {
 	 * {@code @Column(name = "resposta", length = 45, nullable = false)}
 	 * .
 	 */
-	@Column(name = "resposta", length = 45, nullable = false)
+	@Column(name = "resposta", length = 250, nullable = false)
 	private String resposta;
 	
 	/**

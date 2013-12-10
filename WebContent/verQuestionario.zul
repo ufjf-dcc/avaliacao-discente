@@ -1,0 +1,56 @@
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<zk>
+	<window title="Vizualização de Questionario" border="normal"
+		closable="true" width="80%">
+		<div apply="org.zkoss.bind.BindComposer"
+			viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
+			form="@id('fm') @load(vm.questionarioEditar) @save(vm.questionarioEditar, before='salvarQuest')"
+			id="form">
+			<grid model="@load(vm.prazos)">
+				<auxhead>
+					<auxheader label="Título: ">
+						<label value="@load(fm.tituloQuestionario)" />
+					</auxheader>
+					<auxheader label="Tipo: ">
+						<label value="@load(fm.nomeTipoQuestionario)" />
+					</auxheader>
+				</auxhead>
+				<columns>
+					<column align="center" label="Data Inicial" />
+					<column align="center" label="Data Final" />
+				</columns>
+				<template name="model">
+					<row>
+						<label value="@load(each.dataInicialFormatada)" />
+						<label value="@load(each.dataFinalFormatada)" />
+					</row>
+				</template>
+			</grid>
+			<grid model="@load(vm.perguntas)">
+				<auxhead>
+					<auxheader style="text-align:center" colspan="3"
+						label="Perguntas">
+					</auxheader>
+				</auxhead>
+				<columns>
+					<column align="center" label="Título da Pergunta" />
+					<column align="center" label="Tipo de Resposta" />
+				</columns>
+				<template name="model">
+					<row>
+						<label value="@load(each.tituloPergunta)" />
+						<label value="@load(each.nomeTipoPergunta)" />
+					</row>
+				</template>
+			</grid>
+			<div align="center">
+				<button label="Ativar" height="32"
+					onClick="@command('ativa')" />
+				<button image="/img/edit.png"
+					onClick="@command('editarQuest')" />
+				<button image="/img/delete.png"
+					onClick="@command('exclui')" />
+			</div>
+		</div>
+	</window>
+</zk>

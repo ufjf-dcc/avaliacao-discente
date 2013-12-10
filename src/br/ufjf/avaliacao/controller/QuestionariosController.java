@@ -26,7 +26,6 @@ import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
 public class QuestionariosController extends GenericController {
 
 	private QuestionarioDAO questionarioDAO = new QuestionarioDAO();
-	private List<Questionario> questionarios;
 	private List<Questionario> questionariosCoord = questionarioDAO
 			.retornaQuestinariosCursoTipo(usuario.getCurso(), 0);
 	private List<Questionario> questionariosProf = questionarioDAO
@@ -44,8 +43,10 @@ public class QuestionariosController extends GenericController {
 	private Questionario questionario = new Questionario();
 	private static Questionario questionarioEditar = new Questionario();
 	private List<Integer> tiposQuestionario = Arrays.asList(0, 1, 2, 3);
+	private List<Integer> tiposPergunta = Arrays.asList(0, 1, 2, 3);
 	private PrazoQuestionario prazo = new PrazoQuestionario();
 	private List<PrazoQuestionario> prazos = new ArrayList<PrazoQuestionario>();
+	private List<PrazoQuestionario> prazosAntigos = new ArrayList<PrazoQuestionario>();
 	private PrazoQuestionarioDAO prazoDAO = new PrazoQuestionarioDAO();
 
 	@Init
@@ -54,10 +55,14 @@ public class QuestionariosController extends GenericController {
 		if (QuestionariosController.questionarioEditar.getPerguntas().isEmpty())
 			perguntas = new ArrayList<Pergunta>();
 		else {
+			this.questionario = QuestionariosController.questionarioEditar;
 			perguntas = perguntaDAO
 					.getPerguntasQuestionario(QuestionariosController.questionarioEditar);
 			perguntasAntigas = perguntaDAO
 					.getPerguntasQuestionario(QuestionariosController.questionarioEditar);
+			prazos = prazoDAO
+					.getPrazo(QuestionariosController.questionarioEditar);
+			prazosAntigos = prazos;
 		}
 	}
 
@@ -70,11 +75,17 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	public void editarQuest(
-			@BindingParam("questionario") Questionario questionario) {
-		QuestionariosController.questionarioEditar = questionario;
+	public void editarQuest() {
 		Window window = (Window) Executions.createComponents(
 				"/editarQuestionario.zul", null, null);
+		window.doModal();
+	}
+
+	@Command
+	public void verQuest(@BindingParam("questionario") Questionario questionario) {
+		QuestionariosController.questionarioEditar = questionario;
+		Window window = (Window) Executions.createComponents(
+				"/verQuestionario.zul", null, null);
 		window.doModal();
 	}
 
@@ -86,6 +97,13 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
+	@NotifyChange({ "prazos", "prazo" })
+	public void adicionaPrazo() {
+		prazos.add(prazo);
+		prazo = new PrazoQuestionario();
+	}
+
+	@Command
 	@NotifyChange({ "perguntas", "pergunta" })
 	public void excluiPergunta(@BindingParam("pergunta") Pergunta pergunta) {
 		perguntas.remove(pergunta);
@@ -94,22 +112,35 @@ public class QuestionariosController extends GenericController {
 	@Command
 	@NotifyChange({ "questionariosCoord", "questionariosProf",
 			"questionariosAuto", "questionariosInfra", "questionario" })
-	public void exclui(@BindingParam("questionario") Questionario questionario) {
+	public void exclui() {
 		perguntas = questionario.getPerguntas();
+		prazos = prazoDAO.getPrazo(questionario);
 		perguntaDAO.excluiLista(perguntas);
-		questionarioDAO.exclui(questionario);
-		listaQuestionarios(questionario.getTipoQuestionario()).remove(
-				questionario);
+		prazoDAO.excluiLista(prazos);
+		if (questionarioDAO.exclui(questionario)) {
+			Messagebox.show("Questionário Excluído", "Concluído",
+					Messagebox.OK, Messagebox.INFORMATION,
+					new EventListener<Event>() {
+						@Override
+						public void onEvent(Event event) throws Exception {
+							Executions.sendRedirect(null);
+						}
+					});
+			listaQuestionarios(questionario.getTipoQuestionario()).remove(
+					questionario);
+		}
+
 	}
 
 	@Command
 	@NotifyChange({ "perguntas", "questionario" })
 	public void cria() {
-		prazoDAO.salvar(prazo);
-		prazos.add(prazo);
 		questionario.setCurso(usuario.getCurso());
-		questionario.setPrazos(prazos);
 		if (questionarioDAO.salvar(questionario)) {
+			prazo.setQuestionario(questionario);
+			prazoDAO.salvar(prazo);
+			prazos.add(prazo);
+			questionario.setPrazos(prazos);
 			if (isAtivo()) {
 				for (Questionario q : listaQuestionarios(questionario
 						.getTipoQuestionario())) {
@@ -126,20 +157,64 @@ public class QuestionariosController extends GenericController {
 				questionario = new Questionario();
 				pergunta = new Pergunta();
 				perguntas = new ArrayList<Pergunta>();
+				prazo = new PrazoQuestionario();
+			}
+			Messagebox.show("Questionario Criado", "Concluído", Messagebox.OK,
+					Messagebox.INFORMATION, new EventListener<Event>() {
+						@Override
+						public void onEvent(Event event) throws Exception {
+							Executions.sendRedirect(null);
+						}
+					});
+		}
+	}
+
+	@Command
+	public void salvarQuest() {
+		if (perguntas.size() > 1) {
+			if (questionarioDAO.editar(questionario)) {
+				if (prazoDAO.excluiLista(prazosAntigos)) {
+					for (PrazoQuestionario p : prazos)
+						p.setQuestionario(questionario);
+					prazoDAO.salvarLista(prazos);
+				}
+				if (perguntaDAO.excluiLista(perguntasAntigas)) {
+					for (Pergunta pergunta : perguntas) {
+						pergunta.setQuestionario(questionario);
+					}
+
+					if (perguntaDAO.salvarLista(perguntas)) {
+						Messagebox.show("Questionário Salvo", "Concluído",
+								Messagebox.OK, Messagebox.INFORMATION,
+								new EventListener<Event>() {
+									@Override
+									public void onEvent(Event event)
+											throws Exception {
+										Executions.sendRedirect(null);
+									}
+								});
+					}
+				}
 			}
 		}
-		System.out.println(prazo.getDataInicial());
-		System.out.println(prazo.getDataFinalFormatada());
-		System.out.println(prazo.getSemestre());
 	}
 
 	@Command
 	@NotifyChange({ "perguntas", "pergunta" })
 	public void top(@BindingParam("pergunta") Pergunta pergunta) {
-		int index = perguntas.indexOf(pergunta);
-		Pergunta aux = perguntas.get(0);
+		for (int index = perguntas.indexOf(pergunta); index > 0; index--) {
+			perguntas.set(index, perguntas.get(index - 1));
+		}
 		perguntas.set(0, pergunta);
-		perguntas.set(index, aux);
+	}
+
+	@Command
+	@NotifyChange({ "perguntas", "pergunta" })
+	public void bottom(@BindingParam("pergunta") Pergunta pergunta) {
+		for (int index = perguntas.indexOf(pergunta); index < perguntas.size() - 1; index++) {
+			perguntas.set(index, perguntas.get(index + 1));
+		}
+		perguntas.set(perguntas.size() - 1, pergunta);
 	}
 
 	@Command
@@ -161,49 +236,14 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	@NotifyChange({ "perguntas", "pergunta" })
-	public void bottom(@BindingParam("pergunta") Pergunta pergunta) {
-		int index = perguntas.indexOf(pergunta);
-		Pergunta aux = perguntas.get(perguntas.size() - 1);
-		perguntas.set(perguntas.size() - 1, pergunta);
-		perguntas.set(index, aux);
-	}
-
-	@Command
-	@NotifyChange({ "questionariosCoord", "questionariosProf",
-			"questionariosAuto", "questionariosInfra", "questionario" })
-	public void ativa(@BindingParam("questionario") Questionario questionario) {
+	public void ativa() {
 		for (Questionario q : listaQuestionarios(questionario
 				.getTipoQuestionario())) {
-			if (q.equals(questionario))
+			if (q.getIdQuestionario() == questionario.getIdQuestionario())
 				q.setAtivo(true);
 			else
 				q.setAtivo(false);
 			questionarioDAO.editar(q);
-		}
-	}
-
-	@Command
-	public void salvarQuest() {
-		if (perguntas.size() > 1) {
-			if (questionarioDAO.editar(questionarioEditar)) {
-				if (perguntaDAO.excluiLista(perguntasAntigas)) {
-					for (Pergunta pergunta : perguntas) {
-						pergunta.setQuestionario(questionarioEditar);
-					}
-					if (perguntaDAO.salvarLista(perguntas)) {
-						Messagebox.show("Questionário Salvo", "Concluído",
-								Messagebox.OK, Messagebox.INFORMATION,
-								new EventListener<Event>() {
-									@Override
-									public void onEvent(Event event)
-											throws Exception {
-										Executions.sendRedirect(null);
-									}
-								});
-					}
-				}
-			}
 		}
 	}
 
@@ -240,10 +280,6 @@ public class QuestionariosController extends GenericController {
 			return questionariosAuto;
 		else
 			return questionariosInfra;
-	}
-
-	public void setQuestionarios(List<Questionario> questionarios) {
-		this.questionarios = questionarios;
 	}
 
 	public Questionario getQuestionario() {
@@ -284,10 +320,6 @@ public class QuestionariosController extends GenericController {
 
 	public void setQuestionariosInfra(List<Questionario> questionariosInfra) {
 		this.questionariosInfra = questionariosInfra;
-	}
-
-	public List<Questionario> getQuestionarios() {
-		return questionarios;
 	}
 
 	public boolean isAtivo() {
@@ -345,6 +377,22 @@ public class QuestionariosController extends GenericController {
 
 	public void setPrazos(List<PrazoQuestionario> prazos) {
 		this.prazos = prazos;
+	}
+
+	public List<Integer> getTiposPergunta() {
+		return tiposPergunta;
+	}
+
+	public void setTiposPergunta(List<Integer> tiposPergunta) {
+		this.tiposPergunta = tiposPergunta;
+	}
+
+	public List<PrazoQuestionario> getPrazosAntigos() {
+		return prazosAntigos;
+	}
+
+	public void setPrazosAntigos(List<PrazoQuestionario> prazosAntigos) {
+		this.prazosAntigos = prazosAntigos;
 	}
 
 }
