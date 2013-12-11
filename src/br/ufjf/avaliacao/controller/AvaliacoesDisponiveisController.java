@@ -12,6 +12,7 @@ import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.Clients;
+import org.zkoss.zul.Button;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
@@ -42,10 +43,11 @@ public class AvaliacoesDisponiveisController extends GenericController {
 	private Questionario questionarioAuto = questionarioDAO
 			.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario);
 	private List<PrazoQuestionario> prazoAuto = new PrazoQuestionarioDAO()
-	.questionarioDisponivel(questionarioAuto);
-	private Questionario questionarioInfra = questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario);
+			.questionarioDisponivel(questionarioAuto);
+	private Questionario questionarioInfra = questionarioDAO
+			.retornaQuestinarioParaUsuarioInfra(usuario);
 	private List<PrazoQuestionario> prazoInfra = new PrazoQuestionarioDAO()
-	.questionarioDisponivel(questionarioInfra);
+			.questionarioDisponivel(questionarioInfra);
 	private static Questionario questionarioAtual = new Questionario();
 	private Resposta resposta = new Resposta();
 	private List<Resposta> respostas = new ArrayList<Resposta>();
@@ -103,23 +105,33 @@ public class AvaliacoesDisponiveisController extends GenericController {
 	}
 
 	@Command
+	public void avaliacaoDisponivel(@BindingParam("button") Button b,
+			@BindingParam("questionario") Questionario q) {
+		if (new AvaliacaoDAO().jaAvaliouOutros(usuario, q)) {
+			b.setDisabled(true);
+			b.setLabel("Já Avaliou");
+		} else {
+			b.setDisabled(false);
+			b.setLabel("Avaliar");
+		}
+	}
+
+	@Command
 	public void terminarAvaliacao() {
 		Clients.showBusy("Salvando avaliação..");
 		if (respostas.size() != questionarioAtual.getPerguntas().size()) {
+			Clients.clearBusy();
 			Messagebox.show("Responda todas as perguntas antes de finalizar!");
 		} else {
 			Avaliacao avaliacao = new Avaliacao();
 			avaliacao.setAvaliando(usuario);
-			avaliacao.setQuestionario(questionarioAtual);
 			avaliacao.setAvaliado(coordAvaliado);
+			avaliacao.setPrazoQuestionario(prazoCoord.get(0));
 			new AvaliacaoDAO().salvar(avaliacao);
-
 			for (Resposta r : respostas) {
 				r.setAvaliacao(avaliacao);
 			}
-
 			new RespostaDAO().salvarLista(respostas);
-
 			Clients.clearBusy();
 			Messagebox.show("Avaliação Salva com Sucesso", "Concluído",
 					Messagebox.OK, Messagebox.INFORMATION,

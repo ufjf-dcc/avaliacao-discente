@@ -68,15 +68,6 @@ public class Questionario implements Serializable {
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "questionario")
 	private List<Pergunta> perguntas = new ArrayList<Pergunta>();
 
-	/**
-	 * Relacionamento 1 para N entre questionário e avaliação. Mapeada em
-	 * {@link Avaliação} pela variável {@code questionario} e retorno do tipo
-	 * {@code LAZY} que indica que não será carregado automáticamente este dado
-	 * quando retornarmos o {@link Questionario} .
-	 * 
-	 */
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "questionario")
-	private List<Avaliacao> avaliacoes = new ArrayList<Avaliacao>();
 
 	/**
 	 * Relacionamento N para 1 entre questionario e curso. Mapeando
@@ -138,14 +129,6 @@ public class Questionario implements Serializable {
 
 	public void setPerguntas(List<Pergunta> perguntas) {
 		this.perguntas = perguntas;
-	}
-
-	public List<Avaliacao> getAvaliacoes() {
-		return avaliacoes;
-	}
-
-	public void setAvaliacoes(List<Avaliacao> avaliacoes) {
-		this.avaliacoes = avaliacoes;
 	}
 
 	public Integer getTipoQuestionario() {

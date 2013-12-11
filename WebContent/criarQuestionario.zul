@@ -1,5 +1,5 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
-<window id="win" title="Criar Questionário" border="normal" closable="true" onClose="Executions.sendRedirect(null)">
+<window style="text-align:center;" id="win" title="Criar Questionário" border="normal" closable="true" onClose="Executions.sendRedirect(null)">
 	<div style="width:800px;" apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
 		form="@id('fm') @load(vm.questionario) @save(vm.questionario, before='cria')"

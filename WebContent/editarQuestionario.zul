@@ -1,5 +1,5 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
-<window width="80%" id="win" title="Editar Questionário" border="normal"
+<window style="text-align:center;" width="80%" id="win" title="Editar Questionário" border="normal"
 	closable="true">
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"

@@ -1,13 +1,12 @@
-<?page title="Avaliar" contentType="text/html;charset=UTF-8"?>
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
-<window title="Avaliar" border="normal" closable="true" width="80%" >
+<window style="text-align:center;" title="Avaliar" border="normal" closable="true" width="80%" >
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AvaliacoesDisponiveisController')"
 		form="@id('fm') @load(vm.questionarioAtual)" id="form">
 		<grid model="@load(fm.perguntas)">
 			<columns>
 				<column align="center" />
-				<column />
+				<column align="left"/>
 			</columns>
 			<template name="model">
 				<row

@@ -1,6 +1,6 @@
 <?page title="Cadastro de Usuário" contentType="text/html;charset=UTF-8"?>
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
-<window id="win" title="Cadastro de Usuário" border="normal"
+<window style="text-align:center;" id="win" title="Cadastro de Usuário" border="normal"
 	closable="true" onClose="Executions.sendRedirect(null)">
 	<div style="width:350px;" apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.UsuariosController')"

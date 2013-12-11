@@ -52,11 +52,32 @@ public class LoginController {
 											.getAttribute("usuario");
 									Executions.sendRedirect("/home.zul");
 								} else {
+									Clients.clearBusy();
 									Messagebox.show(
 											"Usuário ou Senha inválidos!",
 											"Error", Messagebox.OK,
-											Messagebox.ERROR);
-								}			
+											Messagebox.ERROR,
+											new EventListener<Event>() {
+												@Override
+												public void onEvent(Event event)
+														throws Exception {
+													Executions
+															.sendRedirect(null);
+												}
+											});
+								}
+							} else {
+								Clients.clearBusy();
+								Messagebox.show("Preencha todos os campos!",
+										"Error", Messagebox.OK,
+										Messagebox.ERROR,
+										new EventListener<Event>() {
+											@Override
+											public void onEvent(Event event)
+													throws Exception {
+												Executions.sendRedirect(null);
+											}
+										});
 							}
 						}
 					});

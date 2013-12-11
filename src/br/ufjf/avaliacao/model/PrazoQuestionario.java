@@ -1,6 +1,9 @@
 package br.ufjf.avaliacao.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -23,8 +27,9 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "PrazoQuestionario")
-public class PrazoQuestionario {
+public class PrazoQuestionario implements Serializable{
 	
+	private static final long serialVersionUID = 1L;
 	
 	/**
 	 * Campo com ID do prazo do questionario. Relaciona com a coluna
@@ -59,6 +64,15 @@ public class PrazoQuestionario {
 	@Column(name = "dataFinal", nullable = false)
 	private Date dataFinal;
 	
+	/**
+	 * Relacionamento 1 para N entre prazoQuestionário e avaliação. Mapeada em
+	 * {@link Avaliação} pela variável {@code prazoquestionario} e retorno do tipo
+	 * {@code LAZY} que indica que não será carregado automáticamente este dado
+	 * quando retornarmos o {@link PrazoQuestionario} .
+	 * 
+	 */
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "prazoQuestionario" )
+	private List<Avaliacao> avaliacoes = new ArrayList<Avaliacao>();
 	
 	/**
 	 * Relacionamento N para 1 entre prazoQuestionario e questionario. Mapeando
@@ -130,6 +144,13 @@ public class PrazoQuestionario {
 	public void setDataInicialFormatada(String dataInicialFormatada) {
 		this.dataInicialFormatada = dataInicialFormatada;
 	}
-	
 
+	public List<Avaliacao> getAvaliacoes() {
+		return avaliacoes;
+	}
+
+	public void setAvaliacoes(List<Avaliacao> avaliacoes) {
+		this.avaliacoes = avaliacoes;
+	}
+	
 }

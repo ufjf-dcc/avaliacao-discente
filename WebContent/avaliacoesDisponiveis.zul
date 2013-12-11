@@ -33,7 +33,8 @@
 								<label
 									value="@load(each.dataFinalFormatada)" />
 								<div>
-									<button label="Avaliar"
+									<button
+										onCreate="@command('avaliacaoDisponivel', button=self, questionario=vm.questionarioCoord)"
 										onClick="@command('avaliar', questionario=vm.questionarioCoord)" />
 								</div>
 							</row>
@@ -74,8 +75,10 @@
 							<row>
 								<label
 									value="@load(vm.questionarioAuto.tituloQuestionario)" />
-								<label value="@load(each.dataInicialFormatada)" />
-								<label value="@load(each.dataFinalFormatada)" />
+								<label
+									value="@load(each.dataInicialFormatada)" />
+								<label
+									value="@load(each.dataFinalFormatada)" />
 								<div>
 									<button label="Avaliar"
 										onClick="@command('avaliar', questionario=vm.questionarioAuto)" />
@@ -94,9 +97,12 @@
 						</columns>
 						<template name="model">
 							<row>
-								<label value="@load(vm.questionarioInfra.tituloQuestionario)" />
-								<label value="@load(each.dataInicialFormatada)" />
-								<label value="@load(each.dataFinalFormatada)" />
+								<label
+									value="@load(vm.questionarioInfra.tituloQuestionario)" />
+								<label
+									value="@load(each.dataInicialFormatada)" />
+								<label
+									value="@load(each.dataFinalFormatada)" />
 								<div>
 									<button label="Avaliar"
 										onClick="@command('avaliar', questionario=each)" />

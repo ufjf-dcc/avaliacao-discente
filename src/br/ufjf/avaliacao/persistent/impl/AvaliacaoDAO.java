@@ -1,6 +1,6 @@
 package br.ufjf.avaliacao.persistent.impl;
 
-import java.util.List;
+import java.util.Date;
 
 import org.hibernate.Query;
 
@@ -12,18 +12,19 @@ import br.ufjf.avaliacao.persistent.IAvalicaoDAO;
 
 public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 
-	@SuppressWarnings("unchecked")
-	public boolean jaAvaliou(Usuario user, Questionario quest) {
+	//Método para verificar se existe uma avaliação de coordenador, infraestrutura ou autoavaliação
+	public boolean jaAvaliouOutros(Usuario aluno, Questionario quest) {
 		try {
 			Query query = getSession()
 					.createQuery(
-							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.questionario AS q WHERE q =:questionario AND a.avaliando =:user");
+							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.prazoQuestionario AS p WHERE p.questionario = :questionario AND a.avaliando = :aluno AND :dataAtual BETWEEN p.dataInicial AND p.dataFinal");
 			query.setParameter("questionario", quest);
-			query.setParameter("user", user);
+			query.setParameter("aluno", aluno);
+			query.setParameter("dataAtual", new Date());
 
-			List<Avaliacao> avaliacao = (List<Avaliacao>) query.list();
+			Avaliacao avaliacao = (Avaliacao) query.uniqueResult();
 
-			if (!avaliacao.isEmpty())
+			if (avaliacao!=null)
 				return true;
 		} catch (Exception e) {
 			e.printStackTrace();

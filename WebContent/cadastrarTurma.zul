@@ -1,7 +1,6 @@
 <?page title="new page title" contentType="text/html;charset=UTF-8"?>
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
-
-<window id="win" title="Cadastro de Turma" border="normal"
+<window style="text-align:center;" id="win" title="Cadastro de Turma" border="normal"
 	closable="true" onClose="Executions.sendRedirect(null)">
 	<div style="width:400px;" apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.TurmasController')"
