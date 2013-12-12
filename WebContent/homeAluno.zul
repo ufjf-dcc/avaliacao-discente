@@ -1,0 +1,34 @@
+<?page title="Avaliações Disponíveis" contentType="text/html;charset=UTF-8"?>
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<zk>
+	<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AvaliacoesDisponiveisController')">
+		<include src="@load(vm.menu)" />
+		<grid model="@load(vm.turmasDoUsuario)">
+			<columns>
+				<column label="Disciplina" align="center" />
+				<column label="Data Inicial" align="center" />
+				<column label="Data Final" align="center" />
+				<column label="Opções" align="center" />
+			</columns>
+			<template name="model">
+				<row
+					onCreate="@command('questDisponivel', questionario=vm.questionarioProf, row=self)">
+					<label
+						value="@load(each.disciplina.codNomeDisciplina)" />
+					<label value="@load(vm.prazo.dataInicialFormatada)" />
+					<label value="@load(vm.prazo.dataFinalFormatada)" />
+					<div
+						onCreate="@command('jaAvaliou', div=self, turma=each)">
+						<label
+							style="font-size:16px;font-style:italic;font-weight:bold;"
+							value="Você já avaliou!" />
+						<button label="Avaliar"
+							onClick="@command('avaliar', questionario=vm.questionarioProf, turma=each)" />
+					</div>
+				</row>
+			</template>
+		</grid>
+
+	</div>
+</zk>

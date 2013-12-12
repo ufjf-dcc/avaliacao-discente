@@ -33,7 +33,7 @@ public class DisciplinaDAO extends GenericoDAO implements IDisciplinaDAO{
 	public Disciplina retornaDisciplinaNome(String nomeDisciplina) {
 		try {
 			Query query = 
-				getSession().createQuery("SELECT disciplina FROM Disciplina AS disciplina WHERE u.nomeDisciplina = :nomeDisciplina");
+				getSession().createQuery("SELECT disciplina FROM Disciplina AS disciplina WHERE disciplina.nomeDisciplina = :nomeDisciplina");
 			query.setParameter("nomeDisciplina", nomeDisciplina);
 			
 			Disciplina disciplina = (Disciplina) query.uniqueResult();

@@ -49,7 +49,7 @@ public class Avaliacao implements Serializable{
 	 * quando retornarmos a {@link Avaliacao}.
 	 * 
 	 */
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "idAvaliando", nullable = false)
 	private Usuario avaliando;
 	

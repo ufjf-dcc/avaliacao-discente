@@ -74,7 +74,7 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 		}
 		return null;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public List<Questionario> retornaQuestinariosParaUsuario(Usuario usuario) {
 		try {
@@ -95,7 +95,7 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 		}
 		return null;
 	}
-	
+
 	public Questionario retornaQuestinarioParaUsuarioCoord(Usuario usuario) {
 		try {
 			Query query = getSession()
@@ -116,8 +116,9 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 		}
 		return null;
 	}
-	
-	public Questionario retornaQuestinarioParaUsuarioAutoAvaliacao(Usuario usuario) {
+
+	public Questionario retornaQuestinarioParaUsuarioAutoAvaliacao(
+			Usuario usuario) {
 		try {
 			Query query = getSession()
 					.createQuery(
@@ -137,7 +138,7 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 		}
 		return null;
 	}
-	
+
 	public Questionario retornaQuestinarioParaUsuarioInfra(Usuario usuario) {
 		try {
 			Query query = getSession()
@@ -158,5 +159,28 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 		}
 		return null;
 	}
-	
+
+	public Questionario retornaQuestionarioProf(Usuario usuario) {
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT q FROM Questionario AS q WHERE q.curso = :curso AND q.ativo = :ativo AND q.tipoQuestionario = :tipoQuestionario");
+			query.setParameter("curso", usuario.getCurso());
+			query.setParameter("ativo", true);
+			query.setParameter("tipoQuestionario", 1);
+			
+			Questionario q = (Questionario) query.uniqueResult();
+			
+			getSession().close();
+			
+			if(q!=null) {
+				return q;
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 }

@@ -1,29 +1,35 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
-<window style="text-align:center;" title="Avaliar" border="normal" closable="true" width="80%" >
+<window style="text-align:center;" title="Avaliar" border="normal"
+	closable="true" width="80%">
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AvaliacoesDisponiveisController')"
 		form="@id('fm') @load(vm.questionarioAtual)" id="form">
 		<grid model="@load(fm.perguntas)">
 			<columns>
 				<column align="center" />
-				<column align="left"/>
+				<column align="left" />
 			</columns>
 			<template name="model">
 				<row
 					onCreate="@command('criarCampoResposta', row=self, tipoPergunta=each.tipoPergunta)">
 					<label value="@load(each.tituloPergunta)" />
 					<div>
-						<textbox maxlength="250" cols="60" rows="6"
-						onBlur="@command('escolha', string=self.value, pergunta=each)" />
+						<textbox maxlength="250" cols="60" rows="7"
+							onBlur="@command('escolha', string=self.value, pergunta=each)" />
 						<label value="*250 caracteres" />
 					</div>
 					<radiogroup
 						onCheck="@command('escolha', string=self.selectedItem.value, pergunta=each)">
-						<radio label="1" value="1" />
-						<radio label="2" value="2" />
-						<radio label="3" value="3" />
-						<radio label="4" value="4" />
-						<radio label="5" value="5" />
+						<radio style="font-size:16px;" label="1 "
+							value="1" />
+						<radio style="font-size:16px;" label="2 "
+							value="2" />
+						<radio style="font-size:16px;" label="3 "
+							value="3" />
+						<radio style="font-size:16px;" label="4 "
+							value="4" />
+						<radio style="font-size:16px;" label="5"
+							value="5" />
 					</radiogroup>
 					<radiogroup orient="vertical"
 						onCheck="@command('escolha', string=self.selectedItem.value, pergunta=each)">
@@ -35,7 +41,7 @@
 					</radiogroup>
 					<radiogroup
 						onCheck="@command('escolha', string=self.selectedItem.value, pergunta=each)">
-						<radio label="SIM" value="SIM" />
+						<radio label="SIM " value="SIM" /><separator />
 						<radio label="NÃO" value="NAO" />
 					</radiogroup>
 				</row>
@@ -43,7 +49,7 @@
 		</grid>
 		<div align="center">
 			<button label="Terminar e Enviar Avaliação"
-				onClick="@command('terminarAvaliacao')" />
+				onClick="@command('terminarAvaliacaoProfessor')" />
 		</div>
 	</div>
 </window>

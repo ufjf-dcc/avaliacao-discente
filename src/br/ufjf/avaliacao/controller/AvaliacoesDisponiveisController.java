@@ -12,7 +12,7 @@ import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.Clients;
-import org.zkoss.zul.Button;
+import org.zkoss.zul.Div;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
@@ -23,32 +23,35 @@ import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
 import br.ufjf.avaliacao.model.Resposta;
+import br.ufjf.avaliacao.model.Turma;
 import br.ufjf.avaliacao.model.Usuario;
 import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
 import br.ufjf.avaliacao.persistent.impl.PrazoQuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.RespostaDAO;
+import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
 
 public class AvaliacoesDisponiveisController extends GenericController {
 
 	private QuestionarioDAO questionarioDAO = new QuestionarioDAO();
 	private UsuarioDAO usuarioDAO = new UsuarioDAO();
+	private Questionario questionarioProf = questionarioDAO
+			.retornaQuestionarioProf(usuario);
+	private List<Turma> turmasDoUsuario = new TurmaDAO()
+			.getTurmasUsuario(usuario);
+	private PrazoQuestionario prazo = new PrazoQuestionarioDAO()
+			.prazoQuestionario(questionarioProf);
+	private static Questionario questionarioAtual = new Questionario();
+	private static Turma turmaAtual = new Turma();
+
 	private Questionario questionarioCoord = questionarioDAO
 			.retornaQuestinarioParaUsuarioCoord(usuario);
-	private List<PrazoQuestionario> prazoCoord = new PrazoQuestionarioDAO()
-			.questionarioDisponivel(questionarioCoord);
-	private List<Questionario> questionariosProfs = questionarioDAO
-			.retornaQuestinariosParaUsuario(usuario);
 	private Questionario questionarioAuto = questionarioDAO
 			.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario);
-	private List<PrazoQuestionario> prazoAuto = new PrazoQuestionarioDAO()
-			.questionarioDisponivel(questionarioAuto);
 	private Questionario questionarioInfra = questionarioDAO
 			.retornaQuestinarioParaUsuarioInfra(usuario);
-	private List<PrazoQuestionario> prazoInfra = new PrazoQuestionarioDAO()
-			.questionarioDisponivel(questionarioInfra);
-	private static Questionario questionarioAtual = new Questionario();
+
 	private Resposta resposta = new Resposta();
 	private List<Resposta> respostas = new ArrayList<Resposta>();
 	private Usuario coordAvaliado = usuarioDAO.retornaCoordAvaliado(usuario);
@@ -60,8 +63,11 @@ public class AvaliacoesDisponiveisController extends GenericController {
 	}
 
 	@Command
-	public void avaliar(@BindingParam("questionario") Questionario questionario) {
+	public void avaliar(
+			@BindingParam("questionario") Questionario questionario,
+			@BindingParam("turma") Turma turma) {
 		AvaliacoesDisponiveisController.questionarioAtual = questionario;
+		AvaliacoesDisponiveisController.turmaAtual = turma;
 		Window window = (Window) Executions.createComponents("/avaliar.zul",
 				null, null);
 		window.doModal();
@@ -105,19 +111,29 @@ public class AvaliacoesDisponiveisController extends GenericController {
 	}
 
 	@Command
-	public void avaliacaoDisponivel(@BindingParam("button") Button b,
-			@BindingParam("questionario") Questionario q) {
-		if (new AvaliacaoDAO().jaAvaliouOutros(usuario, q)) {
-			b.setDisabled(true);
-			b.setLabel("Já Avaliou");
-		} else {
-			b.setDisabled(false);
-			b.setLabel("Avaliar");
+	public void jaAvaliou(@BindingParam("div") Div d,
+			@BindingParam("turma") Turma t) {
+		System.out.println(new AvaliacaoDAO().jaAvaliou(usuario, t));
+		if(!new AvaliacaoDAO().jaAvaliou(usuario, t)){
+			d.getFirstChild().setVisible(false);
+			d.getLastChild().setVisible(true);
+		}
+		else {
+			d.getFirstChild().setVisible(true);
+			d.getLastChild().setVisible(false);
 		}
 	}
 
 	@Command
-	public void terminarAvaliacao() {
+	public void questDisponivel(@BindingParam("questionario") Questionario q,
+			@BindingParam("row") Row r) {
+		if (!new PrazoQuestionarioDAO().questionarioEstaDisponivel(q)) {
+			r.detach();
+		}
+	}
+
+	@Command
+	public void terminarAvaliacaoProfessor() {
 		Clients.showBusy("Salvando avaliação..");
 		if (respostas.size() != questionarioAtual.getPerguntas().size()) {
 			Clients.clearBusy();
@@ -125,8 +141,10 @@ public class AvaliacoesDisponiveisController extends GenericController {
 		} else {
 			Avaliacao avaliacao = new Avaliacao();
 			avaliacao.setAvaliando(usuario);
-			avaliacao.setAvaliado(coordAvaliado);
-			avaliacao.setPrazoQuestionario(prazoCoord.get(0));
+			avaliacao.setAvaliado(usuarioDAO
+					.retornaProfessoresTurma(turmaAtual).get(0));
+			avaliacao.setPrazoQuestionario(prazo);
+			avaliacao.setTurma(turmaAtual);
 			new AvaliacaoDAO().salvar(avaliacao);
 			for (Resposta r : respostas) {
 				r.setAvaliacao(avaliacao);
@@ -168,14 +186,6 @@ public class AvaliacoesDisponiveisController extends GenericController {
 				+ coordAvaliado.getCurso().getNomeCurso());
 	}
 
-	public List<Questionario> getQuestionariosProfs() {
-		return questionariosProfs;
-	}
-
-	public void setQuestionariosProfs(List<Questionario> questionariosProfs) {
-		this.questionariosProfs = questionariosProfs;
-	}
-
 	public Questionario getQuestionarioAtual() {
 		return questionarioAtual;
 	}
@@ -208,30 +218,6 @@ public class AvaliacoesDisponiveisController extends GenericController {
 		this.questionarioCoord = questionarioCoord;
 	}
 
-	public List<PrazoQuestionario> getPrazoCoord() {
-		return prazoCoord;
-	}
-
-	public void setPrazoCoord(List<PrazoQuestionario> prazoCoord) {
-		this.prazoCoord = prazoCoord;
-	}
-
-	public List<PrazoQuestionario> getPrazoAuto() {
-		return prazoAuto;
-	}
-
-	public void setPrazoAuto(List<PrazoQuestionario> prazoAuto) {
-		this.prazoAuto = prazoAuto;
-	}
-
-	public List<PrazoQuestionario> getPrazoInfra() {
-		return prazoInfra;
-	}
-
-	public void setPrazoInfra(List<PrazoQuestionario> prazoInfra) {
-		this.prazoInfra = prazoInfra;
-	}
-
 	public Questionario getQuestionarioAuto() {
 		return questionarioAuto;
 	}
@@ -246,6 +232,38 @@ public class AvaliacoesDisponiveisController extends GenericController {
 
 	public void setQuestionarioInfra(Questionario questionarioInfra) {
 		this.questionarioInfra = questionarioInfra;
+	}
+
+	public List<Turma> getTurmasDoUsuario() {
+		return turmasDoUsuario;
+	}
+
+	public void setTurmasDoUsuario(List<Turma> turmasDoUsuario) {
+		this.turmasDoUsuario = turmasDoUsuario;
+	}
+
+	public Questionario getQuestionarioProf() {
+		return questionarioProf;
+	}
+
+	public void setQuestionarioProf(Questionario questionarioProf) {
+		this.questionarioProf = questionarioProf;
+	}
+
+	public Turma getTurmaAtual() {
+		return turmaAtual;
+	}
+
+	public void setTurmaAtual(Turma turmaAtual) {
+		AvaliacoesDisponiveisController.turmaAtual = turmaAtual;
+	}
+
+	public PrazoQuestionario getPrazo() {
+		return prazo;
+	}
+
+	public void setPrazo(PrazoQuestionario prazo) {
+		this.prazo = prazo;
 	}
 
 }

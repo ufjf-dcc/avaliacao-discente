@@ -50,7 +50,23 @@ public class LoginController {
 										usuario.getSenha())) {
 									usuario = (Usuario) session
 											.getAttribute("usuario");
-									Executions.sendRedirect("/home.zul");
+									switch (usuario.getTipoUsuario()) {
+									case 0:
+										Executions.sendRedirect("/home.zul");
+										break;
+									case 1:
+										Executions.sendRedirect("/home.zul");
+										break;
+									case 2:
+										Executions.sendRedirect("/homeAluno.zul");
+										break;
+									case 3:
+										Executions.sendRedirect("/home.zul");
+										break;
+									default:
+										;
+										break;
+									}
 								} else {
 									Clients.clearBusy();
 									Messagebox.show(

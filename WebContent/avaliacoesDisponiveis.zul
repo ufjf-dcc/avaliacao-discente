@@ -57,7 +57,7 @@
 								<label value="" />
 								<div>
 									<button label="Avaliar"
-										onClick="@command('avaliar', questionario=each)" />
+										onClick="@command('avaliar')" />
 								</div>
 							</row>
 						</template>
@@ -105,7 +105,7 @@
 									value="@load(each.dataFinalFormatada)" />
 								<div>
 									<button label="Avaliar"
-										onClick="@command('avaliar', questionario=each)" />
+										onClick="@command('avaliar', questionario=vm.questionarioInfra)" />
 								</div>
 							</row>
 						</template>
