@@ -1,0 +1,36 @@
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<zk>
+	<window style="text-align:center;" width="350px"
+		title="Adicionar Prazo de Questionário" border="normal"
+		closable="true">
+		<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
+		form="@id('fm') @load(vm.questionario) @save(vm.questionario, before='cria')"
+		id="form">
+			<grid>
+				<columns>
+					<column />
+					<column />
+				</columns>
+				<rows>
+					<row>
+						<label value="Data Inicial: " />
+						<datebox width="100%"
+							 format="dd/MM/yyyy"
+							constraint="no past" />
+					</row>
+					<row>
+						<label value="Data Final: " />
+						<datebox width="100%"
+							 format="dd/MM/yyyy"
+							constraint="no past" />
+					</row>
+				</rows>
+			</grid>
+		</div>
+		<div align="center" >
+			<button label="Adicionar Prazo de Questionário"
+				onClick="@command('addPrazo')" />
+		</div>
+	</window>
+</zk>

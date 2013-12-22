@@ -97,10 +97,11 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	@NotifyChange({ "prazos", "prazo" })
-	public void adicionaPrazo() {
-		prazos.add(prazo);
-		prazo = new PrazoQuestionario();
+	public void adcPrazo(@BindingParam("questionario")Questionario questionario) {
+		QuestionariosController.questionarioEditar = questionario;
+		Window window = (Window) Executions.createComponents(
+				"/add-prazo.zul", null, null);
+		window.doModal();
 	}
 
 	@Command
