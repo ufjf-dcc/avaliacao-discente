@@ -44,8 +44,6 @@
 				</template>
 			</grid>
 			<div align="center">
-				<button label="Ativar" height="32"
-					onClick="@command('ativa')" />
 				<button image="/img/edit.png"
 					onClick="@command('editarQuest')" />
 				<button image="/img/delete.png"

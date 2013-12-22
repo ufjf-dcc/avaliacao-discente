@@ -97,10 +97,10 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	public void adcPrazo(@BindingParam("questionario")Questionario questionario) {
+	public void adcPrazo(@BindingParam("questionario") Questionario questionario) {
 		QuestionariosController.questionarioEditar = questionario;
-		Window window = (Window) Executions.createComponents(
-				"/add-prazo.zul", null, null);
+		Window window = (Window) Executions.createComponents("/add-prazo.zul",
+				null, null);
 		window.doModal();
 	}
 
@@ -237,10 +237,11 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	public void ativa() {
-		for (Questionario q : listaQuestionarios(questionario
-				.getTipoQuestionario())) {
-			if (q.getIdQuestionario() == questionario.getIdQuestionario())
+	@NotifyChange({ "questionariosCoord", "questionariosProf",
+			"questionariosAuto", "questionariosInfra", "questionario" })
+	public void ativa(@BindingParam("questionario") Questionario quest) {
+		for (Questionario q : listaQuestionarios(quest.getTipoQuestionario())) {
+			if (q.getIdQuestionario() == quest.getIdQuestionario())
 				q.setAtivo(true);
 			else
 				q.setAtivo(false);
