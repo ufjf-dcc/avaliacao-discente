@@ -2,7 +2,7 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
 <zk>
 	<div apply="org.zkoss.bind.BindComposer"
-		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AvaliacoesDisponiveisController')">
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.HomeAlunoController')">
 		<include src="@load(vm.menu)" />
 		<grid model="@load(vm.turmasDoUsuario)">
 			<columns>

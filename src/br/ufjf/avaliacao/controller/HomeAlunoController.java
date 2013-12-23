@@ -32,7 +32,7 @@ import br.ufjf.avaliacao.persistent.impl.RespostaDAO;
 import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
 
-public class AvaliacoesDisponiveisController extends GenericController {
+public class HomeAlunoController extends GenericController {
 
 	private QuestionarioDAO questionarioDAO = new QuestionarioDAO();
 	private UsuarioDAO usuarioDAO = new UsuarioDAO();
@@ -66,8 +66,8 @@ public class AvaliacoesDisponiveisController extends GenericController {
 	public void avaliar(
 			@BindingParam("questionario") Questionario questionario,
 			@BindingParam("turma") Turma turma) {
-		AvaliacoesDisponiveisController.questionarioAtual = questionario;
-		AvaliacoesDisponiveisController.turmaAtual = turma;
+		HomeAlunoController.questionarioAtual = questionario;
+		HomeAlunoController.turmaAtual = turma;
 		Window window = (Window) Executions.createComponents("/avaliar.zul",
 				null, null);
 		window.doModal();
@@ -113,7 +113,6 @@ public class AvaliacoesDisponiveisController extends GenericController {
 	@Command
 	public void jaAvaliou(@BindingParam("div") Div d,
 			@BindingParam("turma") Turma t) {
-		System.out.println(new AvaliacaoDAO().jaAvaliou(usuario, t));
 		if(!new AvaliacaoDAO().jaAvaliou(usuario, t)){
 			d.getFirstChild().setVisible(false);
 			d.getLastChild().setVisible(true);
@@ -191,7 +190,7 @@ public class AvaliacoesDisponiveisController extends GenericController {
 	}
 
 	public void setQuestionarioAtual(Questionario questionarioAtual) {
-		AvaliacoesDisponiveisController.questionarioAtual = questionarioAtual;
+		HomeAlunoController.questionarioAtual = questionarioAtual;
 	}
 
 	public Resposta getResposta() {
@@ -255,7 +254,7 @@ public class AvaliacoesDisponiveisController extends GenericController {
 	}
 
 	public void setTurmaAtual(Turma turmaAtual) {
-		AvaliacoesDisponiveisController.turmaAtual = turmaAtual;
+		HomeAlunoController.turmaAtual = turmaAtual;
 	}
 
 	public PrazoQuestionario getPrazo() {

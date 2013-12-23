@@ -61,7 +61,7 @@ public class QuestionariosController extends GenericController {
 			perguntasAntigas = perguntaDAO
 					.getPerguntasQuestionario(QuestionariosController.questionarioEditar);
 			prazos = prazoDAO
-					.getPrazo(QuestionariosController.questionarioEditar);
+					.getPrazos(QuestionariosController.questionarioEditar);
 			prazosAntigos = prazos;
 		}
 	}
@@ -115,7 +115,7 @@ public class QuestionariosController extends GenericController {
 			"questionariosAuto", "questionariosInfra", "questionario" })
 	public void exclui() {
 		perguntas = questionario.getPerguntas();
-		prazos = prazoDAO.getPrazo(questionario);
+		prazos = prazoDAO.getPrazos(questionario);
 		perguntaDAO.excluiLista(perguntas);
 		prazoDAO.excluiLista(prazos);
 		if (questionarioDAO.exclui(questionario)) {
@@ -240,12 +240,17 @@ public class QuestionariosController extends GenericController {
 	@NotifyChange({ "questionariosCoord", "questionariosProf",
 			"questionariosAuto", "questionariosInfra", "questionario" })
 	public void ativa(@BindingParam("questionario") Questionario quest) {
-		for (Questionario q : listaQuestionarios(quest.getTipoQuestionario())) {
-			if (q.getIdQuestionario() == quest.getIdQuestionario())
-				q.setAtivo(true);
-			else
-				q.setAtivo(false);
-			questionarioDAO.editar(q);
+		if(!quest.getPrazos().isEmpty()) {
+			for (Questionario q : listaQuestionarios(quest.getTipoQuestionario())) {
+				if (q.getIdQuestionario() == quest.getIdQuestionario())
+					q.setAtivo(true);
+				else
+					q.setAtivo(false);
+				questionarioDAO.editar(q);
+			}
+		}
+		else {
+			Messagebox.show("Adicione um prazo ao questionário para poder ativá-lo");
 		}
 	}
 
