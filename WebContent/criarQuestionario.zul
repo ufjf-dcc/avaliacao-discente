@@ -8,13 +8,14 @@
 		form="@id('fm') @load(vm.questionario) @save(vm.questionario, before='cria')"
 		id="form">
 		<grid model="@load(vm.perguntas)">
-			<auxhead style="text-align:center" >
-				<auxheader label="Título:"
-					colspan="2">
-					<textbox width="90%" value="@bind(fm.tituloQuestionario)" />
+			<auxhead style="text-align:center">
+				<auxheader label="Título:" colspan="2">
+					<textbox width="90%"
+						value="@bind(fm.tituloQuestionario)" />
 				</auxheader>
 				<auxheader label="Tipo:">
-					<combobox width="80%" model="@load(vm.tiposQuestionario)"
+					<combobox width="80%"
+						model="@load(vm.tiposQuestionario)"
 						selectedItem="@bind(fm.tipoQuestionario)" readonly="true">
 						<template name="model">
 							<comboitem
@@ -24,8 +25,7 @@
 				</auxheader>
 			</auxhead>
 			<auxhead>
-				<auxheader align="center" label="Perguntas"
-					colspan="3" />
+				<auxheader align="center" label="Perguntas" colspan="3" />
 			</auxhead>
 			<columns style="text-align:center;">
 				<column label="Título" />
@@ -34,9 +34,18 @@
 			</columns>
 			<template name="model">
 				<row>
-					<label value="@load(each.tituloPergunta)" />
+					<textbox
+						value="@load(each.tituloPergunta) @save(each.tituloPergunta, before='adicionaPergunta')" />
+					<combobox width="95%" model="@load(vm.tiposPergunta)"
+						value="@load(each.tipoPergunta)"
+						selectedItem="@load(each.tipoPergunta) @save(each.tipoPergunta, before='adicionaPergunta')"
+						readonly="true">
+						<template name="model">
+							<comboitem
+								label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Escala numérica' : each eq 2 ? 'Escala conceitual' : 'Sim/Não')" />
+						</template>
+					</combobox>
 
-					<label value="@load(each.nomeTipoPergunta)" />
 					<div style="text-align:center">
 						<button image="/img/delete.png"
 							onClick="@command('excluiPergunta',pergunta=each)" />

@@ -1,14 +1,14 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
-<window style="text-align:center;" width="80%" id="win" title="Editar Questionário" border="normal"
-	closable="true">
-	<div apply="org.zkoss.bind.BindComposer"
+<window style="text-align:center;" width="80%" id="win"
+	title="Editar Questionário" border="normal" closable="true">
+	<div apply="org.zkoss.bind.BindComposer" style="margin:5px;"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
 		form="@id('fm') @load(vm.questionarioEditar) @save(vm.questionarioEditar, before='salvarQuest')"
 		id="form">
-		<grid model="@load(vm.prazos)">
+		<grid model="@load(vm.perguntas)">
 			<auxhead style="text-align:center;">
-				<auxheader colspan="2"
-					label="Título do Questionario: ">
+				<auxheader label="Título do Questionario: "
+					colspan="2">
 					<textbox width="70%"
 						value="@load(fm.tituloQuestionario) @save(fm.tituloQuestionario, before='salvarQuest')" />
 				</auxheader>
@@ -23,33 +23,9 @@
 					</combobox>
 				</auxheader>
 			</auxhead>
-			<columns>
-				<column align="center" label="Data Inicial" />
-				<column align="center" label="Data Final" />
-				<column align="center" label="Opções" />
-			</columns>
-			<template name="model">
-				<row>
-					<datebox format="dd/MM/yyyy" width="150px"
-						constraint="no past"
-						value="@load(each.dataInicial) @save(each.dataInicial, before='salvarQuest')" />
-					<datebox format="dd/MM/yyyy" width="150px"
-						constraint="no past"
-						value="@load(each.dataFinal) @save(each.dataFinal, before='salvarQuest')" />
-					<button label="Excluir" />
-				</row>
-			</template>
-		</grid>
-		<div form="@id('fx') @load(vm.prazo) @save(vm.prazo, before='adicionaPrazo')" align="center">
-			<datebox value="@bind(fx.dataInicial)" format="dd/MM/yyyy" width="150px" constraint="no past"/>
-			<datebox value="@bind(fx.dataFinal)" format="dd/MM/yyyy" width="150px" constraint="no past"/>
-			<button label="Adicionar Prazo"
-				onClick="@command('adicionaPrazo')" />
-		</div>
-		<grid model="@load(vm.perguntas)">
-			<auxhead style="text-align:center;">
-				<auxheader label="Perguntas no Questionário:"
-					colspan="3" />
+			<auxhead>
+				<auxheader align="center"
+					label="Perguntas no Questionário:" colspan="3" />
 			</auxhead>
 			<columns style="text-align:center;">
 				<column label="Título" />
@@ -58,10 +34,14 @@
 			</columns>
 			<template name="model">
 				<row align="center">
-					<textbox value="@load(each.tituloPergunta) @bind(each.tituloPergunta)" />
-					<combobox value="@load(each.nomeTipoPergunta)" selectedItem="@load(each.tipoPergunta) @bind(each.tipoPergunta)" model="@load(vm.tiposPergunta)" readonly="true" width="70%">
+					<textbox
+						value="@load(each.tituloPergunta) @bind(each.tituloPergunta)" />
+					<combobox value="@load(each.nomeTipoPergunta)"
+						selectedItem="@load(each.tipoPergunta) @bind(each.tipoPergunta)"
+						model="@load(vm.tiposPergunta)" readonly="true" width="70%">
 						<template name="model">
-							<comboitem label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Escala Numérica' : each eq 2 ? 'Escala Conceitual' : 'Sim/Não')" />
+							<comboitem
+								label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Escala Numérica' : each eq 2 ? 'Escala Conceitual' : 'Sim/Não')" />
 						</template>
 					</combobox>
 					<div style="text-align:center">
@@ -84,16 +64,33 @@
 		<div
 			form="@id('fx') @load(vm.pergunta) @save(vm.pergunta, before='adicionaPergunta')"
 			id="form2" align="center">
-			<textbox value="@bind(fx.tituloPergunta)" />
-			<combobox selectedItem="@bind(fx.tipoPergunta)"
-				readonly="true">
-				<comboitem label="Texto" value="0" />
-				<comboitem label="Escala numérica" value="1" />
-				<comboitem label="Escala conceitual" value="2" />
-				<comboitem label="Sim/Não" value="3" />
-			</combobox>
-			<button label="Adicionar Pergunta"
-				onClick="@command('adicionaPergunta')" />
+			<grid>
+				<columns>
+					<column />
+					<column />
+					<column />
+				</columns>
+				<rows>
+					<row>
+						<textbox width="95%"
+							value="@bind(fx.tituloPergunta)" />
+						<combobox width="95%"
+							model="@load(vm.tiposPergunta)"
+							selectedItem="@bind(fx.tipoPergunta)" readonly="true">
+							<template name="model">
+								<comboitem
+									label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Escala Numérica' : each eq 2 ? 'Escala Conceitual' : 'Sim/Não')" />
+							</template>
+						</combobox>
+						<div align="center">
+							<button label="Adicionar Pergunta"
+								onClick="@command('adicionaPergunta')" />
+
+						</div>
+					</row>
+				</rows>
+			</grid>
+
 		</div>
 		<separator />
 		<button label="Salvar Alterações Feitas"

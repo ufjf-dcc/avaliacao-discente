@@ -2,7 +2,7 @@
 <zk>
 	<window title="Vizualização de Questionario" border="normal"
 		closable="true" width="80%">
-		<div apply="org.zkoss.bind.BindComposer"
+		<div apply="org.zkoss.bind.BindComposer" style="margin:5px;"
 			viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
 			form="@id('fm') @load(vm.questionarioEditar) @save(vm.questionarioEditar, before='salvarQuest')"
 			id="form">
@@ -43,7 +43,7 @@
 					</row>
 				</template>
 			</grid>
-			<div align="center">
+			<div align="center" style="margin-top:5px;">
 				<button image="/img/edit.png"
 					onClick="@command('editarQuest')" />
 				<button image="/img/delete.png"

@@ -15,6 +15,7 @@ import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
+import br.ufjf.avaliacao.business.QuestionariosBusiness;
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
@@ -105,14 +106,41 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
+	public void addPrazo(@BindingParam("window") Window w) {
+		if (new QuestionariosBusiness().prazoValido(prazo)) {
+			if (!prazo.getDataFinal().before(prazo.getDataInicial())) {
+				prazo.setQuestionario(questionario);
+				prazoDAO.salvar(prazo);
+				prazos.add(prazo);
+				questionario.setPrazos(prazos);
+				prazo = new PrazoQuestionario();
+				w.detach();
+				Messagebox.show("Prazo Adicionado!");
+				/*
+				 * Messagebox.show("Prazo Adicionado!", "Concluido",
+				 * Messagebox.OK, Messagebox.INFORMATION, new
+				 * EventListener<Event>() {
+				 * 
+				 * @Override public void onEvent(Event event) throws Exception {
+				 * Executions.sendRedirect(null); } });
+				 */
+
+			} else {
+				Messagebox.show("Data final antes da data inicial");
+			}
+		} else {
+			Messagebox.show("Data final e/ ou inicial inválida");
+		}
+
+	}
+
+	@Command
 	@NotifyChange({ "perguntas", "pergunta" })
 	public void excluiPergunta(@BindingParam("pergunta") Pergunta pergunta) {
 		perguntas.remove(pergunta);
 	}
 
 	@Command
-	@NotifyChange({ "questionariosCoord", "questionariosProf",
-			"questionariosAuto", "questionariosInfra", "questionario" })
 	public void exclui() {
 		perguntas = questionario.getPerguntas();
 		prazos = prazoDAO.getPrazos(questionario);
@@ -138,10 +166,6 @@ public class QuestionariosController extends GenericController {
 	public void cria() {
 		questionario.setCurso(usuario.getCurso());
 		if (questionarioDAO.salvar(questionario)) {
-			prazo.setQuestionario(questionario);
-			prazoDAO.salvar(prazo);
-			prazos.add(prazo);
-			questionario.setPrazos(prazos);
 			if (isAtivo()) {
 				for (Questionario q : listaQuestionarios(questionario
 						.getTipoQuestionario())) {
@@ -240,17 +264,18 @@ public class QuestionariosController extends GenericController {
 	@NotifyChange({ "questionariosCoord", "questionariosProf",
 			"questionariosAuto", "questionariosInfra", "questionario" })
 	public void ativa(@BindingParam("questionario") Questionario quest) {
-		if(!quest.getPrazos().isEmpty()) {
-			for (Questionario q : listaQuestionarios(quest.getTipoQuestionario())) {
+		if (!quest.getPrazos().isEmpty()) {
+			for (Questionario q : listaQuestionarios(quest
+					.getTipoQuestionario())) {
 				if (q.getIdQuestionario() == quest.getIdQuestionario())
 					q.setAtivo(true);
 				else
 					q.setAtivo(false);
 				questionarioDAO.editar(q);
 			}
-		}
-		else {
-			Messagebox.show("Adicione um prazo ao questionário para poder ativá-lo");
+		} else {
+			Messagebox
+					.show("Adicione um prazo ao questionário para poder ativá-lo");
 		}
 	}
 
