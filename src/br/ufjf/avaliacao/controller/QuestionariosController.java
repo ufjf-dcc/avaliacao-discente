@@ -25,7 +25,7 @@ import br.ufjf.avaliacao.persistent.impl.PrazoQuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
 
 public class QuestionariosController extends GenericController {
-
+	
 	private QuestionarioDAO questionarioDAO = new QuestionarioDAO();
 	private List<Questionario> questionariosCoord = questionarioDAO
 			.retornaQuestinariosCursoTipo(usuario.getCurso(), 0);
@@ -109,22 +109,13 @@ public class QuestionariosController extends GenericController {
 	public void addPrazo(@BindingParam("window") Window w) {
 		if (new QuestionariosBusiness().prazoValido(prazo)) {
 			if (!prazo.getDataFinal().before(prazo.getDataInicial())) {
-				prazo.setQuestionario(questionario);
+				prazo.setQuestionario(questionario);	
 				prazoDAO.salvar(prazo);
 				prazos.add(prazo);
 				questionario.setPrazos(prazos);
 				prazo = new PrazoQuestionario();
 				w.detach();
 				Messagebox.show("Prazo Adicionado!");
-				/*
-				 * Messagebox.show("Prazo Adicionado!", "Concluido",
-				 * Messagebox.OK, Messagebox.INFORMATION, new
-				 * EventListener<Event>() {
-				 * 
-				 * @Override public void onEvent(Event event) throws Exception {
-				 * Executions.sendRedirect(null); } });
-				 */
-
 			} else {
 				Messagebox.show("Data final antes da data inicial");
 			}

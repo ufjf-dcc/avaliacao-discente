@@ -12,6 +12,7 @@ import br.ufjf.avaliacao.persistent.IPrazoQuestionarioDAO;
 
 public class PrazoQuestionarioDAO extends GenericoDAO implements
 		IPrazoQuestionarioDAO {
+	
 
 	public List<PrazoQuestionario> getPrazos(Questionario questionario) {
 		try {
@@ -60,7 +61,6 @@ public class PrazoQuestionarioDAO extends GenericoDAO implements
 							"SELECT p FROM PrazoQuestionario AS p LEFT JOIN FETCH p.questionario AS q WHERE q = :questionario AND :dataAtual BETWEEN p.dataInicial AND p.dataFinal");
 			query.setParameter("dataAtual", new Date());
 			query.setParameter("questionario", questionario);
-
 			PrazoQuestionario prazo = (PrazoQuestionario) query.uniqueResult();
 
 			getSession().close();

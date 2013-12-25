@@ -2,7 +2,7 @@
 <window style="text-align:center;" title="Avaliar" border="normal"
 	closable="true" width="80%">
 	<div apply="org.zkoss.bind.BindComposer"
-		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AvaliacoesDisponiveisController')"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.HomeAlunoController')"
 		form="@id('fm') @load(vm.questionarioAtual)" id="form">
 		<grid model="@load(fm.perguntas)">
 			<columns>
