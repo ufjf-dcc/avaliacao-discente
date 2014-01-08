@@ -18,11 +18,16 @@
 				<columns>
 					<column align="center" label="Data Inicial" />
 					<column align="center" label="Data Final" />
+					<column align="center" label="Opções" />
 				</columns>
 				<template name="model">
 					<row>
 						<label value="@load(each.dataInicialFormatada)" />
 						<label value="@load(each.dataFinalFormatada)" />
+						<div>
+							<button label="Excluir"
+								onClick="@command('excluiPrazo',prazo=each)" />
+						</div>
 					</row>
 				</template>
 			</grid>

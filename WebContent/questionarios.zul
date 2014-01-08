@@ -29,6 +29,10 @@
 								<div>
 									<button label="Ver"
 										onClick="@command('verQuest',questionario=each)" />
+									<button label="Ativar"
+										onClick="@command('ativa', questionario=each)" />
+									<button label="Adicionar Prazo"
+										onClick="@command('adcPrazo',questionario=each)" />
 								</div>
 							</row>
 						</template>
@@ -77,6 +81,10 @@
 								<div>
 									<button label="Ver"
 										onClick="@command('verQuest',questionario=each)" />
+									<button label="Ativar"
+										onClick="@command('ativa', questionario=each)" />
+									<button label="Adicionar Prazo"
+										onClick="@command('adcPrazo',questionario=each)" />
 								</div>
 							</row>
 						</template>
@@ -99,6 +107,10 @@
 								<div>
 									<button label="Ver"
 										onClick="@command('verQuest',questionario=each)" />
+									<button label="Ativar"
+										onClick="@command('ativa', questionario=each)" />
+									<button label="Adicionar Prazo"
+										onClick="@command('adcPrazo',questionario=each)" />
 								</div>
 							</row>
 						</template>

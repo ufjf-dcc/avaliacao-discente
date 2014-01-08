@@ -20,6 +20,7 @@ import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
+import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
 import br.ufjf.avaliacao.persistent.impl.PerguntaDAO;
 import br.ufjf.avaliacao.persistent.impl.PrazoQuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
@@ -41,6 +42,7 @@ public class QuestionariosController extends GenericController {
 	private Pergunta pergunta = new Pergunta();
 	private PerguntaDAO perguntaDAO = new PerguntaDAO();
 	private Avaliacao avaliacao = new Avaliacao();
+	private AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
 	private Questionario questionario = new Questionario();
 	private static Questionario questionarioEditar = new Questionario();
 	private List<Integer> tiposQuestionario = Arrays.asList(0, 1, 2, 3);
@@ -124,7 +126,25 @@ public class QuestionariosController extends GenericController {
 		}
 
 	}
+	
+	@Command
+	public void excluiPrazo(@BindingParam("prazo") PrazoQuestionario prazo) { //deleta um prazo se for possivel
+		if(avaliacaoDAO.jaAvaliouNestePrazo(prazo))//<<<< ?????
+		if(questionario.isAtivo() && questionario.getPrazos().size()==1) //verifica se ele esta ativo e se existe um prazo e ele está ativo
+			questionario.setAtivo(false); // se sim o questionario nao pode mais estar ativo <<<<<<<<<<<<<<<<
+			
+		prazoDAO.exclui(prazo); // exclui o prazo
+		Messagebox.show("Prazo excluido", "Concluído", Messagebox.OK,
+		Messagebox.INFORMATION, new EventListener<Event>() {
+			@Override
+			public void onEvent(Event event) throws Exception {
+				Executions.sendRedirect(null);
+			}
+		});
+		
+	}
 
+	
 	@Command
 	@NotifyChange({ "perguntas", "pergunta" })
 	public void excluiPergunta(@BindingParam("pergunta") Pergunta pergunta) {
