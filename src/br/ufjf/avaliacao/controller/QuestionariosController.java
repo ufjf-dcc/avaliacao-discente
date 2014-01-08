@@ -156,38 +156,44 @@ public class QuestionariosController extends GenericController {
 	@NotifyChange({ "perguntas", "questionario" })
 	public void cria() {
 		questionario.setCurso(usuario.getCurso());
-		if (questionarioDAO.salvar(questionario)) {
-			if (isAtivo()) {
-				for (Questionario q : listaQuestionarios(questionario
-						.getTipoQuestionario())) {
-					q.setAtivo(false);
-					questionarioDAO.editar(q);
-				}
-				questionario.setAtivo(true);
-			}
-			for (Pergunta pergunta : perguntas) {
-				pergunta.setQuestionario(questionario);
-			}
-			if (perguntaDAO.salvarLista(perguntas)) {
-
-				questionario = new Questionario();
-				pergunta = new Pergunta();
-				perguntas = new ArrayList<Pergunta>();
-				prazo = new PrazoQuestionario();
-			}
-			Messagebox.show("Questionario Criado", "Concluído", Messagebox.OK,
-					Messagebox.INFORMATION, new EventListener<Event>() {
-						@Override
-						public void onEvent(Event event) throws Exception {
-							Executions.sendRedirect(null);
+		if(new QuestionariosBusiness().tituloValido(questionario)){
+			if(perguntas.size()>0){
+				if (questionarioDAO.salvar(questionario)) {
+					if (isAtivo()) {
+						for (Questionario q : listaQuestionarios(questionario
+								.getTipoQuestionario())) {
+							q.setAtivo(false);
+							questionarioDAO.editar(q);
 						}
-					});
+						questionario.setAtivo(true);
+					}
+					for (Pergunta pergunta : perguntas) {
+						pergunta.setQuestionario(questionario);
+					}
+					if (perguntaDAO.salvarLista(perguntas)) {
+		
+						questionario = new Questionario();
+						pergunta = new Pergunta();
+						perguntas = new ArrayList<Pergunta>();
+						prazo = new PrazoQuestionario();
+					}
+					Messagebox.show("Questionario Criado", "Concluído", Messagebox.OK,
+							Messagebox.INFORMATION, new EventListener<Event>() {
+								@Override
+								public void onEvent(Event event) throws Exception {
+									Executions.sendRedirect(null);
+								}
+							});
+				}
+			}
+			else
+				Messagebox.show("O questionário não possui nenhuma pergunta");
 		}
 	}
 
 	@Command
 	public void salvarQuest() {
-		if (perguntas.size() > 1) {
+		if (perguntas.size() > 0) {
 			if (questionarioDAO.editar(questionario)) {
 				if (prazoDAO.excluiLista(prazosAntigos)) {
 					for (PrazoQuestionario p : prazos)
