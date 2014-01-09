@@ -15,4 +15,8 @@ public interface ITurmaDAO {
 
 	public List<Turma> getTurmasUsuario(Usuario usuario);
 
+	public List<String> getAllSemestres();
+
+	public List<Turma> getAllTurmas(String semestre);
+
 }

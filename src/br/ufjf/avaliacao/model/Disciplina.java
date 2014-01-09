@@ -64,7 +64,7 @@ public class Disciplina implements Serializable{
 	 * quando retornarmos a {@link Disciplina} .
 	 * 
 	 */
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "disciplina")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "disciplina")
 	private List<Turma> turmas = new ArrayList<Turma>();
 	
 	@Transient

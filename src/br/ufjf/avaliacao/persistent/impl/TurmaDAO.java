@@ -1,5 +1,6 @@
 package br.ufjf.avaliacao.persistent.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -13,7 +14,8 @@ import br.ufjf.avaliacao.persistent.ITurmaDAO;
 public class TurmaDAO extends GenericoDAO implements ITurmaDAO {
 
 	@Override
-	public Turma retornaTurma(String letraTurma, String semestre, Disciplina disciplina) {
+	public Turma retornaTurma(String letraTurma, String semestre,
+			Disciplina disciplina) {
 		try {
 			Query query = getSession()
 					.createQuery(
@@ -55,13 +57,15 @@ public class TurmaDAO extends GenericoDAO implements ITurmaDAO {
 	@SuppressWarnings("unchecked")
 	public List<Turma> getTurmasUsuario(Usuario usuario) {
 		try {
-			Query query = getSession().createQuery("SELECT t FROM Usuario AS u JOIN u.turmas as t WHERE u = :usuario");
+			Query query = getSession()
+					.createQuery(
+							"SELECT t FROM Usuario AS u JOIN u.turmas as t WHERE u = :usuario");
 			query.setParameter("usuario", usuario);
-			
+
 			List<Turma> turmas = query.list();
-			
+
 			getSession().close();
-			
+
 			if (turmas != null)
 				return turmas;
 		} catch (Exception e) {
@@ -69,6 +73,42 @@ public class TurmaDAO extends GenericoDAO implements ITurmaDAO {
 		}
 		return null;
 	}
-		
+
+	@Override
+	public List<String> getAllSemestres() {
+		try {
+			Query query = getSession().createQuery("SELECT t FROM Turma AS t");
+
+			@SuppressWarnings("unchecked")
+			List<Turma> turmas = query.list();
+
+			List<String> semestres = new ArrayList<String>();
+
+			for (Turma t : turmas) {
+				if (!semestres.contains(t.getSemestre()))
+					semestres.add(t.getSemestre());
+			}
+			return semestres;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
+	@Override
+	public List<Turma> getAllTurmas(String semestre) {
+		try {
+			Query query = getSession().createQuery("SELECT t FROM Turma AS t WHERE t.semestre =:semestre");
+			query.setParameter("semestre", semestre);
+
+			@SuppressWarnings("unchecked")
+			List<Turma> turmas = query.list();
+			
+			return turmas;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 }

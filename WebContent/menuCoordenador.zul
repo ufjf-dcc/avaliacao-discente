@@ -7,6 +7,8 @@
 			<menuitem label="Inicial" href="/home.zul" />
 			<menuitem label="Gerenciar Questionários"
 				href="/questionarios.zul" />
+			<menuitem label="Vizualizar Resultados"
+				href="/resultados.zul" />
 			<menuitem label="Opções" />
 			<menuitem label="Sair" onClick="@command('exit')" />
 		</menubar>
