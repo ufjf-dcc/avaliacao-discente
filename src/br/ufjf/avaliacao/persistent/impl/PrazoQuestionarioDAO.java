@@ -5,11 +5,8 @@ import java.util.List;
 
 import org.hibernate.Query;
 
-import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
-import br.ufjf.avaliacao.model.Turma;
-import br.ufjf.avaliacao.model.Usuario;
 import br.ufjf.avaliacao.persistent.GenericoDAO;
 import br.ufjf.avaliacao.persistent.IPrazoQuestionarioDAO;
 
