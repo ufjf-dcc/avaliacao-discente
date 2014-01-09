@@ -64,8 +64,8 @@ public class TurmasController extends GenericController {
 	}
 
 	@Command("uploadTurmas")
-	// FORMATO DE ENTRADA: código da disciplina, turma,semestre, nome do prof,
-	// email, código de usuario do professor.
+	// FORMATO DE ENTRADA: código da disciplina, nome da disciplina,turma,semestre, nome do prof,
+	// email,senha do professor;
 	public void uploadTurmas(@BindingParam("evt") UploadEvent evt)
 			throws IOException {
 		Media media = evt.getMedia();
@@ -279,6 +279,7 @@ public class TurmasController extends GenericController {
 						disciplinaDAO.retornaDisciplinaCod(conteudo[5]));
 				List<Usuario> users = usuarioDAO.retornaAlunosTurma(turma);
 				users.add(nusuario);
+				users.addAll(usuarioDAO.retornaProfessoresTurma(turma));
 				turma.setUsuarios(users);
 				operacao = turmaDAO.editar(turma);
 
