@@ -3,6 +3,7 @@ package br.ufjf.avaliacao.persistent.impl;
 import java.util.List;
 
 import org.hibernate.Query;
+import org.zkoss.zhtml.Messagebox;
 
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
@@ -33,20 +34,23 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 		return false;
 	}
 	
-	public boolean jaAvaliouNestePrazo(PrazoQuestionario prazo) {// procura se há alguma avaliação no que possua o prazo em questão
+	public boolean jaAvaliouNestePrazo(PrazoQuestionario prazo, Usuario aluno) {// procura se há alguma avaliação no que possua o prazo em questão
 		try {
 			Query query = getSession()
 					.createQuery(
-							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.prazoQuestionario WHERE a.prazoQuestionario = :prazo");
+							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.prazoQuestionario AS p WHERE p = :prazo AND a.avaliando = :aluno");
 			query.setParameter("prazo", prazo);
+			query.setParameter("aluno", aluno);
+
 
 			@SuppressWarnings("unchecked")
 			List<Avaliacao> a = query.list();
 			
 			getSession().close();
 
-			if (!a.isEmpty())// se sim retorna true
+			if (!a.isEmpty()){// se sim retorna true
 				return true;
+			}
 			else					//se nao retorna false
 				return false;
 		} catch (Exception e) {
@@ -57,11 +61,11 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 	
 	public boolean jaAvaliouCoordenador(PrazoQuestionario prazo, Usuario aluno){
 		try {
-			Query query = getSession() // selecionar as avalições de coordenadores que estao no prazo
+			Query query = getSession() // carrega as avaliaçoes que esse aluno ja fez
 					.createQuery(
-							"SELECT a FROM a AS a LEFT JOIN FETCH a.prazoQuestionario LEFT JOIN FETCH a.avaliado AS u WHERE  a.prazoQuestionario := prazo AND a.avaliado.tipoUsuario := tipoUsuario");
+							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.avaliado LEFT JOIN FETCH a.prazoQuestionario AS p WHERE p = :prazo AND a.avaliando = :aluno");
 			query.setParameter("prazo", prazo);
-			query.setParameter("tipoUsuario", 0);
+			query.setParameter("aluno", aluno);
 
 
 			@SuppressWarnings("unchecked")
@@ -69,16 +73,52 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 			
 			getSession().close();
 
-			for(int i=0;i<a.size();i++){ // olha todas as avaliações
-				if(a.get(i).getAvaliado().getIdUsuario() == aluno.getIdUsuario())// verifica se esse aluno fez uma dessas avaliações 
-					return true;
+			
+			
+			if (!a.isEmpty()){// verific se esta vazio
+				for(int i=0;i<a.size();i++){ // verifica se alguma foi feita para um coordenador
+					if(a.get(i).getAvaliado().getTipoUsuario()==0) //se sim retorna true
+						return true;
+				}
 			}
-			return false;
-		
+			else					//se nao retorna false
+				return false;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
 	
+	public boolean jaSeAvalior(PrazoQuestionario prazo, Usuario aluno){
+		try {
+			Query query = getSession() // carrega as avaliaçoes que esse aluno ja fez
+					.createQuery(
+							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.avaliado LEFT JOIN FETCH a.prazoQuestionario AS p WHERE p = :prazo AND a.avaliando = :aluno");
+			query.setParameter("prazo", prazo);
+			query.setParameter("aluno", aluno);
+
+
+			@SuppressWarnings("unchecked")
+			List<Avaliacao> a = query.list();
+			
+			getSession().close();
+
+			
+			
+			if (!a.isEmpty()){// verific se esta vazio
+				for(int i=0;i<a.size();i++){ // verifica se o id do avaliado é igual o do avaliando
+					if(a.get(i).getAvaliado().getIdUsuario() == aluno.getIdUsuario()) //se sim retorna true
+						return true;
+				}
+			}
+			else					//se nao retorna false
+				return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+
 }
+

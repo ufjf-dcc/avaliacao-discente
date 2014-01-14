@@ -36,6 +36,7 @@ public class HomeAlunoController extends GenericController {
 	
 	private QuestionarioDAO questionarioDAO = new QuestionarioDAO();
 	private UsuarioDAO usuarioDAO = new UsuarioDAO();
+	private AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
 	private Questionario questionarioProf = questionarioDAO
 			.retornaQuestionarioProf(usuario);
 	private List<Turma> turmasDoUsuario = new TurmaDAO()
@@ -66,11 +67,29 @@ public class HomeAlunoController extends GenericController {
 	public void avaliar(
 			@BindingParam("questionario") Questionario questionario,
 			@BindingParam("turma") Turma turma) {
+
+
+	// AGORA TENHO QUE VERIFICAR SE JA AVALIOU O COOR A SI MESMO E A INFRA E ADIIONAR OS QUEST NECESSARIOS
 		HomeAlunoController.questionarioAtual = questionario;
 		HomeAlunoController.turmaAtual = turma;
 		Window window = (Window) Executions.createComponents("/avaliar.zul",
 				null, null);
 		window.doModal();
+	}
+	
+	//FUNÇÂO DE TESTE (EXCLUIR DEPOIS)
+	@Command
+	public void teste(
+			@BindingParam("questionario") Questionario questionario,
+			@BindingParam("turma") Turma turma) {
+		
+		Messagebox.show(prazo.getDataFinalFormatada()+"-"+usuario.getNome());
+
+		if(avaliacaoDAO.jaSeAvalior(prazo,usuario))
+			Messagebox.show("JA SE AVALIOU");
+		else
+				Messagebox.show("inda Nao");
+
 	}
 
 	@Command

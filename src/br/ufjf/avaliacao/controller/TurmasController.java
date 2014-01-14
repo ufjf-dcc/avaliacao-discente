@@ -245,7 +245,7 @@ public class TurmasController extends GenericController {
 			}
 
 			if (operacao)
-				Messagebox.show("Usuarios cadastrados com sucesso", null,
+				Messagebox.show("Usuarios cadastrados em suas turmas com sucesso", null,
 						new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
 							public void onEvent(ClickEvent e) {
 								if (e.getButton() == Messagebox.Button.OK)

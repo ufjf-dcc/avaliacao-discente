@@ -10,6 +10,9 @@
 				<column label="Data Inicial" align="center" />
 				<column label="Data Final" align="center" />
 				<column label="Opções" align="center" />
+				
+				<column label="Extra" align="center" /><!-- TESTE, EXCLUIR DEPOIS -->
+				
 			</columns>
 			<template name="model">
 				<row
@@ -25,6 +28,10 @@
 							value="Você já avaliou!" />
 						<button label="Avaliar"
 							onClick="@command('avaliar', questionario=vm.questionarioProf, turma=each)" />
+					</div>
+					<div><!-- TESTE, EXCLUIR DEPOIS -->
+						<button label="Teste"
+							onClick="@command('teste', questionario=vm.questionarioProf, turma=each)" />
 					</div>
 				</row>
 			</template>
