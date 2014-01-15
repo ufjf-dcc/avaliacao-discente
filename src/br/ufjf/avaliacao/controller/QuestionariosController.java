@@ -129,11 +129,19 @@ public class QuestionariosController extends GenericController {
 	
 	@Command
 	public void excluiPrazo(@BindingParam("prazo") PrazoQuestionario prazo) { //deleta um prazo se for possivel
-		if(avaliacaoDAO.jaAvaliouNestePrazo(prazo))//<<<< ?????
-			Messagebox.show("Prazo não pode ser excluido");
+		if(avaliacaoDAO.alguemJaAavaliou(prazo, questionario))
+			Messagebox.show("Prazo não pode ser excluido, já está em uso");
 		
 		else{
 			prazoDAO.exclui(prazo); // exclui o prazo
+			if(questionario.isAtivo()){
+				questionario.setAtivo(false);
+				questionarioDAO.editar(questionario);
+				if(!questionario.isAtivo())
+
+					System.out.println("nao ativo");
+					System.out.println(questionario.getPrazos().size());
+			}
 			ativa(questionario);// verifica as possibilidades de ativar esse questionario ou não
 		
 			Messagebox.show("Prazo excluido", "Concluído", Messagebox.OK,
