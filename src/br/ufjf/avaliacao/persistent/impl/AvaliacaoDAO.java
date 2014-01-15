@@ -3,8 +3,6 @@ package br.ufjf.avaliacao.persistent.impl;
 import java.util.List;
 
 import org.hibernate.Query;
-import org.zkoss.zhtml.Messagebox;
-
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
@@ -23,11 +21,34 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 			query.setParameter("turma", turma);
 			query.setParameter("usuario", usuario);
 
-			Avaliacao a = (Avaliacao) query.uniqueResult();
+			List<Avaliacao> a = query.list();
 
 			getSession().close();
 
-			if (a != null)
+			if (!a.isEmpty())
+				return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	
+
+	public boolean jaAvaliouEsseProfessor(Usuario usuario, Turma turma, Usuario professor) {
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.turma AS t LEFT JOIN FETCH a.avaliado WHERE a.avaliando = :usuario AND t = :turma AND a.avaliado = :professor");
+			query.setParameter("turma", turma);
+			query.setParameter("usuario", usuario);
+			query.setParameter("professor", professor);
+
+			List<Avaliacao> a = query.list();
+
+			getSession().close();
+
+			if (!a.isEmpty())
 				return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -74,8 +95,6 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 			
 			getSession().close();
 
-			
-			
 			if (!a.isEmpty()){// verific se esta vazio
 				for(int i=0;i<a.size();i++){ // verifica se alguma foi feita para um coordenador
 					if(a.get(i).getAvaliado().getTipoUsuario()==0) //se sim retorna true
