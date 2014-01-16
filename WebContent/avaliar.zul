@@ -49,7 +49,7 @@
 		</grid>
 		<div align="center">
 			<button label="Terminar e Enviar Avaliação"
-				onClick="@command('terminarAvaliacaoProfessor')" />
+				onClick="@command('terminarAvaliacaoProfessor', window=win)" />
 		</div>
 	</div>
 </window>

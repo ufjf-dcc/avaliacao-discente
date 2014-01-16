@@ -116,6 +116,7 @@ public class QuestionariosController extends GenericController {
 				prazos.add(prazo);
 				questionario.setPrazos(prazos);
 				prazo = new PrazoQuestionario();
+
 				w.detach();
 				Messagebox.show("Prazo Adicionado!");
 			} else {
@@ -129,7 +130,7 @@ public class QuestionariosController extends GenericController {
 	
 	@Command
 	public void excluiPrazo(@BindingParam("prazo") PrazoQuestionario prazo) { //deleta um prazo se for possivel
-		if(avaliacaoDAO.alguemJaAavaliou(prazo, questionario))
+		if(avaliacaoDAO.alguemJaAvaliou(questionario))
 			Messagebox.show("Prazo não pode ser excluido, já está em uso");
 		
 		else{
