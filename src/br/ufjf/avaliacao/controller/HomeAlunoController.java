@@ -56,7 +56,7 @@ public class HomeAlunoController extends GenericController {
 	private Resposta resposta = new Resposta();
 	private List<Resposta> respostas = new ArrayList<Resposta>();
 	private Usuario coordAvaliado = usuarioDAO.retornaCoordAvaliado(usuario);
-	private Questionario questionarioCorrente = new Questionario();
+	private Questionario questionarioInicial = new Questionario();
 	
 
 	@Init
@@ -79,17 +79,21 @@ public class HomeAlunoController extends GenericController {
 			@BindingParam("questionario") Questionario questionario,
 			@BindingParam("turma") Turma turma) {
 
+		questionarioInicial = questionario;
 		questionarioAtual = questionario;
 		turmaAtual = turma;
+		avaliarAux();
+	}
 
 	// AGORA TEM QUE VERIFICAR SE JA AVALIOU O COOR A SI MESMO E A INFRA E ADICIONAR OS QUEST NECESSARIOS PARA O USUARIO AVALIAR
 		// se ainda não fez a  avaliação de coordenador e se tem uma avaliação de coordenador pra fazer
 
+	public void avaliarAux(){
 		
 		if(!avaliacaoDAO.jaAvaliouCoordenadorDataAtual(usuario) && questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario)!=null){
 			//setando qual é o questionario que deve ser avaliado
 			System.out.println("avaliando coor");
-			questionarioCorrente = questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario);//seta o questionario atual para um questionario de coordenador a ser avaliado
+			questionarioAtual = questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario);//seta o questionario atual para um questionario de coordenador a ser avaliado
 			Window window = (Window) Executions.createComponents("/avaliar.zul",
 					null, null);
 			window.doModal();
@@ -99,7 +103,7 @@ public class HomeAlunoController extends GenericController {
 			// se ainda não fez a auto avaliação e se tem uma auto avaliação pra fazer
 			if(!avaliacaoDAO.jaSeAvaliorDataAtual(usuario) && questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario)!=null){
 				//setando qual é o questionario que deve ser avaliado
-				questionarioCorrente = questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario);//seta o questionario atual para um questionario de auto avaliação a ser avaliado
+				questionarioAtual = questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario);//seta o questionario atual para um questionario de auto avaliação a ser avaliado
 				Window window = (Window) Executions.createComponents("/avaliar.zul",
 						null, null);
 				window.doModal();
@@ -107,7 +111,7 @@ public class HomeAlunoController extends GenericController {
 			else{
 				if(!avaliacaoDAO.jaAvaliouInfraestruturaDataAtual(usuario)){
 					//setando qual é o questionario que deve ser avaliado
-					questionarioCorrente = questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario);
+					questionarioAtual = questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario);
 					Window window = (Window) Executions.createComponents("/avaliar.zul",
 							null, null);
 					window.doModal();
@@ -115,8 +119,10 @@ public class HomeAlunoController extends GenericController {
 				else{
 					if(!avaliacaoDAO.jaAvaliou(usuario,turmaAtual)){
 						System.out.println("AAAAAAAAAAAQUI "+questionarioAtual.getTituloQuestionario());
-						questionarioCorrente = questionarioAtual;
+						questionarioAtual = questionarioInicial;
 						System.out.println("AAAAAAAAAAAQUI "+questionarioAtual.getTituloQuestionario());
+						System.out.println("AAAAAAAAAAAQUI "+questionarioInicial.getTituloQuestionario());
+
 
 						Window window = (Window) Executions.createComponents("/avaliar.zul",
 								null, null);
@@ -142,7 +148,7 @@ public class HomeAlunoController extends GenericController {
 
 		Usuario avaliado = null;
 		Turma turmaUsada = null;
-		System.out.printf("OI...."+questionarioCorrente.getNomeTipoQuestionario()+"  "+questionarioCorrente.getTituloQuestionario() );
+		System.out.printf("OI...."+questionarioAtual.getNomeTipoQuestionario()+"  "+questionarioAtual.getTituloQuestionario() );
 
 		//setando o usuario que vai ser avaliado---------------------------------------------
 		// verificando se antes deve avaliar alguma coisa, nao estou conseguindo importar o tipo de questionario pois
@@ -191,7 +197,7 @@ public class HomeAlunoController extends GenericController {
 					new EventListener<Event>() {
 						@Override
 						public void onEvent(Event event) throws Exception {
-							teste(questionarioAtual,turmaAtual);
+							avaliarAux();
 						}
 					});
 		}
