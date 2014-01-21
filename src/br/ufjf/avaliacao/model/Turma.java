@@ -167,6 +167,9 @@ public class Turma implements Serializable{
 			this.usuarios.add(usuario);
 	}
 		
-		
+	public String getDisciplinaLetraTurma(){
+		return (disciplina.getNomeDisciplina() + " - " + letraTurma);
+	}
+			
 
 }

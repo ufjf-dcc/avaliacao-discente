@@ -175,6 +175,22 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 		}
 		return false;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Avaliacao> avaliacoesTurma(Turma turma) {
+		try {
+			Query query = getSession().createQuery("SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.turma AS t WHERE t =: turma");
+			query.setParameter("turma", turma);
+			
+			List<Avaliacao> as = query.list();
+			
+			getSession().close();
+			return as;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	
 

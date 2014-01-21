@@ -23,14 +23,18 @@
 					</row>
 					<row>
 						<label value="Turma" />
-						<combobox width="98%" model="@load(vm.ts)">
+						<combobox width="98%" model="@load(vm.turmas)" selectedItem="@bind(vm.turma)">
 							<template name="model">
-								<comboitem label="@load(each)" />
+								<comboitem
+									label="@load(each.disciplinaLetraTurma)" />
 							</template>
 						</combobox>
 					</row>
 				</rows>
 			</grid>
+			<div>
+				<button onClick="@command('abrirGrafico')" label="Gerar Gráfico" />
+			</div>
 		</div>
 	</div>
 </zk>
