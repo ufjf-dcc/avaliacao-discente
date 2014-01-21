@@ -20,7 +20,6 @@ import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
-import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
 import br.ufjf.avaliacao.persistent.impl.PerguntaDAO;
 import br.ufjf.avaliacao.persistent.impl.PrazoQuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
@@ -42,7 +41,6 @@ public class QuestionariosController extends GenericController {
 	private Pergunta pergunta = new Pergunta();
 	private PerguntaDAO perguntaDAO = new PerguntaDAO();
 	private Avaliacao avaliacao = new Avaliacao();
-	private AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
 	private Questionario questionario = new Questionario();
 	private static Questionario questionarioEditar = new Questionario();
 	private List<Integer> tiposQuestionario = Arrays.asList(0, 1, 2, 3);
@@ -100,6 +98,11 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
+	@NotifyChange({ "prazos", "prazo" })
+	public void adicionaPrazo() {
+		prazos.add(prazo);
+		prazo = new PrazoQuestionario();
+	}
 	public void adcPrazo(@BindingParam("questionario") Questionario questionario) {
 		QuestionariosController.questionarioEditar = questionario;
 		Window window = (Window) Executions.createComponents("/add-prazo.zul",
@@ -116,7 +119,6 @@ public class QuestionariosController extends GenericController {
 				prazos.add(prazo);
 				questionario.setPrazos(prazos);
 				prazo = new PrazoQuestionario();
-
 				w.detach();
 				Messagebox.show("Prazo Adicionado!");
 			} else {
@@ -127,36 +129,7 @@ public class QuestionariosController extends GenericController {
 		}
 
 	}
-	
-	@Command
-	public void excluiPrazo(@BindingParam("prazo") PrazoQuestionario prazo) { //deleta um prazo se for possivel
-		if(avaliacaoDAO.alguemJaAvaliou(questionario))
-			Messagebox.show("Prazo não pode ser excluido, já está em uso");
-		
-		else{
-			prazoDAO.exclui(prazo); // exclui o prazo
-			if(questionario.isAtivo()){
-				questionario.setAtivo(false);
-				questionarioDAO.editar(questionario);
-				if(!questionario.isAtivo())
 
-					System.out.println("nao ativo");
-					System.out.println(questionario.getPrazos().size());
-			}
-			ativa(questionario);// verifica as possibilidades de ativar esse questionario ou não
-		
-			Messagebox.show("Prazo excluido", "Concluído", Messagebox.OK,
-				Messagebox.INFORMATION, new EventListener<Event>() {
-				@Override
-				public void onEvent(Event event) throws Exception {
-					Executions.sendRedirect(null);
-				}
-			});
-		}
-		
-	}
-
-	
 	@Command
 	@NotifyChange({ "perguntas", "pergunta" })
 	public void excluiPergunta(@BindingParam("pergunta") Pergunta pergunta) {
@@ -164,6 +137,8 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
+	@NotifyChange({ "questionariosCoord", "questionariosProf",
+			"questionariosAuto", "questionariosInfra", "questionario" })
 	public void exclui() {
 		perguntas = questionario.getPerguntas();
 		prazos = prazoDAO.getPrazos(questionario);
@@ -188,44 +163,42 @@ public class QuestionariosController extends GenericController {
 	@NotifyChange({ "perguntas", "questionario" })
 	public void cria() {
 		questionario.setCurso(usuario.getCurso());
-		if(new QuestionariosBusiness().tituloValido(questionario)){
-			if(perguntas.size()>0){
-				if (questionarioDAO.salvar(questionario)) {
-					if (isAtivo()) {
-						for (Questionario q : listaQuestionarios(questionario
-								.getTipoQuestionario())) {
-							q.setAtivo(false);
-							questionarioDAO.editar(q);
-						}
-						questionario.setAtivo(true);
-					}
-					for (Pergunta pergunta : perguntas) {
-						pergunta.setQuestionario(questionario);
-					}
-					if (perguntaDAO.salvarLista(perguntas)) {
-		
-						questionario = new Questionario();
-						pergunta = new Pergunta();
-						perguntas = new ArrayList<Pergunta>();
-						prazo = new PrazoQuestionario();
-					}
-					Messagebox.show("Questionario Criado", "Concluído", Messagebox.OK,
-							Messagebox.INFORMATION, new EventListener<Event>() {
-								@Override
-								public void onEvent(Event event) throws Exception {
-									Executions.sendRedirect(null);
-								}
-							});
+		if (questionarioDAO.salvar(questionario)) {
+			prazo.setQuestionario(questionario);
+			prazoDAO.salvar(prazo);
+			prazos.add(prazo);
+			questionario.setPrazos(prazos);
+			if (isAtivo()) {
+				for (Questionario q : listaQuestionarios(questionario
+						.getTipoQuestionario())) {
+					q.setAtivo(false);
+					questionarioDAO.editar(q);
 				}
+				questionario.setAtivo(true);
 			}
-			else
-				Messagebox.show("O questionário não possui nenhuma pergunta");
+			for (Pergunta pergunta : perguntas) {
+				pergunta.setQuestionario(questionario);
+			}
+			if (perguntaDAO.salvarLista(perguntas)) {
+
+				questionario = new Questionario();
+				pergunta = new Pergunta();
+				perguntas = new ArrayList<Pergunta>();
+				prazo = new PrazoQuestionario();
+			}
+			Messagebox.show("Questionario Criado", "Concluído", Messagebox.OK,
+					Messagebox.INFORMATION, new EventListener<Event>() {
+						@Override
+						public void onEvent(Event event) throws Exception {
+							Executions.sendRedirect(null);
+						}
+					});
 		}
 	}
 
 	@Command
 	public void salvarQuest() {
-		if (perguntas.size() > 0) {
+		if (perguntas.size() > 1) {
 			if (questionarioDAO.editar(questionario)) {
 				if (prazoDAO.excluiLista(prazosAntigos)) {
 					for (PrazoQuestionario p : prazos)
@@ -290,21 +263,14 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	@NotifyChange({ "questionariosCoord", "questionariosProf",
-			"questionariosAuto", "questionariosInfra", "questionario" })
-	public void ativa(@BindingParam("questionario") Questionario quest) {
-		if (!quest.getPrazos().isEmpty()) {
-			for (Questionario q : listaQuestionarios(quest
-					.getTipoQuestionario())) {
-				if (q.getIdQuestionario() == quest.getIdQuestionario())
-					q.setAtivo(true);
-				else
-					q.setAtivo(false);
-				questionarioDAO.editar(q);
-			}
-		} else {
-			Messagebox
-					.show("Adicione um prazo ao questionário para poder ativá-lo");
+	public void ativa() {
+		for (Questionario q : listaQuestionarios(questionario
+				.getTipoQuestionario())) {
+			if (q.getIdQuestionario() == questionario.getIdQuestionario())
+				q.setAtivo(true);
+			else
+				q.setAtivo(false);
+			questionarioDAO.editar(q);
 		}
 	}
 

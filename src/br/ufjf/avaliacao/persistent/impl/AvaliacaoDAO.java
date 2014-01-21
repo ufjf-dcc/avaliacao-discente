@@ -26,7 +26,6 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 			query.setParameter("usuario", usuario);
 
 			List<Avaliacao> a = query.list();
-
 			getSession().close();
 
 			if (!a.isEmpty())
@@ -98,7 +97,7 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 		try {
 			Query query = getSession() // carrega as avaliaçoes que esse aluno ja fez
 					.createQuery(
-							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.avaliado LEFT JOIN FETCH a.prazoQuestionario AS p WHERE :dataAtual BETWEEN p.dataInicial AND p.dataFinal AND a.avaliando = :aluno");
+							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.avaliado LEFT JOIN FETCH a.prazoQuestionario AS p LEFT JOIN FETCH p.questionario WHERE :dataAtual BETWEEN p.dataInicial AND p.dataFinal AND a.avaliando = :aluno");
 			query.setParameter("dataAtual", new Date());
 			query.setParameter("aluno", aluno);
 			//verifica as avaliaçoes(auto avaliações) com esse usuario que estao ativas agora
@@ -110,8 +109,8 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 			
 			if (!a.isEmpty()){// verific se esta vazio
 				for(int i=0;i<a.size();i++){ // verifica se o id do avaliado é igual o do avaliando
-					if(a.get(i).getAvaliado().getIdUsuario() == aluno.getIdUsuario()) //se sim retorna true
-						return true;
+					if(a.get(i).getPrazoQuestionario().getQuestionario().getTipoQuestionario() == 2) //se sim retorna true
+							return true;
 				}
 			}
 			else					//se nao retorna false
