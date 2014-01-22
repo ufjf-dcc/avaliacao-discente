@@ -56,7 +56,7 @@ public class HomeAlunoController extends GenericController {
 	private Resposta resposta = new Resposta();
 	private List<Resposta> respostas = new ArrayList<Resposta>();
 	private Usuario coordAvaliado = usuarioDAO.retornaCoordAvaliado(usuario);
-	private Questionario questionarioInicial = new Questionario();
+	private static Questionario questionarioInicial = new Questionario();
 	
 
 	@Init
@@ -79,7 +79,7 @@ public class HomeAlunoController extends GenericController {
 			@BindingParam("questionario") Questionario questionario,
 			@BindingParam("turma") Turma turma) {
 
-		questionarioInicial = questionario;
+		HomeAlunoController.questionarioInicial = questionario;
 		questionarioAtual = questionario;
 		turmaAtual = turma;
 		avaliarAux();
@@ -97,11 +97,12 @@ public class HomeAlunoController extends GenericController {
 			Window window = (Window) Executions.createComponents("/avaliar.zul",
 					null, null);
 			window.doModal();
+			
 		}
 		else{
-			System.out.println("avaliando coor");
 			// se ainda não fez a auto avaliação e se tem uma auto avaliação pra fazer
 			if(!avaliacaoDAO.jaSeAvaliorDataAtual(usuario) && questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario)!=null){
+				System.out.println("avaliando auto");
 				//setando qual é o questionario que deve ser avaliado
 				questionarioAtual = questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario);//seta o questionario atual para um questionario de auto avaliação a ser avaliado
 				Window window = (Window) Executions.createComponents("/avaliar.zul",
@@ -111,6 +112,7 @@ public class HomeAlunoController extends GenericController {
 			else{
 				if(!avaliacaoDAO.jaAvaliouInfraestruturaDataAtual(usuario)){
 					//setando qual é o questionario que deve ser avaliado
+					System.out.println("avaliando infra");
 					questionarioAtual = questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario);
 					Window window = (Window) Executions.createComponents("/avaliar.zul",
 							null, null);
@@ -118,24 +120,13 @@ public class HomeAlunoController extends GenericController {
 				}
 				else{
 					if(!avaliacaoDAO.jaAvaliou(usuario,turmaAtual)){
-						System.out.println("AAAAAAAAAAAQUI "+questionarioAtual.getTituloQuestionario());
-						questionarioAtual = questionarioInicial;
-						System.out.println("AAAAAAAAAAAQUI "+questionarioAtual.getTituloQuestionario());
-						System.out.println("AAAAAAAAAAAQUI "+questionarioInicial.getTituloQuestionario());
-
-
+						System.out.println("avaliando prof");
+						questionarioAtual = HomeAlunoController.questionarioInicial;
 						Window window = (Window) Executions.createComponents("/avaliar.zul",
 								null, null);
 						window.doModal();
 						
-						Messagebox.show("Finalizado", "Concluído",
-								Messagebox.OK, Messagebox.INFORMATION,
-								new EventListener<Event>() {
-									@Override
-									public void onEvent(Event event) throws Exception {
-										Executions.sendRedirect(null);
-									}
-								});
+					
 					}
 				}
 			}
@@ -148,10 +139,11 @@ public class HomeAlunoController extends GenericController {
 
 		Usuario avaliado = null;
 		Turma turmaUsada = null;
-		System.out.printf("OI...."+questionarioAtual.getNomeTipoQuestionario()+"  "+questionarioAtual.getTituloQuestionario() );
 
 		//setando o usuario que vai ser avaliado---------------------------------------------
 		// verificando se antes deve avaliar alguma coisa, nao estou conseguindo importar o tipo de questionario pois
+		
+		System.out.println(")))))_____--------"+questionarioAtual.getTipoQuestionario());
 		
 		if(questionarioAtual.getTipoQuestionario() == 0){ // verifica se o questionario é do tipo coodenador
 			avaliado = usuarioDAO.retornaCoordenadorCurso(usuario.getCurso());
@@ -161,6 +153,7 @@ public class HomeAlunoController extends GenericController {
 			avaliado = usuario;
 			turmaUsada = turmaAtual;
 			System.out.println("avaliando prof");
+			
 
 		}
 		if(questionarioAtual.getTipoQuestionario() == 2){ // verifica se o questionario é do tipo auto avaliação
@@ -192,6 +185,7 @@ public class HomeAlunoController extends GenericController {
 			}
 			new RespostaDAO().salvarLista(respostas);
 			Clients.clearBusy();
+			if(questionarioAtual.getTipoQuestionario() != 1)
 			Messagebox.show("Avaliação Salva com Sucesso", "Concluído",
 					Messagebox.OK, Messagebox.INFORMATION,
 					new EventListener<Event>() {
@@ -200,6 +194,15 @@ public class HomeAlunoController extends GenericController {
 							avaliarAux();
 						}
 					});
+			else
+				Messagebox.show("Finalizado", "Concluído",
+						Messagebox.OK, Messagebox.INFORMATION,
+						new EventListener<Event>() {
+							@Override
+							public void onEvent(Event event) throws Exception {
+								Executions.sendRedirect(null);
+							}
+						});
 		}
 
 	}
