@@ -20,6 +20,7 @@ import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
+import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
 import br.ufjf.avaliacao.persistent.impl.PerguntaDAO;
 import br.ufjf.avaliacao.persistent.impl.PrazoQuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
@@ -40,6 +41,7 @@ public class QuestionariosController extends GenericController {
 	private List<Pergunta> perguntasAntigas = new ArrayList<Pergunta>();
 	private Pergunta pergunta = new Pergunta();
 	private PerguntaDAO perguntaDAO = new PerguntaDAO();
+	private AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
 	private Avaliacao avaliacao = new Avaliacao();
 	private Questionario questionario = new Questionario();
 	private static Questionario questionarioEditar = new Questionario();
@@ -49,6 +51,7 @@ public class QuestionariosController extends GenericController {
 	private List<PrazoQuestionario> prazos = new ArrayList<PrazoQuestionario>();
 	private List<PrazoQuestionario> prazosAntigos = new ArrayList<PrazoQuestionario>();
 	private PrazoQuestionarioDAO prazoDAO = new PrazoQuestionarioDAO();
+
 
 	@Init
 	public void init() throws HibernateException, Exception {
@@ -103,6 +106,7 @@ public class QuestionariosController extends GenericController {
 		prazos.add(prazo);
 		prazo = new PrazoQuestionario();
 	}
+	@Command
 	public void adcPrazo(@BindingParam("questionario") Questionario questionario) {
 		QuestionariosController.questionarioEditar = questionario;
 		Window window = (Window) Executions.createComponents("/add-prazo.zul",
@@ -129,6 +133,31 @@ public class QuestionariosController extends GenericController {
 		}
 
 	}
+	
+	@Command
+	public void excluiPrazo(@BindingParam("prazo") PrazoQuestionario prazo) { //deleta um prazo se for possivel
+		if(avaliacaoDAO.alguemJaAvaliou(questionario))
+			Messagebox.show("Prazo não pode ser excluido, já está em uso");
+			
+		else{
+			prazoDAO.exclui(prazo); // exclui o prazo
+			if(questionario.isAtivo()){
+				questionario.setAtivo(false);
+				questionarioDAO.editar(questionario);
+
+			}
+		
+			Messagebox.show("Prazo excluido", "Concluído", Messagebox.OK,
+				Messagebox.INFORMATION, new EventListener<Event>() {
+				@Override
+				public void onEvent(Event event) throws Exception {
+					Executions.sendRedirect(null);
+				}
+			});
+		}
+			
+	}
+
 
 	@Command
 	@NotifyChange({ "perguntas", "pergunta" })
