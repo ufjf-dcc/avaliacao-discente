@@ -114,10 +114,11 @@ public class QuestionariosController extends GenericController {
 		window.doModal();
 	}
 
+	
 	@Command
 	public void addPrazo(@BindingParam("window") Window w) {
 		if (new QuestionariosBusiness().prazoValido(prazo)) {
-			if (!prazo.getDataFinal().before(prazo.getDataInicial())) {
+			if (validadaData(prazo)) {
 				prazo.setQuestionario(questionario);	
 				prazoDAO.salvar(prazo);
 				prazos.add(prazo);
@@ -125,13 +126,26 @@ public class QuestionariosController extends GenericController {
 				prazo = new PrazoQuestionario();
 				w.detach();
 				Messagebox.show("Prazo Adicionado!");
-			} else {
-				Messagebox.show("Data final antes da data inicial");
-			}
+			} 
 		} else {
 			Messagebox.show("Data final e/ ou inicial inválida");
 		}
 
+	}
+	
+	private boolean validadaData(PrazoQuestionario prazo){
+		if(prazo.getDataFinal().before(prazo.getDataInicial())){
+			Messagebox.show("Data final antes da data inicial");
+			return false;
+		}
+		if(questionario.getPrazos()!=null)
+		for(int i=0;i<questionario.getPrazos().size();i++){
+			if(questionario.getPrazos().get(i).getDataFinal().after(prazo.getDataInicial())){		
+				Messagebox.show("Não pode criar nessa data");
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	@Command
@@ -144,7 +158,7 @@ public class QuestionariosController extends GenericController {
 			if(questionario.isAtivo()){
 				questionario.setAtivo(false);
 				questionarioDAO.editar(questionario);
-
+				ativa(questionario);
 			}
 		
 			Messagebox.show("Prazo excluido", "Concluído", Messagebox.OK,
