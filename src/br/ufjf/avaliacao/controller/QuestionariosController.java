@@ -291,16 +291,31 @@ public class QuestionariosController extends GenericController {
 		perguntas.set(index, aux);
 	}
 
+	
+	
 	@Command
-	public void ativa() {
-		for (Questionario q : listaQuestionarios(questionario
-				.getTipoQuestionario())) {
-			if (q.getIdQuestionario() == questionario.getIdQuestionario())
-				q.setAtivo(true);
-			else
-				q.setAtivo(false);
-			questionarioDAO.editar(q);
+	@NotifyChange("questionario")
+	public void ativa(@BindingParam("questionario") Questionario questionario) {
+		if(questionario.getPrazos()!=null){
+			for (Questionario q : listaQuestionarios(questionario.getTipoQuestionario())) {
+				if (q.getIdQuestionario() == questionario.getIdQuestionario())
+					q.setAtivo(true);
+				else
+					q.setAtivo(false);
+				questionarioDAO.editar(q);
+			}
+			Messagebox.show("Ativado", "Concluído",
+					Messagebox.OK, Messagebox.INFORMATION,
+					new EventListener<Event>() {
+						@Override
+						public void onEvent(Event event)
+								throws Exception {
+							Executions.sendRedirect(null);
+						}
+					});
 		}
+		else
+			Messagebox.show("Questionário não possui prazo");
 	}
 
 	public List<Pergunta> getPerguntas() {

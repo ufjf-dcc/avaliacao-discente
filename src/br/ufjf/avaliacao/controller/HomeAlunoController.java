@@ -65,17 +65,9 @@ public class HomeAlunoController extends GenericController {
 
 	}
 
+
 	@Command
 	public void avaliar(
-			@BindingParam("questionario") Questionario questionario,
-			@BindingParam("turma") Turma turma) {
-				
-	}
-	
-		
-	//FUNÇÂO DE TESTE (EXCLUIR DEPOIS)
-	@Command
-	public void teste(
 			@BindingParam("questionario") Questionario questionario,
 			@BindingParam("turma") Turma turma) {
 
@@ -88,7 +80,7 @@ public class HomeAlunoController extends GenericController {
 	// AGORA TEM QUE VERIFICAR SE JA AVALIOU O COOR A SI MESMO E A INFRA E ADICIONAR OS QUEST NECESSARIOS PARA O USUARIO AVALIAR
 		// se ainda não fez a  avaliação de coordenador e se tem uma avaliação de coordenador pra fazer
 
-	public void avaliarAux(){
+	private void avaliarAux(){
 		
 		if(!avaliacaoDAO.jaAvaliouCoordenadorDataAtual(usuario) && questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario)!=null){
 			//setando qual é o questionario que deve ser avaliado
