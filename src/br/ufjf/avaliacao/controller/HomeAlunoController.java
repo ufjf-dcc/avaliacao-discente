@@ -57,7 +57,6 @@ public class HomeAlunoController extends GenericController {
 	private List<Resposta> respostas = new ArrayList<Resposta>();
 	private Usuario coordAvaliado = usuarioDAO.retornaCoordAvaliado(usuario);
 	private static Questionario questionarioInicial = new Questionario();
-	
 
 	@Init
 	public void init() throws HibernateException, Exception {
@@ -135,7 +134,6 @@ public class HomeAlunoController extends GenericController {
 		//setando o usuario que vai ser avaliado---------------------------------------------
 		// verificando se antes deve avaliar alguma coisa, nao estou conseguindo importar o tipo de questionario pois
 		
-		System.out.println(")))))_____--------"+questionarioAtual.getTipoQuestionario());
 		
 		if(questionarioAtual.getTipoQuestionario() == 0){ // verifica se o questionario é do tipo coodenador
 			avaliado = usuarioDAO.retornaCoordenadorCurso(usuario.getCurso());

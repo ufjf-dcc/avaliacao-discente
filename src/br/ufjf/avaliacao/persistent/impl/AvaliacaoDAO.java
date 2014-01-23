@@ -97,20 +97,20 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 		try {
 			Query query = getSession() // carrega as avaliaçoes que esse aluno ja fez
 					.createQuery(
-							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.avaliado LEFT JOIN FETCH a.prazoQuestionario AS p LEFT JOIN FETCH p.questionario WHERE :dataAtual BETWEEN p.dataInicial AND p.dataFinal AND a.avaliando = :aluno");
+							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.avaliado LEFT JOIN FETCH a.prazoQuestionario AS p WHERE :dataAtual BETWEEN p.dataInicial AND p.dataFinal AND a.avaliando = :aluno");
 			query.setParameter("dataAtual", new Date());
 			query.setParameter("aluno", aluno);
-			//verifica as avaliaçoes(auto avaliações) com esse usuario que estao ativas agora
-			
+			//verifica as avaliaçoes(avaliaçoes de coordenador) com esse usuario que estao ativas agora
+
 			@SuppressWarnings("unchecked")
 			List<Avaliacao> a = query.list();
-
-			getSession().close();
 			
+			getSession().close();
+
 			if (!a.isEmpty()){// verific se esta vazio
-				for(int i=0;i<a.size();i++){ // verifica se o id do avaliado é igual o do avaliando
-					if(a.get(i).getPrazoQuestionario().getQuestionario().getTipoQuestionario() == 2) //se sim retorna true
-							return true;
+				for(int i=0;i<a.size();i++){ // verifica se alguma foi feita para um coordenador
+					if(a.get(i).getAvaliado().getTipoUsuario()==2) //se sim retorna true
+						return true;
 				}
 			}
 			else					//se nao retorna false
@@ -129,6 +129,7 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.avaliado LEFT JOIN FETCH a.prazoQuestionario AS p WHERE :dataAtual BETWEEN p.dataInicial AND p.dataFinal AND a.avaliando = :aluno");
 			query.setParameter("dataAtual", new Date());
 			query.setParameter("aluno", aluno);
+			//verifica as avaliaçoes(avaliaçoes de coordenador) com esse usuario que estao ativas agora
 
 			@SuppressWarnings("unchecked")
 			List<Avaliacao> a = query.list();
@@ -192,7 +193,32 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 		return null;
 	}
 
-	
+
+	//utilizado pra verificar se um professor ja foi avaliado por esse questionario para avaliar mais de um professor por turma
+		public boolean alguemJaAvaliouEsteProfessot(Questionario questionario, Usuario professor){
+			try {
+				Query query = getSession() // carrega as avaliações daquele questionario com o professor especifico
+						.createQuery(
+								"SELECT a FROM Avaliacao AS a  LEFT JOIN FETCH a.prazoQuestionario AS p LEFT JOIN LEFT JOIN FETCH p.questionario FETCH a.avaliado  WHERE a.avaliado = :professor AND p.questionario = :questionario");
+				query.setParameter("questionario", questionario);
+				query.setParameter("professor", professor);
+
+				@SuppressWarnings("unchecked")
+				List<Avaliacao> a = query.list();
+				
+				getSession().close();
+
+				if (!a.isEmpty()){// verific se esta vazio
+							return true;
+				}
+				else					//se nao retorna false
+					return false;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return false;
+		}
+
 
 }
 
