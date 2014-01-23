@@ -1,4 +1,6 @@
-<vlayout onCreate="@command('gerarGrafico')" apply="org.zkoss.bind.BindComposer"
-    viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.ResultadosController')">
-	<flashchart type="column" model="@load(vm.model) "/>
-</vlayout>
+<window onCreate="@command('gerarGrafico')"
+	apply="org.zkoss.bind.BindComposer"
+	viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.ResultadosController')"
+	border="normal" title="Grafico">
+	<flashchart type="column" model="@load(vm.model) " />
+</window>

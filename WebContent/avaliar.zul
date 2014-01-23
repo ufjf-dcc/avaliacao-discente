@@ -37,7 +37,7 @@
 						<radio label="Ruim" value="Ruim" />
 						<radio label="Regular" value="Regular" />
 						<radio label="Bom" value="Bom" />
-						<radio label="Muito Bom" value="Muito bom" />
+						<radio label="Muito Bom" value="Muito Bom" />
 					</radiogroup>
 					<radiogroup
 						onCheck="@command('escolha', string=self.selectedItem.value, pergunta=each)">

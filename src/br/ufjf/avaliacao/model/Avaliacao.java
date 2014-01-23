@@ -16,6 +16,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import br.ufjf.avaliacao.persistent.impl.RespostaDAO;
+
 /**
  * DTO da Tabela {@code Avaliacao} contém os atributos e relacionamentos da
  * mesma.
@@ -96,6 +98,14 @@ public class Avaliacao implements Serializable{
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "idPrazoQuestionario", nullable = false)
 	private PrazoQuestionario prazoQuestionario;
+
+	public List<Resposta> getRespostas() {
+		return new RespostaDAO().respostasAvaliacao(this);
+	}
+
+	public void setRespostas(List<Resposta> respostas) {
+		this.respostas = respostas;
+	}
 
 	public int getIdAvaliacao() {
 		return idAvaliacao;
