@@ -106,6 +106,7 @@ public class QuestionariosController extends GenericController {
 		prazos.add(prazo);
 		prazo = new PrazoQuestionario();
 	}
+	
 	@Command
 	public void adcPrazo(@BindingParam("questionario") Questionario questionario) {
 		QuestionariosController.questionarioEditar = questionario;
@@ -158,7 +159,6 @@ public class QuestionariosController extends GenericController {
 			if(questionario.isAtivo()){
 				questionario.setAtivo(false);
 				questionarioDAO.editar(questionario);
-				ativa(questionario);
 			}
 		
 			Messagebox.show("Prazo excluido", "Concluído", Messagebox.OK,
@@ -310,7 +310,7 @@ public class QuestionariosController extends GenericController {
 	@Command
 	@NotifyChange("questionario")
 	public void ativa(@BindingParam("questionario") Questionario questionario) {
-		if(questionario.getPrazos()!=null){
+		if(!questionario.getPrazos().isEmpty()){
 			for (Questionario q : listaQuestionarios(questionario.getTipoQuestionario())) {
 				if (q.getIdQuestionario() == questionario.getIdQuestionario())
 					q.setAtivo(true);
