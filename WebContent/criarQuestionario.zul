@@ -36,13 +36,13 @@
 				<row>
 					<textbox
 						value="@load(each.tituloPergunta) @save(each.tituloPergunta, before='adicionaPergunta')" />
-					<combobox width="95%" model="@load(vm.tiposPergunta)"
-						value="@load(each.tipoPergunta)"
+					<combobox width="95%"
+						model="@load(vm.tiposPergunta)" value="@load(each.tipoPergunta)"
 						selectedItem="@load(each.tipoPergunta) @save(each.tipoPergunta, before='adicionaPergunta')"
 						readonly="true">
 						<template name="model">
 							<comboitem
-								label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Escala numérica' : each eq 2 ? 'Escala conceitual' : 'Sim/Não')" />
+								label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Escala Numérica' : each eq 2 ? 'Escala Conceitual' : each eq 3 ? 'Sim/Nao' : 'Personalizada')" />
 						</template>
 					</combobox>
 
@@ -77,13 +77,12 @@
 						<textbox width="95%"
 							value="@bind(fx.tituloPergunta)" />
 						<combobox width="95%"
+							model="@load(vm.tiposPergunta)"
 							selectedItem="@bind(fx.tipoPergunta)" readonly="true">
-							<comboitem label="Texto" value="0" />
-							<comboitem label="Escala numérica"
-								value="1" />
-							<comboitem label="Escala conceitual"
-								value="2" />
-							<comboitem label="Sim/Não" value="3" />
+							<template name="model">
+								<comboitem
+									label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Escala Numérica' : each eq 2 ? 'Escala Conceitual' : each eq 3 ? 'Sim/Não' : 'Personalizada')" />
+							</template>
 						</combobox>
 						<button label="Adicionar Pergunta"
 							onClick="@command('adicionaPergunta')" />
