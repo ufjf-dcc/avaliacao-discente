@@ -243,10 +243,10 @@ public class QuestionariosController extends GenericController {
 	public void salvarQuest() {
 		if (perguntas.size() > 1) {
 			if (questionarioDAO.editar(questionario)) {
-				if (prazoDAO.excluiLista(prazosAntigos)) {
+			/*	if (prazoDAO.excluiLista(prazos)) {
 					for (PrazoQuestionario p : prazos)
 						p.setQuestionario(questionario);
-					prazoDAO.salvarLista(prazos);
+					prazoDAO.salvarLista(prazos); */
 				}
 				if (perguntaDAO.excluiLista(perguntasAntigas)) {
 					for (Pergunta pergunta : perguntas) {
@@ -267,7 +267,7 @@ public class QuestionariosController extends GenericController {
 				}
 			}
 		}
-	}
+	
 
 	@Command
 	@NotifyChange({ "perguntas", "pergunta" })

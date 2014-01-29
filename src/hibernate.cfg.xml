@@ -26,6 +26,7 @@
 		<mapping class="br.ufjf.avaliacao.model.PrazoQuestionario" />
 		<mapping class="br.ufjf.avaliacao.model.Questionario" />
 		<mapping class="br.ufjf.avaliacao.model.Resposta" />
+		<mapping class="br.ufjf.avaliacao.model.RespostaEspecifica" />
 		<mapping class="br.ufjf.avaliacao.model.Turma" />
 		<mapping class="br.ufjf.avaliacao.model.Usuario" />
 	</session-factory>

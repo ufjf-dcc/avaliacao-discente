@@ -1,0 +1,38 @@
+<zk>
+	<window apply="org.zkoss.bind.BindComposer" width="550px"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AddRespostaEspecificaController')"
+		form="@id('fm') @load(vm.resposta) @save(vm.resposta, before='adicionarResposta')"
+		title="Adicionar Perguntas Personalizadas" border="normal"
+		closable="true" id="win">
+		<grid model="@load(vm.respostas)">
+			<columns>
+				<column align="center" />
+				<column align="center" />
+			</columns>
+			<template name="model">
+				<row>
+					<textbox value="@bind(each.respostaEspecifica)" />
+					<button image="/img/delete.png"
+						onClick="@command('excluirResposta', resposta=each)" />
+				</row>
+			</template>
+		</grid>
+		<grid>
+			<columns>
+				<column />
+				<column />
+				<column />
+			</columns>
+			<rows>
+				<row align="center">
+					<textbox value="@bind(fm.respostaEspecifica)"
+						onOK="@command('adicionarResposta')" />
+					<button label="Adicionar"
+						onClick="@command('adicionarResposta')" />
+					<button label="Finalizar"
+						onClick="@command('terminar', window=win)" />
+				</row>
+			</rows>
+		</grid>
+	</window>
+</zk>

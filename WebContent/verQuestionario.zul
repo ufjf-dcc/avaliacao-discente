@@ -25,7 +25,7 @@
 						<label value="@load(each.dataInicialFormatada)" />
 						<label value="@load(each.dataFinalFormatada)" />
 						<div>
-							<button label="Excluir"
+							<button image="/img/delete.png"
 								onClick="@command('excluiPrazo',prazo=each)" />
 						</div>
 					</row>
