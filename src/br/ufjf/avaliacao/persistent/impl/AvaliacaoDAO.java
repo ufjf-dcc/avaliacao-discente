@@ -18,22 +18,10 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 	//arrumar
 	public boolean jaAvaliou(Usuario usuario, Turma turma) {
 		
-		try {
-			Query query = getSession()
-					.createQuery(
-							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.turma AS t WHERE a.avaliando = :usuario AND t = :turma");
-			query.setParameter("turma", turma);
-			query.setParameter("usuario", usuario);
-
-			List<Avaliacao> a = query.list();
-			getSession().close();
-
-			if (!a.isEmpty())
-				return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
+	AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
+	if(avaliacaoDAO.jaAvaliouTodosProfessoresTurma(usuario, turma))
+		return true;
+	return false;
 	}
 
 	
@@ -219,6 +207,79 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 			return false;
 		}
 
+		
+		//utilizado pra verificar se uma pessoa ja avaliou outra
+		public boolean avaliadoEAvaliando(Usuario avaliado, Usuario avaliando){
+			try {
+				Query query = getSession() // carrega as avaliações daquele questionario com o professor especifico
+						.createQuery(
+								"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.avaliado WHERE a.avaliando = :avaliando AND a.avaliado = :avaliado");
+				query.setParameter("avaliando", avaliando);
+				query.setParameter("avaliado", avaliado);
+				
+				@SuppressWarnings("unchecked")
+				List<Avaliacao> a = query.list();
+				getSession().close();
+				
+				if (!a.isEmpty()){// verific se esta vazio
+					return true;
+				}
+				else					//se nao retorna false
+					return false;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return false;
+		}
+		
+		//verifica se o aluno ja avaliou todos os professores da turma em questão
+		public boolean jaAvaliouTodosProfessoresTurma(Usuario aluno, Turma turma){
+			UsuarioDAO usuarioDAO = new UsuarioDAO();
+			List<Usuario> professores = usuarioDAO.retornaProfessoresTurma(turma);
+			
+			for(int i=0;i<professores.size();i++){
+				if(!alunoJaAvaliouEsteProfessor(aluno, professores.get(i), turma))
+					return false;
+			}
+			return true;
+		}
+		
+		public List<Usuario> retornaProfessoresNaoAvaliados(Usuario aluno,Turma turma){
+			UsuarioDAO usuarioDAO = new UsuarioDAO();
+			List<Usuario> professores = usuarioDAO.retornaProfessoresTurma(turma);
+			
+			for(int i=0;i<professores.size();i++){
+				if(!alunoJaAvaliouEsteProfessor(aluno, professores.get(i), turma))
+					professores.remove(i);
+			}
+			return professores;
+		}
 
+		public boolean alunoJaAvaliouEsteProfessor(Usuario aluno,Usuario professor,Turma turma){
+			try {
+				Query query = getSession() // carrega as avaliações daquele questionario com o professor especifico
+						.createQuery(
+								"SELECT a FROM Avaliacao AS a  LEFT JOIN FETCH a.avaliado LEFT JOIN FETCH a.turma WHERE a.avaliado = :professor AND a.avaliando = :aluno AND a.turma = :turma ");
+				query.setParameter("turma", turma);
+				query.setParameter("professor", professor);
+				query.setParameter("aluno", aluno);
+
+
+				@SuppressWarnings("unchecked")
+				List<Avaliacao> a = query.list();
+				
+				getSession().close();
+
+				if (!a.isEmpty()){// verific se esta vazio
+							return true;
+				}
+				else					//se nao retorna false
+					return false;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return false;
+		}
+		
 }
 
