@@ -15,7 +15,7 @@ import br.ufjf.avaliacao.persistent.IAvalicaoDAO;
 public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 
 	
-	//arrumar
+	//se ja avaliou todos os professores daquela turma retorna true
 	public boolean jaAvaliou(Usuario usuario, Turma turma) {
 			AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
 			if(avaliacaoDAO.jaAvaliouTodosProfessoresTurma(usuario, turma))
@@ -24,9 +24,8 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 
 	}
 
-	
-	
-	public boolean jaAvaliouNestePrazo(PrazoQuestionario prazo, Usuario aluno) {// procura se há alguma avaliação no que possua o prazo em questão
+	// procura se há alguma avaliação no que possua o prazo em questão
+	public boolean jaAvaliouNestePrazo(PrazoQuestionario prazo, Usuario aluno) {
 		try {
 			Query query = getSession()
 					.createQuery(
@@ -182,7 +181,7 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 	}
 
 
-	//utilizado pra verificar se um professor ja foi avaliado por esse questionario para avaliar mais de um professor por turma
+	//verifica se um professor ja foi avaliado por esse questionario para avaliar mais de um professor por turma
 		public boolean alguemJaAvaliouEsteProfessot(Questionario questionario, Usuario professor){
 			try {
 				Query query = getSession() // carrega as avaliações daquele questionario com o professor especifico
