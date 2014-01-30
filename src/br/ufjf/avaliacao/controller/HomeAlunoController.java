@@ -129,20 +129,24 @@ public class HomeAlunoController extends GenericController {
 
 		Usuario avaliado = null;
 		Turma turmaUsada = null;
-
+		
 		//setando o usuario que vai ser avaliado e a turma-----------------------------------------------------
 		if(questionarioAtual.getTipoQuestionario() == 0){ // verifica se o questionario é do tipo coodenador
 			avaliado = usuarioDAO.retornaCoordenadorCurso(usuario.getCurso());
+
 		}
 		if(questionarioAtual.getTipoQuestionario() == 1){ // verifica se o questionario é do tipo professor
 			avaliado = avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario, turmaAtual).get(0);
 			turmaUsada = turmaAtual;
+
 		}
 		if(questionarioAtual.getTipoQuestionario() == 2){ // verifica se o questionario é do tipo auto avaliação
 			avaliado = usuario;
 
 		}
 		if(questionarioAtual.getTipoQuestionario() == 3){ // verifica se o questionario é do tipo infraestrutura
+			if(avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario, turmaAtual).size()==1)
+				ultimo=true;
 			avaliado = null;
 		}
 		//-------------------------------------------------------------------------------
@@ -163,7 +167,8 @@ public class HomeAlunoController extends GenericController {
 			}
 			new RespostaDAO().salvarLista(respostas);
 			Clients.clearBusy();
-			if(questionarioAtual.getTipoQuestionario() != 1 && avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario, turmaAtual).size()!=0)
+
+			if(questionarioAtual.getTipoQuestionario() != 1 || avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario, turmaAtual).size() >0)
 
 			Messagebox.show("Avaliação Salva com Sucesso", "Concluído",
 					Messagebox.OK, Messagebox.INFORMATION,
@@ -174,6 +179,7 @@ public class HomeAlunoController extends GenericController {
 						}
 					});
 			else
+
 				Messagebox.show("Finalizado", "Concluído",
 						Messagebox.OK, Messagebox.INFORMATION,
 						new EventListener<Event>() {

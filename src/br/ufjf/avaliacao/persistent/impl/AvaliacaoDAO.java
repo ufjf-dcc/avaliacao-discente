@@ -17,11 +17,11 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 	
 	//arrumar
 	public boolean jaAvaliou(Usuario usuario, Turma turma) {
-		
-	AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
-	if(avaliacaoDAO.jaAvaliouTodosProfessoresTurma(usuario, turma))
-		return true;
-	return false;
+			AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
+			if(avaliacaoDAO.jaAvaliouTodosProfessoresTurma(usuario, turma))
+				return true;
+			return false;
+
 	}
 
 	
@@ -249,7 +249,7 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 			List<Usuario> professores = usuarioDAO.retornaProfessoresTurma(turma);
 			
 			for(int i=0;i<professores.size();i++){
-				if(!alunoJaAvaliouEsteProfessor(aluno, professores.get(i), turma))
+				if(alunoJaAvaliouEsteProfessor(aluno, professores.get(i), turma))
 					professores.remove(i);
 			}
 			return professores;
