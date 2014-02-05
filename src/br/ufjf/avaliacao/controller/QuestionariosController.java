@@ -97,6 +97,19 @@ public class QuestionariosController extends GenericController {
 				"/criarPerguntas.zul", null, null);
 		window.doModal();
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Command
+	public void fecharCriarQuest() {
+		Messagebox.show("Se você fechar a janela perderá todas as modificações", "Cuidado!", Messagebox.OK,
+				Messagebox.EXCLAMATION, new EventListener<Event>() {
+					@Override
+					public void onEvent(Event event) throws Exception {
+						if(perguntaDAO.excluiLista((List<Pergunta>) session.getAttribute("perguntas")))
+							questionarioDAO.exclui(session.getAttribute("questionario"));						
+					}
+				});
+	}
 
 	@Command
 	@NotifyChange({ "perguntas", "pergunta" })
@@ -105,6 +118,9 @@ public class QuestionariosController extends GenericController {
 				.getTituloPergunta())) {
 			pergunta.setTituloPergunta(pergunta.getTituloPergunta().trim());
 			if (pergunta.getTipoPergunta() == 4) {
+				pergunta.setQuestionario((Questionario) session.getAttribute("questionario"));
+				perguntaDAO.salvaOuEdita(pergunta);
+				session.setAttribute("perguntaEspecifica", pergunta);
 				Window wind = (Window) Executions.createComponents(
 						"/addRespostaEspecifica.zul", null, null);
 				wind.doModal();
@@ -227,10 +243,36 @@ public class QuestionariosController extends GenericController {
 	// @NotifyChange({ "perguntas", "questionario" })
 	public void adcPerguntas() {
 		questionario.setCurso(usuario.getCurso());
-		session.setAttribute("questionarioAtual", questionario);
+		session.setAttribute("questionario", questionario);
 		if (questionarioDAO.salvaOuEdita(questionario)) {
 			criarPerguntas();
 		}
+	}
+	
+	@Command
+	@SuppressWarnings("unchecked")
+	public void finalizarCriacao() {
+		if(!((List<Pergunta>) session.getAttribute("perguntas")).isEmpty()) {
+			Messagebox.show("Questionario Criado", "Concluído", Messagebox.OK,
+					Messagebox.INFORMATION, new EventListener<Event>() {
+						@Override
+						public void onEvent(Event event) throws Exception {
+							Executions.sendRedirect(null);
+						}
+					});
+		} else {
+			Messagebox.show("Você ainda não adicionou perguntas a esse questionario");
+		}
+	}
+
+	
+	@Command
+	public void finalizarPerguntas(){
+		for(Pergunta p : perguntas) {
+			p.setQuestionario((Questionario) session.getAttribute("questionario"));
+			perguntaDAO.salvaOuEdita(p);
+		}
+		session.setAttribute("perguntas", perguntas);
 	}
 
 	@Command

@@ -25,14 +25,13 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "Pergunta")
 public class Pergunta implements Serializable {
-	
+
 	private static final long serialVersionUID = 1L;
-	
-	
+
 	/**
-	 * Campo com ID da pergunta. Relaciona com a coluna
-	 * {@code idPergunta} do banco e é gerado por autoincrement do MySQL
-	 * através das anotações {@code @GeneratedValue(generator = "increment")} e
+	 * Campo com ID da pergunta. Relaciona com a coluna {@code idPergunta} do
+	 * banco e é gerado por autoincrement do MySQL através das anotações
+	 * {@code @GeneratedValue(generator = "increment")} e
 	 * {@code @GenericGenerator(name = "increment", strategy = "increment")}
 	 * 
 	 */
@@ -41,35 +40,31 @@ public class Pergunta implements Serializable {
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
 	private int idPergunta;
-	
-	
+
 	/**
-	 * Campo com o título da pergunta. Relaciona com a coluna
-	 * {@code pergunta} do banco através da anotação
+	 * Campo com o título da pergunta. Relaciona com a coluna {@code pergunta}
+	 * do banco através da anotação
 	 * {@code @Column(name = "pergunta", length = 45, nullable = false)}.
 	 */
 	@Column(name = "tituloPergunta", length = 120, nullable = false)
 	private String tituloPergunta;
 
-	
 	@Column(name = "tipoPergunta", nullable = false)
 	private Integer tipoPergunta;
 
-	
 	/**
 	 * Relacionamento N para 1 entre pergunta e questionário. Mapeando
 	 * {@link Questionario} na variável {@code questionario} e retorno do tipo
 	 * {@code LAZY} que indica que não será carregado automáticamente este dado
 	 * quando retornarmos a {@link Pergunta}.
 	 * 
-	 */	
+	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "idQuestionario", nullable = false)
 	private Questionario questionario;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "resposta")
 	private List<Resposta> respostas = new ArrayList<Resposta>();
-	
 
 	@Transient
 	private String nomeTipoPergunta;
@@ -78,57 +73,49 @@ public class Pergunta implements Serializable {
 		return idPergunta;
 	}
 
-
 	public void setIdPergunta(int idPergunta) {
 		this.idPergunta = idPergunta;
 	}
-
 
 	public String getTituloPergunta() {
 		return tituloPergunta;
 	}
 
-
 	public void setTituloPergunta(String tituloPergunta) {
 		this.tituloPergunta = tituloPergunta;
 	}
-
 
 	public Integer getTipoPergunta() {
 		return tipoPergunta;
 	}
 
-
 	public void setTipoPergunta(Integer tipoPergunta) {
 		this.tipoPergunta = tipoPergunta;
 	}
-
 
 	public Questionario getQuestionario() {
 		return questionario;
 	}
 
-
 	public void setQuestionario(Questionario questionario) {
 		this.questionario = questionario;
 	}
 
-
 	public String getNomeTipoPergunta() {
-		if (tipoPergunta==0)
+		if (tipoPergunta == 0)
 			return "Texto";
-		else if (tipoPergunta==1)
+		else if (tipoPergunta == 1)
 			return "Escala numérica";
 		else if (tipoPergunta == 2)
 			return "Escala conceitual";
-		else return "Sim/Não";
+		else if (tipoPergunta == 3)
+			return "Sim/Não";
+		else
+			return "Personalizada";
 	}
 
-	
 	public void setNomeTipoPergunta(String nomeTipoPergunta) {
 		this.nomeTipoPergunta = nomeTipoPergunta;
 	}
-	
-	
-	
+
 }

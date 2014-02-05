@@ -12,6 +12,7 @@ import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Window;
 
 import br.ufjf.avaliacao.business.AddRespostaEspecificaBusiness;
+import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.RespostaEspecifica;
 import br.ufjf.avaliacao.persistent.impl.RespostaEspecificaDAO;
 
@@ -40,10 +41,11 @@ public class AddRespostaEspecificaController extends GenericController {
 
 	@Command
 	public void terminar(@BindingParam("window") final Window window) {
-		/*
-		 * Falta associar a resposta especifica com uma pergunta
-		 */
 		if (!respostas.isEmpty()) {
+			for (RespostaEspecifica r : respostas) {
+				r.setPergunta((Pergunta) session
+						.getAttribute("perguntaEspecifica"));
+			}
 			if (new RespostaEspecificaDAO().salvarLista(respostas)) {
 				Messagebox.show("Respostas adicionadas", "Concluído",
 						Messagebox.OK, Messagebox.INFORMATION,
@@ -58,7 +60,7 @@ public class AddRespostaEspecificaController extends GenericController {
 			Messagebox.show("Nenhuma resposta adicionada ainda.");
 		}
 	}
-	
+
 	@Command
 	@NotifyChange("respostas")
 	public void down(@BindingParam("resposta") RespostaEspecifica resposta) {

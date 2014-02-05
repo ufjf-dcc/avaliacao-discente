@@ -1,7 +1,7 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
 <window style="text-align:center;" id="win" title="Criar Questionário"
 	border="normal" closable="true"
-	onClose="Executions.sendRedirect(null)">
+	onClose="@command('fecharCriarQuest')">
 	<div style="width:300px;margin:5px;"
 		apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
@@ -28,7 +28,11 @@
 			</auxhead>
 			<columns></columns>
 		</grid>
-		<button style="margin-top:5px;" label="Adicionar Perguntas"
-			onClick="@command('adcPerguntas')" />
+		<div align="center" style="margin-top:5px;">
+			<button label="Adicionar Perguntas"
+				onClick="@command('adcPerguntas')" />
+			<button label="Finalizar" onClick="@command('finalizarCriacao')" />
+		</div>
+
 	</div>
 </window>

@@ -1,5 +1,6 @@
 package br.ufjf.avaliacao.persistent.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -30,6 +31,7 @@ public class PerguntaDAO extends GenericoDAO implements IPerguntaDAO {
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Pergunta> getPerguntasQuestionario(Questionario questionario) {
 		try {
@@ -38,13 +40,12 @@ public class PerguntaDAO extends GenericoDAO implements IPerguntaDAO {
 							"SELECT p FROM Pergunta AS p WHERE p.questionario = :questionario");
 			query.setParameter("questionario", questionario);
 
-			@SuppressWarnings("unchecked")
-			List<Pergunta> ps = (List<Pergunta>) query.list();
+			List<Pergunta> ps = new ArrayList<Pergunta>();
+			ps = (List<Pergunta>) query.list();
 			getSession().close();
 
-			if (ps != null) {
-				return ps;
-			}
+			return ps;
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

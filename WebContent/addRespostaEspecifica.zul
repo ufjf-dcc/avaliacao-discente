@@ -1,3 +1,4 @@
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
 <zk>
 	<window apply="org.zkoss.bind.BindComposer" width="550px"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AddRespostaEspecificaController')"

@@ -1,8 +1,8 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
 <zk>
-	<window width="600px" apply="org.zkoss.bind.BindComposer"
+	<window width="700px" apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
-		title="Criar Perguntas" border="normal" closable="true">
+		title="Criar Perguntas" border="normal" closable="true" onClose="@command('finalizarPerguntas')">
 		<grid model="@load(vm.perguntas)">
 			<columns style="text-align:center;">
 				<column label="Título" />
