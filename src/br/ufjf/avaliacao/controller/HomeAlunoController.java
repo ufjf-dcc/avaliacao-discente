@@ -45,7 +45,7 @@ public class HomeAlunoController extends GenericController {
 			.prazoQuestionario(questionarioProf);
 	private static Questionario questionarioAtual = new Questionario();
 	private static Turma turmaAtual = new Turma();
-
+	
 	private Questionario questionarioCoord = questionarioDAO
 			.retornaQuestinarioParaUsuarioCoord(usuario);
 	private Questionario questionarioAuto = questionarioDAO
@@ -57,7 +57,8 @@ public class HomeAlunoController extends GenericController {
 	private List<Resposta> respostas = new ArrayList<Resposta>();
 	private Usuario coordAvaliado = usuarioDAO.retornaCoordAvaliado(usuario);
 	private static Questionario questionarioInicial = new Questionario();
-
+	
+	
 	@Init
 	public void init() throws HibernateException, Exception {
 		testaPermissaoAluno();
@@ -75,88 +76,76 @@ public class HomeAlunoController extends GenericController {
 		turmaAtual = turma;
 		avaliarAux();
 	}
-
-	// AGORA TEM QUE VERIFICAR SE JA AVALIOU O COOR A SI MESMO E A INFRA E ADICIONAR OS QUEST NECESSARIOS PARA O USUARIO AVALIAR
-		// se ainda não fez a  avaliação de coordenador e se tem uma avaliação de coordenador pra fazer
-
+	
+	//essa função diz quem precisa ser avaliado agora
 	private void avaliarAux(){
-		
+		// se ainda não fez a  avaliação de coordenador e se tem uma avaliação de coordenador pra fazer
 		if(!avaliacaoDAO.jaAvaliouCoordenadorDataAtual(usuario) && questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario)!=null){
 			//setando qual é o questionario que deve ser avaliado
-			System.out.println("avaliando coor");
 			questionarioAtual = questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario);//seta o questionario atual para um questionario de coordenador a ser avaliado
 			Window window = (Window) Executions.createComponents("/avaliar.zul",
 					null, null);
+			window.setTitle("Avaliação de Coordenador - "+usuarioDAO.retornaCoordAvaliado(usuario).getNome());
 			window.doModal();
 			
 		}
 		else{
 			// se ainda não fez a auto avaliação e se tem uma auto avaliação pra fazer
 			if(!avaliacaoDAO.jaSeAvaliorDataAtual(usuario) && questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario)!=null){
-				System.out.println("avaliando auto");
 				//setando qual é o questionario que deve ser avaliado
 				questionarioAtual = questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario);//seta o questionario atual para um questionario de auto avaliação a ser avaliado
 				Window window = (Window) Executions.createComponents("/avaliar.zul",
 						null, null);
+				window.setTitle("Autoavaliação");
 				window.doModal();
 			}
 			else{
-				if(!avaliacaoDAO.jaAvaliouInfraestruturaDataAtual(usuario)){
+				if(!avaliacaoDAO.jaAvaliouInfraestruturaDataAtual(usuario) && questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario)!=null){
 					//setando qual é o questionario que deve ser avaliado
-					System.out.println("avaliando infra");
 					questionarioAtual = questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario);
 					Window window = (Window) Executions.createComponents("/avaliar.zul",
 							null, null);
+					window.setTitle("Avaliação de Infraestrutura");
 					window.doModal();
 				}
 				else{
-					if(!avaliacaoDAO.jaAvaliou(usuario,turmaAtual)){
-						System.out.println("avaliando prof");
+					if(!avaliacaoDAO.jaAvaliouTodosProfessoresTurma(usuario, turmaAtual)){
 						questionarioAtual = HomeAlunoController.questionarioInicial;
 						Window window = (Window) Executions.createComponents("/avaliar.zul",
 								null, null);
+						window.setTitle("Avaliação de Professor - "+avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario,turmaAtual).get(0).getNome());
 						window.doModal();
-						
-					
 					}
 				}
 			}
 		}
 	}
 
-	
+	//salva a avaliação e verifica se vai precisar retornar na função que verifica quem deve ser avalido agora (avaliarAuz)
 	@Command
-	public void terminarAvaliacaoProfessor(@BindingParam("window") Window win) {
+	public void terminarAvaliacao(@BindingParam("window") Window win) {
 
 		Usuario avaliado = null;
 		Turma turmaUsada = null;
-
-		//setando o usuario que vai ser avaliado---------------------------------------------
-		// verificando se antes deve avaliar alguma coisa, nao estou conseguindo importar o tipo de questionario pois
 		
-		
+		//setando o usuario que vai ser avaliado e a turma-----------------------------------------------------
 		if(questionarioAtual.getTipoQuestionario() == 0){ // verifica se o questionario é do tipo coodenador
 			avaliado = usuarioDAO.retornaCoordenadorCurso(usuario.getCurso());
-			System.out.println("avaliando coor");
+
 		}
 		if(questionarioAtual.getTipoQuestionario() == 1){ // verifica se o questionario é do tipo professor
-			avaliado = usuario;
+			avaliado = avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario, turmaAtual).get(0);
 			turmaUsada = turmaAtual;
-			System.out.println("avaliando prof");
-			
 
 		}
 		if(questionarioAtual.getTipoQuestionario() == 2){ // verifica se o questionario é do tipo auto avaliação
 			avaliado = usuario;
-			System.out.println("avaliando auto");
 
 		}
 		if(questionarioAtual.getTipoQuestionario() == 3){ // verifica se o questionario é do tipo infraestrutura
+			if(avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario, turmaAtual).size()==1)
 			avaliado = null;
-			System.out.println("avaliando infra");
-
 		}
-
 		//-------------------------------------------------------------------------------
 					
 		Clients.showBusy("Salvando avaliação..");
@@ -175,7 +164,10 @@ public class HomeAlunoController extends GenericController {
 			}
 			new RespostaDAO().salvarLista(respostas);
 			Clients.clearBusy();
-			if(questionarioAtual.getTipoQuestionario() != 1)
+			
+			//se tiver mais de um professor a ser avaliado ou nao for uma avaliação de professor, ele verifica o que mais precisa ser avaliado
+			if(questionarioAtual.getTipoQuestionario() != 1 || avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario, turmaAtual).size() >0)
+
 			Messagebox.show("Avaliação Salva com Sucesso", "Concluído",
 					Messagebox.OK, Messagebox.INFORMATION,
 					new EventListener<Event>() {
@@ -184,6 +176,7 @@ public class HomeAlunoController extends GenericController {
 							avaliarAux();
 						}
 					});
+			// se acabar de avaliar a ultima coisa(que seria o ultimo professor da turma(ou o unico)) ele finaliza as avaliaçoes e da um refresh na pagina 
 			else
 				Messagebox.show("Finalizado", "Concluído",
 						Messagebox.OK, Messagebox.INFORMATION,
