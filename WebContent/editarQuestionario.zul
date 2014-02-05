@@ -41,7 +41,7 @@
 						model="@load(vm.tiposPergunta)" readonly="true" width="70%">
 						<template name="model">
 							<comboitem
-								label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Escala Numérica' : each eq 2 ? 'Escala Conceitual' : 'Sim/Não')" />
+								label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Escala Numérica' : each eq 2 ? 'Escala Conceitual' : each eq 3 ? 'Sim/Não' : 'Personalizada')" />
 						</template>
 					</combobox>
 					<div style="text-align:center">
@@ -79,7 +79,7 @@
 							selectedItem="@bind(fx.tipoPergunta)" readonly="true">
 							<template name="model">
 								<comboitem
-									label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Escala Numérica' : each eq 2 ? 'Escala Conceitual' : 'Sim/Não')" />
+									label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Escala Numérica' : each eq 2 ? 'Escala Conceitual' : each eq 3 ? 'Sim/Não' : 'Personalizada')" />
 							</template>
 						</combobox>
 						<div align="center">

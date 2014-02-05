@@ -58,6 +58,24 @@ public class AddRespostaEspecificaController extends GenericController {
 			Messagebox.show("Nenhuma resposta adicionada ainda.");
 		}
 	}
+	
+	@Command
+	@NotifyChange("respostas")
+	public void down(@BindingParam("resposta") RespostaEspecifica resposta) {
+		int index = respostas.indexOf(resposta);
+		RespostaEspecifica aux = respostas.get(index + 1);
+		respostas.set(index + 1, resposta);
+		respostas.set(index, aux);
+	}
+
+	@Command
+	@NotifyChange("respostas")
+	public void up(@BindingParam("resposta") RespostaEspecifica resposta) {
+		int index = respostas.indexOf(resposta);
+		RespostaEspecifica aux = respostas.get(index - 1);
+		respostas.set(index - 1, resposta);
+		respostas.set(index, aux);
+	}
 
 	public List<RespostaEspecifica> getRespostas() {
 		return respostas;

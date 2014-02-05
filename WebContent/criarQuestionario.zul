@@ -2,18 +2,20 @@
 <window style="text-align:center;" id="win" title="Criar Questionário"
 	border="normal" closable="true"
 	onClose="Executions.sendRedirect(null)">
-	<div style="width:800px;margin:5px;"
+	<div style="width:300px;margin:5px;"
 		apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
-		form="@id('fm') @load(vm.questionario) @save(vm.questionario, before='cria')"
+		form="@id('fm') @load(vm.questionario) @save(vm.questionario, before='adcPerguntas')"
 		id="form">
 		<grid model="@load(vm.perguntas)">
-			<auxhead style="text-align:center">
-				<auxheader label="Título:" colspan="2">
-					<textbox width="90%"
+			<auxhead>
+				<auxheader align="center" label="Título:">
+					<textbox width="80%"
 						value="@bind(fm.tituloQuestionario)" />
 				</auxheader>
-				<auxheader label="Tipo:">
+			</auxhead>
+			<auxhead>
+				<auxheader align="center" label="Tipo:">
 					<combobox width="80%"
 						model="@load(vm.tiposQuestionario)"
 						selectedItem="@bind(fm.tipoQuestionario)" readonly="true">
@@ -24,73 +26,9 @@
 					</combobox>
 				</auxheader>
 			</auxhead>
-			<auxhead>
-				<auxheader align="center" label="Perguntas" colspan="3" />
-			</auxhead>
-			<columns style="text-align:center;">
-				<column label="Título" />
-				<column label="Tipo" />
-				<column label="Opções" />
-			</columns>
-			<template name="model">
-				<row>
-					<textbox
-						value="@load(each.tituloPergunta) @save(each.tituloPergunta, before='adicionaPergunta')" />
-					<combobox width="95%"
-						model="@load(vm.tiposPergunta)" value="@load(each.tipoPergunta)"
-						selectedItem="@load(each.tipoPergunta) @save(each.tipoPergunta, before='adicionaPergunta')"
-						readonly="true">
-						<template name="model">
-							<comboitem
-								label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Escala Numérica' : each eq 2 ? 'Escala Conceitual' : each eq 3 ? 'Sim/Nao' : 'Personalizada')" />
-						</template>
-					</combobox>
-
-					<div style="text-align:center">
-						<button image="/img/delete.png"
-							onClick="@command('excluiPergunta',pergunta=each)" />
-						<button label="top"
-							onClick="@command('top',pergunta=each)" />
-						<button image="/img/up.png"
-							onClick="@command('up',pergunta=each)"
-							disabled="@load(not (forEachStatus.index eq forEachStatus.begin) ? 'false' : 'true')" />
-						<button image="/img/down.png"
-							onClick="@command('down',pergunta=each)"
-							disabled="@load(not (forEachStatus.index + 1 eq forEachStatus.end) ? 'false' : 'true')" />
-						<button label="bottom"
-							onClick="@command('bottom',pergunta=each)" />
-					</div>
-				</row>
-			</template>
+			<columns></columns>
 		</grid>
-		<div
-			form="@id('fx') @load(vm.pergunta) @save(vm.pergunta, before='adicionaPergunta')"
-			id="form2">
-			<grid>
-				<columns>
-					<column />
-					<column />
-					<column />
-				</columns>
-				<rows>
-					<row>
-						<textbox width="95%"
-							value="@bind(fx.tituloPergunta)" />
-						<combobox width="95%"
-							model="@load(vm.tiposPergunta)"
-							selectedItem="@bind(fx.tipoPergunta)" readonly="true">
-							<template name="model">
-								<comboitem
-									label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Escala Numérica' : each eq 2 ? 'Escala Conceitual' : each eq 3 ? 'Sim/Não' : 'Personalizada')" />
-							</template>
-						</combobox>
-						<button label="Adicionar Pergunta"
-							onClick="@command('adicionaPergunta')" />
-					</row>
-				</rows>
-			</grid>
-		</div>
-		<button style="margin-top:5px;" label="Criar Questionário"
-			onClick="@command('cria')" />
+		<button style="margin-top:5px;" label="Adicionar Perguntas"
+			onClick="@command('adcPerguntas')" />
 	</div>
 </window>

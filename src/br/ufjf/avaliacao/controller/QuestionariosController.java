@@ -92,14 +92,28 @@ public class QuestionariosController extends GenericController {
 		window.doModal();
 	}
 
+	public void criarPerguntas() {
+		Window window = (Window) Executions.createComponents(
+				"/criarPerguntas.zul", null, null);
+		window.doModal();
+	}
+
 	@Command
 	@NotifyChange({ "perguntas", "pergunta" })
 	public void adicionaPergunta() {
 		if (new QuestionariosBusiness().campoStrValido(pergunta
 				.getTituloPergunta())) {
 			pergunta.setTituloPergunta(pergunta.getTituloPergunta().trim());
-			perguntas.add(pergunta);
-			pergunta = new Pergunta();
+			if (pergunta.getTipoPergunta() == 4) {
+				Window wind = (Window) Executions.createComponents(
+						"/addRespostaEspecifica.zul", null, null);
+				wind.doModal();
+				perguntas.add(pergunta);
+				pergunta = new Pergunta();
+			} else {
+				perguntas.add(pergunta);
+				pergunta = new Pergunta();
+			}
 		}
 	}
 
@@ -111,7 +125,7 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	public void adcPrazo(@BindingParam("questionario") Questionario questionario) {
+	public void adcPrazo() {
 		QuestionariosController.questionarioEditar = questionario;
 		Window window = (Window) Executions.createComponents("/add-prazo.zul",
 				null, null);
@@ -133,7 +147,7 @@ public class QuestionariosController extends GenericController {
 		} else {
 			Messagebox.show("Data final e/ ou inicial inválida");
 		}
-
+		w.detach();
 	}
 
 	private boolean validadaData(PrazoQuestionario prazo) {
@@ -210,58 +224,36 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	@NotifyChange({ "perguntas", "questionario" })
-	public void cria() {
+	// @NotifyChange({ "perguntas", "questionario" })
+	public void adcPerguntas() {
 		questionario.setCurso(usuario.getCurso());
-		if (questionarioDAO.salvar(questionario)) {
-			
-			for (Pergunta pergunta : perguntas) {
-				pergunta.setQuestionario(questionario);
-			}
-			if (perguntaDAO.salvarLista(perguntas)) {
-
-				questionario = new Questionario();
-				pergunta = new Pergunta();
-				perguntas = new ArrayList<Pergunta>();
-				prazo = new PrazoQuestionario();
-			}
-			Messagebox.show("Questionario Criado", "Concluído", Messagebox.OK,
-					Messagebox.INFORMATION, new EventListener<Event>() {
-						@Override
-						public void onEvent(Event event) throws Exception {
-							Executions.sendRedirect(null);
-						}
-					});
+		session.setAttribute("questionarioAtual", questionario);
+		if (questionarioDAO.salvaOuEdita(questionario)) {
+			criarPerguntas();
 		}
 	}
 
 	@Command
 	public void salvarQuest() {
 		if (perguntas.size() > 1) {
-			if (questionarioDAO.editar(questionario)) {
-				/*
-				 * if (prazoDAO.excluiLista(prazos)) { for (PrazoQuestionario p
-				 * : prazos) p.setQuestionario(questionario);
-				 * prazoDAO.salvarLista(prazos);
-				 */
-			}
-			if (perguntaDAO.excluiLista(perguntasAntigas)) {
-				for (Pergunta pergunta : perguntas) {
-					pergunta.setQuestionario(questionario);
-				}
+			if (questionarioDAO.editar(questionario))
+				if (perguntaDAO.excluiLista(perguntasAntigas)) {
+					for (Pergunta pergunta : perguntas) {
+						pergunta.setQuestionario(questionario);
+					}
 
-				if (perguntaDAO.salvarLista(perguntas)) {
-					Messagebox.show("Questionário Salvo", "Concluído",
-							Messagebox.OK, Messagebox.INFORMATION,
-							new EventListener<Event>() {
-								@Override
-								public void onEvent(Event event)
-										throws Exception {
-									Executions.sendRedirect(null);
-								}
-							});
+					if (perguntaDAO.salvarLista(perguntas)) {
+						Messagebox.show("Questionário Salvo", "Concluído",
+								Messagebox.OK, Messagebox.INFORMATION,
+								new EventListener<Event>() {
+									@Override
+									public void onEvent(Event event)
+											throws Exception {
+										Executions.sendRedirect(null);
+									}
+								});
+					}
 				}
-			}
 		}
 	}
 
@@ -293,7 +285,7 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	@NotifyChange({ "perguntas", "pergunta" })
+	@NotifyChange("perguntas")
 	public void up(@BindingParam("pergunta") Pergunta pergunta) {
 		int index = perguntas.indexOf(pergunta);
 		Pergunta aux = perguntas.get(index - 1);
