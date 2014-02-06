@@ -1,6 +1,7 @@
 package br.ufjf.avaliacao.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.zkoss.bind.annotation.BindingParam;
@@ -18,12 +19,20 @@ import br.ufjf.avaliacao.persistent.impl.RespostaEspecificaDAO;
 
 public class AddRespostaEspecificaController extends GenericController {
 
-	List<RespostaEspecifica> respostas = new ArrayList<RespostaEspecifica>();
-	RespostaEspecifica resposta = new RespostaEspecifica();
+	private Pergunta pergunta = new Pergunta();
+	private List<RespostaEspecifica> respostas = new ArrayList<RespostaEspecifica>();
+	private RespostaEspecifica resposta = new RespostaEspecifica();
+	private List<Integer> tiposPergunta = Arrays.asList(0, 1, 2, 3);
 
 	@Command
+	public void initCriarPergunta(@BindingParam("window") Window w) {
+		pergunta = (Pergunta) session.getAttribute("pergunta");
+		w.setTitle("Criar respostas para a pergunta: " + pergunta.getTituloPergunta());
+	}
+	
+	@Command
 	@NotifyChange({ "respostas", "resposta" })
-	public void adicionarResposta() {
+	public void addNewResposta() {
 		if (new AddRespostaEspecificaBusiness().campoStrValido(resposta
 				.getRespostaEspecifica())) {
 			resposta.setRespostaEspecifica(resposta.getRespostaEspecifica()
@@ -60,6 +69,12 @@ public class AddRespostaEspecificaController extends GenericController {
 			Messagebox.show("Nenhuma resposta adicionada ainda.");
 		}
 	}
+	
+	@Command
+	@NotifyChange({ "respostas", "resposta" })
+	public void excluiResposta(@BindingParam("resposta") RespostaEspecifica resposta) {
+		respostas.remove(resposta);
+	}
 
 	@Command
 	@NotifyChange("respostas")
@@ -78,6 +93,7 @@ public class AddRespostaEspecificaController extends GenericController {
 		respostas.set(index - 1, resposta);
 		respostas.set(index, aux);
 	}
+	
 
 	public List<RespostaEspecifica> getRespostas() {
 		return respostas;
@@ -94,5 +110,22 @@ public class AddRespostaEspecificaController extends GenericController {
 	public void setResposta(RespostaEspecifica resposta) {
 		this.resposta = resposta;
 	}
+
+	public Pergunta getPergunta() {
+		return pergunta;
+	}
+
+	public void setPergunta(Pergunta pergunta) {
+		this.pergunta = pergunta;
+	}
+
+	public List<Integer> getTiposPergunta() {
+		return tiposPergunta;
+	}
+
+	public void setTiposPergunta(List<Integer> tiposPergunta) {
+		this.tiposPergunta = tiposPergunta;
+	}
+	
 
 }

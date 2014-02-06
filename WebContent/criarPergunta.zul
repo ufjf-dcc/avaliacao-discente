@@ -1,0 +1,57 @@
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<window onCreate="@command('initCriarPergunta', window=self)"
+	width="600px" border="normal" title="Criar Pergunta"
+	apply="org.zkoss.bind.BindComposer"
+	viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AddRespostaEspecificaController')"
+	form="@id('fm') @load(vm.pergunta) @save(vm.pergunta, before='finalizar')"
+	closable="true">
+	<grid>
+		<auxhead>
+			<auxheader align="center" label="Tipo de Pergunta: ">
+				<combobox model="@load(vm.tiposPergunta)"
+					selectedItem="@bind(fm.tipoPergunta)" readonly="true">
+					<template name="model">
+						<comboitem
+							label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Caixa de Seleção' : each eq 2 ? 'Múltipla Escolha' : 'Escala')" />
+					</template>
+				</combobox>
+			</auxheader>
+		</auxhead>
+		<columns></columns>
+	</grid>
+	<grid model="@load(vm.respostas)">
+		<columns>
+			<column align="center" label="Título" />
+			<column align="center" label="Opções" />
+		</columns>
+		<template name="model">
+			<row>
+				<textbox value="@bind(each.respostaEspecifica)" />
+				<div style="text-align:center">
+					<button image="/img/delete.png"
+						onClick="@command('excluiResposta', resposta=each)" />
+					<button image="/img/up.png"
+						onClick="@command('up', resposta=each)"
+						disabled="@load(not (forEachStatus.index eq forEachStatus.begin) ? 'false' : 'true')" />
+					<button image="/img/down.png"
+						onClick="@command('down', resposta=each)"
+						disabled="@load(not (forEachStatus.index + 1 eq forEachStatus.end) ? 'false' : 'true')" />
+				</div>
+			</row>
+		</template>
+	</grid>
+	<div form="@id('fx') @load(vm.resposta) @save(vm.resposta, before='addNewResposta')">
+		<grid>
+			<columns>
+				<column align="center" />
+				<column align="center" />
+			</columns>
+			<rows>
+				<row>
+					<textbox value="@bind(fx.respostaEspecifica)" />
+					<button label="Adicionar" onClick="@command('addNewResposta')" />
+				</row>
+			</rows>
+		</grid>
+	</div>
+</window>

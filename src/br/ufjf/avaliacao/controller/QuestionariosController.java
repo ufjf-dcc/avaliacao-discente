@@ -46,7 +46,7 @@ public class QuestionariosController extends GenericController {
 	private Questionario questionario = new Questionario();
 	private static Questionario questionarioEditar = new Questionario();
 	private List<Integer> tiposQuestionario = Arrays.asList(0, 1, 2, 3);
-	private List<Integer> tiposPergunta = Arrays.asList(0, 1, 2, 3, 4);
+	private List<Integer> tiposPergunta = Arrays.asList(0, 1, 2, 3);
 	private PrazoQuestionario prazo = new PrazoQuestionario();
 	private List<PrazoQuestionario> prazos = new ArrayList<PrazoQuestionario>();
 	private List<PrazoQuestionario> prazosAntigos = new ArrayList<PrazoQuestionario>();
@@ -92,11 +92,14 @@ public class QuestionariosController extends GenericController {
 		window.doModal();
 	}
 
-	public void criarPerguntas() {
+	@Command
+	public void criarPergunta() {
+		session.setAttribute("pergunta", pergunta);
 		Window window = (Window) Executions.createComponents(
-				"/criarPerguntas.zul", null, null);
+				"/criarPergunta.zul", null, null);
 		window.doModal();
 	}
+	
 	
 	@SuppressWarnings("unchecked")
 	@Command
@@ -240,12 +243,11 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	// @NotifyChange({ "perguntas", "questionario" })
 	public void adcPerguntas() {
 		questionario.setCurso(usuario.getCurso());
 		session.setAttribute("questionario", questionario);
 		if (questionarioDAO.salvaOuEdita(questionario)) {
-			criarPerguntas();
+			criarPergunta();
 		}
 	}
 	
