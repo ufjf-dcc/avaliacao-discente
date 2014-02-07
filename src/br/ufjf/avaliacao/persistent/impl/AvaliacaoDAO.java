@@ -15,7 +15,7 @@ import br.ufjf.avaliacao.persistent.IAvalicaoDAO;
 public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 
 	
-	//se ja avaliou todos os professores daquela turma retorna true
+	//se ja avaliou todos os professores daquela turma retorna true     
 	public boolean jaAvaliou(Usuario usuario, Turma turma) {
 			AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
 			if(avaliacaoDAO.jaAvaliouTodosProfessoresTurma(usuario, turma))

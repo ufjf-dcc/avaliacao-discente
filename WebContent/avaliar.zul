@@ -52,4 +52,4 @@
 				onClick="@command('terminarAvaliacao', window=win)" />
 		</div>
 	</div>
-</window>
+</window> 

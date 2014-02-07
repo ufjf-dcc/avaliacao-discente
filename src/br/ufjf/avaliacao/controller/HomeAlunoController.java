@@ -32,7 +32,7 @@ import br.ufjf.avaliacao.persistent.impl.RespostaDAO;
 import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
 
-public class HomeAlunoController extends GenericController {
+public class HomeAlunoController extends GenericController {   
 	
 	private QuestionarioDAO questionarioDAO = new QuestionarioDAO();
 	private UsuarioDAO usuarioDAO = new UsuarioDAO();

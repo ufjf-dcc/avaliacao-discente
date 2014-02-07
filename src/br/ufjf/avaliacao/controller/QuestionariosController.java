@@ -24,6 +24,7 @@ import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
 import br.ufjf.avaliacao.persistent.impl.PerguntaDAO;
 import br.ufjf.avaliacao.persistent.impl.PrazoQuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
+import br.ufjf.avaliacao.persistent.impl.RespostaEspecificaDAO;
 
 public class QuestionariosController extends GenericController {
 
@@ -51,6 +52,7 @@ public class QuestionariosController extends GenericController {
 	private List<PrazoQuestionario> prazos = new ArrayList<PrazoQuestionario>();
 	private List<PrazoQuestionario> prazosAntigos = new ArrayList<PrazoQuestionario>();
 	private PrazoQuestionarioDAO prazoDAO = new PrazoQuestionarioDAO();
+	private RespostaEspecificaDAO respostaEspecificaDAO = new RespostaEspecificaDAO();
 
 	@Init
 	public void init() throws HibernateException, Exception {
@@ -225,6 +227,10 @@ public class QuestionariosController extends GenericController {
 	public void exclui() {
 		perguntas = questionario.getPerguntas();
 		prazos = prazoDAO.getPrazos(questionario);
+		perguntas.get(0).getTipoPergunta();
+		//tenho que excluir as repostas especificas antes AINDA NAO TESTEI
+		for(int i = 0; i < perguntas.size(); i++)
+			respostaEspecificaDAO.excluiLista(respostaEspecificaDAO.getRespostasEspecificasPerguntas(perguntas.get(i)));
 		perguntaDAO.excluiLista(perguntas);
 		prazoDAO.excluiLista(prazos);
 		if (questionarioDAO.exclui(questionario)) {
