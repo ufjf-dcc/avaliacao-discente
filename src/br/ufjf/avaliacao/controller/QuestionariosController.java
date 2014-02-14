@@ -12,14 +12,20 @@ import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
+import org.zkoss.zul.Button;
+import org.zkoss.zul.Div;
 import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
+import br.ufjf.avaliacao.business.AddRespostaEspecificaBusiness;
 import br.ufjf.avaliacao.business.QuestionariosBusiness;
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
+import br.ufjf.avaliacao.model.RespostaEspecifica;
+import br.ufjf.avaliacao.persistent.GenericoDAO;
 import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
 import br.ufjf.avaliacao.persistent.impl.PerguntaDAO;
 import br.ufjf.avaliacao.persistent.impl.PrazoQuestionarioDAO;
@@ -52,6 +58,10 @@ public class QuestionariosController extends GenericController {
 	private List<PrazoQuestionario> prazos = new ArrayList<PrazoQuestionario>();
 	private List<PrazoQuestionario> prazosAntigos = new ArrayList<PrazoQuestionario>();
 	private PrazoQuestionarioDAO prazoDAO = new PrazoQuestionarioDAO();
+	private Integer spinnerInicio = 0;
+	private Integer spinnerFinal = 10;
+	private List<RespostaEspecifica> respostas = new ArrayList<RespostaEspecifica>();
+	private RespostaEspecifica resposta = new RespostaEspecifica();
 	private RespostaEspecificaDAO respostaEspecificaDAO = new RespostaEspecificaDAO();
 
 	@Init
@@ -94,47 +104,29 @@ public class QuestionariosController extends GenericController {
 		window.doModal();
 	}
 
-	@Command
-	public void criarPergunta() {
-		session.setAttribute("pergunta", pergunta);
-		Window window = (Window) Executions.createComponents(
-				"/criarPergunta.zul", null, null);
-		window.doModal();
-	}
-	
-	
 	@SuppressWarnings("unchecked")
 	@Command
 	public void fecharCriarQuest() {
-		Messagebox.show("Se você fechar a janela perderá todas as modificações", "Cuidado!", Messagebox.OK,
-				Messagebox.EXCLAMATION, new EventListener<Event>() {
+		Messagebox.show(
+				"Se você fechar a janela perderá todas as modificações",
+				"Cuidado!", Messagebox.OK, Messagebox.EXCLAMATION,
+				new EventListener<Event>() {
 					@Override
 					public void onEvent(Event event) throws Exception {
-						if(perguntaDAO.excluiLista((List<Pergunta>) session.getAttribute("perguntas")))
-							questionarioDAO.exclui(session.getAttribute("questionario"));						
+						if (perguntaDAO.excluiLista((List<Pergunta>) session
+								.getAttribute("perguntas")))
+							questionarioDAO.exclui(session
+									.getAttribute("questionario"));
 					}
 				});
 	}
 
 	@Command
-	@NotifyChange({ "perguntas", "pergunta" })
-	public void adicionaPergunta() {
-		if (new QuestionariosBusiness().campoStrValido(pergunta
-				.getTituloPergunta())) {
-			pergunta.setTituloPergunta(pergunta.getTituloPergunta().trim());
-			if (pergunta.getTipoPergunta() == 4) {
-				pergunta.setQuestionario((Questionario) session.getAttribute("questionario"));
-				perguntaDAO.salvaOuEdita(pergunta);
-				session.setAttribute("perguntaEspecifica", pergunta);
-				Window wind = (Window) Executions.createComponents(
-						"/addRespostaEspecifica.zul", null, null);
-				wind.doModal();
-				perguntas.add(pergunta);
-				pergunta = new Pergunta();
-			} else {
-				perguntas.add(pergunta);
-				pergunta = new Pergunta();
-			}
+	@NotifyChange({ "respostas", "resposta" })
+	public void addRespostaEspecifica() {
+		if (new AddRespostaEspecificaBusiness().validaRespostaEspe(resposta) != null) {
+			respostas.add(resposta);
+			resposta = new RespostaEspecifica();
 		}
 	}
 
@@ -146,8 +138,8 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	public void adcPrazo() {
-		QuestionariosController.questionarioEditar = questionario;
+	public void adcPrazo(@BindingParam("questionario") Questionario q) {
+		session.setAttribute("questionario", q);
 		Window window = (Window) Executions.createComponents("/add-prazo.zul",
 				null, null);
 		window.doModal();
@@ -157,10 +149,10 @@ public class QuestionariosController extends GenericController {
 	public void addPrazo(@BindingParam("window") Window w) {
 		if (new QuestionariosBusiness().prazoValido(prazo)) {
 			if (validadaData(prazo)) {
-				prazo.setQuestionario(questionario);
+				prazo.setQuestionario((Questionario) session
+						.getAttribute("questionario"));
 				prazoDAO.salvar(prazo);
 				prazos.add(prazo);
-				questionario.setPrazos(prazos);
 				prazo = new PrazoQuestionario();
 				w.detach();
 				Messagebox.show("Prazo Adicionado!");
@@ -228,9 +220,10 @@ public class QuestionariosController extends GenericController {
 		perguntas = questionario.getPerguntas();
 		prazos = prazoDAO.getPrazos(questionario);
 		perguntas.get(0).getTipoPergunta();
-		//tenho que excluir as repostas especificas antes AINDA NAO TESTEI
-		for(int i = 0; i < perguntas.size(); i++)
-			respostaEspecificaDAO.excluiLista(respostaEspecificaDAO.getRespostasEspecificasPerguntas(perguntas.get(i)));
+		// tenho que excluir as repostas especificas antes AINDA NAO TESTEI
+		for (int i = 0; i < perguntas.size(); i++)
+			respostaEspecificaDAO .excluiLista(respostaEspecificaDAO
+					.getRespostasEspecificasPerguntas(perguntas.get(i)));
 		perguntaDAO.excluiLista(perguntas);
 		prazoDAO.excluiLista(prazos);
 		if (questionarioDAO.exclui(questionario)) {
@@ -253,14 +246,14 @@ public class QuestionariosController extends GenericController {
 		questionario.setCurso(usuario.getCurso());
 		session.setAttribute("questionario", questionario);
 		if (questionarioDAO.salvaOuEdita(questionario)) {
-			criarPergunta();
+			// criarPergunta();
 		}
 	}
-	
+
 	@Command
 	@SuppressWarnings("unchecked")
 	public void finalizarCriacao() {
-		if(!((List<Pergunta>) session.getAttribute("perguntas")).isEmpty()) {
+		if (!((List<Pergunta>) session.getAttribute("perguntas")).isEmpty()) {
 			Messagebox.show("Questionario Criado", "Concluído", Messagebox.OK,
 					Messagebox.INFORMATION, new EventListener<Event>() {
 						@Override
@@ -269,15 +262,16 @@ public class QuestionariosController extends GenericController {
 						}
 					});
 		} else {
-			Messagebox.show("Você ainda não adicionou perguntas a esse questionario");
+			Messagebox
+					.show("Você ainda não adicionou perguntas a esse questionario");
 		}
 	}
 
-	
 	@Command
-	public void finalizarPerguntas(){
-		for(Pergunta p : perguntas) {
-			p.setQuestionario((Questionario) session.getAttribute("questionario"));
+	public void finalizarPerguntas() {
+		for (Pergunta p : perguntas) {
+			p.setQuestionario((Questionario) session
+					.getAttribute("questionario"));
 			perguntaDAO.salvaOuEdita(p);
 		}
 		session.setAttribute("perguntas", perguntas);
@@ -341,6 +335,30 @@ public class QuestionariosController extends GenericController {
 		Pergunta aux = perguntas.get(index - 1);
 		perguntas.set(index - 1, pergunta);
 		perguntas.set(index, aux);
+	}
+
+	@Command
+	public void tipoPergunta(@BindingParam("textbox") Textbox text,
+			@BindingParam("div") Div div, @BindingParam("button") Button b) {
+		Button c = (Button) b.getNextSibling();
+		c.setDisabled(false);
+		if (pergunta.getTipoPergunta() == 0) {
+			text.setDisabled(true);
+			text.setVisible(true);
+			div.setVisible(false);
+			b.setDisabled(true);
+		} else {
+			if (pergunta.getTipoPergunta() == 3) {
+				text.setVisible(false);
+				div.setVisible(true);
+				b.setDisabled(true);
+			} else {
+				text.setVisible(true);
+				text.setDisabled(false);
+				div.setVisible(false);
+				b.setDisabled(false);
+			}
+		}
 	}
 
 	@Command
@@ -512,6 +530,38 @@ public class QuestionariosController extends GenericController {
 
 	public void setPrazosAntigos(List<PrazoQuestionario> prazosAntigos) {
 		this.prazosAntigos = prazosAntigos;
+	}
+
+	public Integer getSpinnerInicio() {
+		return spinnerInicio;
+	}
+
+	public void setSpinnerInicio(Integer spinnerInicio) {
+		this.spinnerInicio = spinnerInicio;
+	}
+
+	public Integer getSpinnerFinal() {
+		return spinnerFinal;
+	}
+
+	public void setSpinnerFinal(Integer spinnerFinal) {
+		this.spinnerFinal = spinnerFinal;
+	}
+
+	public List<RespostaEspecifica> getRespostas() {
+		return respostas;
+	}
+
+	public void setRespostas(List<RespostaEspecifica> respostas) {
+		this.respostas = respostas;
+	}
+
+	public RespostaEspecifica getResposta() {
+		return resposta;
+	}
+
+	public void setResposta(RespostaEspecifica resposta) {
+		this.resposta = resposta;
 	}
 
 }
