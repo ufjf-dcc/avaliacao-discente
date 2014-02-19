@@ -1,5 +1,7 @@
 package br.ufjf.avaliacao.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,9 +20,14 @@ import org.hibernate.annotations.GenericGenerator;
  */
 @Entity
 @Table(name = "RespostaEspecifica")
-public class RespostaEspecifica {
-
+public class RespostaEspecifica implements Serializable {
 	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Campo com ID da resposta especifica. Relaciona com a coluna
 	 * {@code idRespostaEspecifica} do banco e é gerado por autoincrement do MySQL

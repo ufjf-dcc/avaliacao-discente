@@ -63,11 +63,31 @@ public class Pergunta implements Serializable {
 	@JoinColumn(name = "idQuestionario", nullable = false)
 	private Questionario questionario;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "resposta")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pergunta")
 	private List<Resposta> respostas = new ArrayList<Resposta>();
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pergunta")
+	private List<RespostaEspecifica> respostasEspecificas = new ArrayList<RespostaEspecifica>();
 
 	@Transient
 	private String nomeTipoPergunta;
+	
+	public List<Resposta> getRespostas() {
+		return respostas;
+	}
+
+	public void setRespostas(List<Resposta> respostas) {
+		this.respostas = respostas;
+	}
+
+	public List<RespostaEspecifica> getRespostasEspecificas() {
+		return respostasEspecificas;
+	}
+
+	public void setRespostasEspecificas(
+			List<RespostaEspecifica> respostasEspecificas) {
+		this.respostasEspecificas = respostasEspecificas;
+	}
 
 	public int getIdPergunta() {
 		return idPergunta;

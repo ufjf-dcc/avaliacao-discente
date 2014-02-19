@@ -37,7 +37,7 @@ public class PerguntaDAO extends GenericoDAO implements IPerguntaDAO {
 		try {
 			Query query = getSession()
 					.createQuery(
-							"SELECT p FROM Pergunta AS p WHERE p.questionario = :questionario");
+							"SELECT p FROM Pergunta AS p LEFT JOIN FETCH p.questionario AS q WHERE q = :questionario");
 			query.setParameter("questionario", questionario);
 
 			List<Pergunta> ps = new ArrayList<Pergunta>();

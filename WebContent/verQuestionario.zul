@@ -4,9 +4,9 @@
 		closable="true" width="80%">
 		<div apply="org.zkoss.bind.BindComposer" style="margin:5px;"
 			viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
-			form="@id('fm') @load(vm.questionarioEditar) @save(vm.questionarioEditar, before='salvarQuest')"
+			form="@id('fm') @load(vm.questSessao) @save(vm.questSessao, before='salvarQuest')"
 			id="form">
-			<grid model="@load(vm.prazos)">
+			<grid model="@load(vm.prazosSessao)">
 				<auxhead>
 					<auxheader label="Título: ">
 						<label value="@load(fm.tituloQuestionario)" />
@@ -31,7 +31,7 @@
 					</row>
 				</template>
 			</grid>
-			<grid model="@load(vm.perguntas)">
+			<grid model="@load(vm.perguntasSessao)">
 				<auxhead>
 					<auxheader style="text-align:center" colspan="3"
 						label="Perguntas">

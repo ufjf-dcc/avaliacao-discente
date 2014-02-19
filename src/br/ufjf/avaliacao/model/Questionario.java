@@ -17,6 +17,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import br.ufjf.avaliacao.persistent.impl.PerguntaDAO;
 import br.ufjf.avaliacao.persistent.impl.PrazoQuestionarioDAO;
 
 /**
@@ -65,7 +66,7 @@ public class Questionario implements Serializable {
 	 * quando retornarmos o {@link Questionario} .
 	 * 
 	 */
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "questionario")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "questionario")
 	private List<Pergunta> perguntas = new ArrayList<Pergunta>();
 
 
@@ -76,7 +77,7 @@ public class Questionario implements Serializable {
 	 * retornarmos o {@link Questionario}.
 	 * 
 	 */
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "idCurso", nullable = false)
 	private Curso curso;
 
@@ -124,7 +125,7 @@ public class Questionario implements Serializable {
 	}
 
 	public List<Pergunta> getPerguntas() {
-		return perguntas;
+		return (new PerguntaDAO().getPerguntasQuestionario(this));
 	}
 
 	public void setPerguntas(List<Pergunta> perguntas) {

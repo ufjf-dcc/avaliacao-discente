@@ -4,8 +4,8 @@
 	<div style="width:800px;margin:5px;"
 		apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
-		form="@id('fm') @load(vm.questionario) @save(vm.questionario, before='cria')"
-		id="form">
+		form="@id('fm') @load(vm.questionario) @save(vm.questionario, before='criarQuestionario')"
+		id="form" onCreate="@command('zerarQuestionario')">
 
 		<!-- Exibição das perguntas que vao sendo cadastradas
 			e cadastro dos dados do questionario -->
@@ -34,7 +34,7 @@
 			<template name="model">
 				<row>
 					<textbox
-						value="@load(each.tituloPergunta) @save(each.tituloPergunta, before='adicionaPergunta')" />
+						value="@bind(each.tituloPergunta)" />
 					<div style="text-align:center">
 						<button image="/img/delete.png"
 							onClick="@command('excluiPergunta',pergunta=each)" />
@@ -65,20 +65,9 @@
 				<rows>
 					<row>
 						<div>
-							<textbox width="95%"
-								value="@bind(fx.tituloPergunta)" />
-							<grid model="@load(vm.respostas)">
-								<columns></columns>
-								<template name="model">
-									<row>
-										<div>
-											<space width="30px" />
-											<textbox
-												value="@bind(each.respostaEspecifica)" />
-										</div>
-									</row>
-								</template>
-							</grid>
+							<textbox width="80%"
+								value="@bind(vm.pergunta.tituloPergunta)" />
+							<button label="Ver Respostas" onClick="@command('respostas')"/>
 						</div>
 						<combobox model="@load(vm.tiposPergunta)"
 							selectedItem="@bind(vm.pergunta.tipoPergunta)"
@@ -105,7 +94,7 @@
 							<separator />
 							<button disabled="true" id="add"
 								label="Adicionar" onClick="@command('addRespostaEspecifica')" />
-							<button disabled="true" label="Finalizar" />
+							<button disabled="true" label="Finalizar" onClick="@command('addPergunta',button=self)" />
 						</div>
 					</row>
 				</rows>
@@ -114,6 +103,9 @@
 
 		<!-- Botão para criar e salvar o questionario -->
 		<button style="margin-top:5px;" label="Criar Questionário"
-			onClick="@command('cria')" />
+			onClick="@command('criarQuestionario')" />
+			<popup id="respostas">
+				<include src="/respostasEspecificas.zul"/>
+			</popup>
 	</div>
 </window>
