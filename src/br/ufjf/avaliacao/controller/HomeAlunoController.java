@@ -15,6 +15,8 @@ import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.Radio;
+import org.zkoss.zul.Radiogroup;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.Window;
 
@@ -23,6 +25,7 @@ import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
 import br.ufjf.avaliacao.model.Resposta;
+import br.ufjf.avaliacao.model.RespostaEspecifica;
 import br.ufjf.avaliacao.model.Turma;
 import br.ufjf.avaliacao.model.Usuario;
 import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
@@ -32,8 +35,8 @@ import br.ufjf.avaliacao.persistent.impl.RespostaDAO;
 import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
 
-public class HomeAlunoController extends GenericController {   
-	
+public class HomeAlunoController extends GenericController {
+
 	private QuestionarioDAO questionarioDAO = new QuestionarioDAO();
 	private UsuarioDAO usuarioDAO = new UsuarioDAO();
 	private AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
@@ -45,7 +48,7 @@ public class HomeAlunoController extends GenericController {
 			.prazoQuestionario(questionarioProf);
 	private static Questionario questionarioAtual = new Questionario();
 	private static Turma turmaAtual = new Turma();
-	
+
 	private Questionario questionarioCoord = questionarioDAO
 			.retornaQuestinarioParaUsuarioCoord(usuario);
 	private Questionario questionarioAuto = questionarioDAO
@@ -57,63 +60,94 @@ public class HomeAlunoController extends GenericController {
 	private List<Resposta> respostas = new ArrayList<Resposta>();
 	private Usuario coordAvaliado = usuarioDAO.retornaCoordAvaliado(usuario);
 	private static Questionario questionarioInicial = new Questionario();
-	
-	
+
 	@Init
 	public void init() throws HibernateException, Exception {
 		testaPermissaoAluno();
 
 	}
 
-
 	@Command
 	public void avaliar(
 			@BindingParam("questionario") Questionario questionario,
 			@BindingParam("turma") Turma turma) {
-
+		// session.setAttribute("questionario", questionario);
 		HomeAlunoController.questionarioInicial = questionario;
 		questionarioAtual = questionario;
 		turmaAtual = turma;
 		avaliarAux();
 	}
-	
-	//essa função diz quem precisa ser avaliado agora
-	private void avaliarAux(){
-		// se ainda não fez a  avaliação de coordenador e se tem uma avaliação de coordenador pra fazer
-		if(!avaliacaoDAO.jaAvaliouCoordenadorDataAtual(usuario) && questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario)!=null){
-			//setando qual é o questionario que deve ser avaliado
-			questionarioAtual = questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario);//seta o questionario atual para um questionario de coordenador a ser avaliado
-			Window window = (Window) Executions.createComponents("/avaliar.zul",
-					null, null);
-			window.setTitle("Avaliação de Coordenador - "+usuarioDAO.retornaCoordAvaliado(usuario).getNome());
+
+	// essa função diz quem precisa ser avaliado agora
+	private void avaliarAux() {
+		// se ainda não fez a avaliação de coordenador e se tem uma avaliação de
+		// coordenador pra fazer
+		if (!avaliacaoDAO.jaAvaliouCoordenadorDataAtual(usuario)
+				&& questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario) != null) {
+			// setando qual é o questionario que deve ser avaliado
+			questionarioAtual = questionarioDAO
+					.retornaQuestinarioParaUsuarioCoord(usuario);// seta o
+																	// questionario
+																	// atual
+																	// para um
+																	// questionario
+																	// de
+																	// coordenador
+																	// a ser
+																	// avaliado
+			Window window = (Window) Executions.createComponents(
+					"/avaliar.zul", null, null);
+			window.setTitle("Avaliação de Coordenador - "
+					+ usuarioDAO.retornaCoordAvaliado(usuario).getNome());
 			window.doModal();
-			
-		}
-		else{
-			// se ainda não fez a auto avaliação e se tem uma auto avaliação pra fazer
-			if(!avaliacaoDAO.jaSeAvaliorDataAtual(usuario) && questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario)!=null){
-				//setando qual é o questionario que deve ser avaliado
-				questionarioAtual = questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario);//seta o questionario atual para um questionario de auto avaliação a ser avaliado
-				Window window = (Window) Executions.createComponents("/avaliar.zul",
-						null, null);
+
+		} else {
+			// se ainda não fez a auto avaliação e se tem uma auto avaliação pra
+			// fazer
+			if (!avaliacaoDAO.jaSeAvaliorDataAtual(usuario)
+					&& questionarioDAO
+							.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario) != null) {
+				// setando qual é o questionario que deve ser avaliado
+				questionarioAtual = questionarioDAO
+						.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario);// seta
+																				// o
+																				// questionario
+																				// atual
+																				// para
+																				// um
+																				// questionario
+																				// de
+																				// auto
+																				// avaliação
+																				// a
+																				// ser
+																				// avaliado
+				Window window = (Window) Executions.createComponents(
+						"/avaliar.zul", null, null);
 				window.setTitle("Autoavaliação");
 				window.doModal();
-			}
-			else{
-				if(!avaliacaoDAO.jaAvaliouInfraestruturaDataAtual(usuario) && questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario)!=null){
-					//setando qual é o questionario que deve ser avaliado
-					questionarioAtual = questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario);
-					Window window = (Window) Executions.createComponents("/avaliar.zul",
-							null, null);
+			} else {
+				if (!avaliacaoDAO.jaAvaliouInfraestruturaDataAtual(usuario)
+						&& questionarioDAO
+								.retornaQuestinarioParaUsuarioInfra(usuario) != null) {
+					// setando qual é o questionario que deve ser avaliado
+					questionarioAtual = questionarioDAO
+							.retornaQuestinarioParaUsuarioInfra(usuario);
+					Window window = (Window) Executions.createComponents(
+							"/avaliar.zul", null, null);
 					window.setTitle("Avaliação de Infraestrutura");
 					window.doModal();
-				}
-				else{
-					if(!avaliacaoDAO.jaAvaliouTodosProfessoresTurma(usuario, turmaAtual)){
+				} else {
+					if (!avaliacaoDAO.jaAvaliouTodosProfessoresTurma(usuario,
+							turmaAtual)) {
 						questionarioAtual = HomeAlunoController.questionarioInicial;
-						Window window = (Window) Executions.createComponents("/avaliar.zul",
-								null, null);
-						window.setTitle("Avaliação de Professor - "+avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario,turmaAtual).get(0).getNome());
+						Window window = (Window) Executions.createComponents(
+								"/avaliar.zul", null, null);
+						window.setTitle("Avaliação de Professor - "
+								+ avaliacaoDAO
+										.retornaProfessoresNaoAvaliados(
+												usuario, turmaAtual).get(0)
+										.getNome());
 						window.doModal();
 					}
 				}
@@ -121,33 +155,47 @@ public class HomeAlunoController extends GenericController {
 		}
 	}
 
-	//salva a avaliação e verifica se vai precisar retornar na função que verifica quem deve ser avalido agora (avaliarAuz)
+	// salva a avaliação e verifica se vai precisar retornar na função que
+	// verifica quem deve ser avalido agora (avaliarAuz)
 	@Command
 	public void terminarAvaliacao(@BindingParam("window") Window win) {
 
 		Usuario avaliado = null;
 		Turma turmaUsada = null;
-		
-		//setando o usuario que vai ser avaliado e a turma-----------------------------------------------------
-		if(questionarioAtual.getTipoQuestionario() == 0){ // verifica se o questionario é do tipo coodenador
+
+		// setando o usuario que vai ser avaliado e a
+		// turma-----------------------------------------------------
+		if (questionarioAtual.getTipoQuestionario() == 0) { // verifica se o
+															// questionario é do
+															// tipo coodenador
 			avaliado = usuarioDAO.retornaCoordenadorCurso(usuario.getCurso());
 
 		}
-		if(questionarioAtual.getTipoQuestionario() == 1){ // verifica se o questionario é do tipo professor
-			avaliado = avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario, turmaAtual).get(0);
+		if (questionarioAtual.getTipoQuestionario() == 1) { // verifica se o
+															// questionario é do
+															// tipo professor
+			avaliado = avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario,
+					turmaAtual).get(0);
 			turmaUsada = turmaAtual;
 
 		}
-		if(questionarioAtual.getTipoQuestionario() == 2){ // verifica se o questionario é do tipo auto avaliação
+		if (questionarioAtual.getTipoQuestionario() == 2) { // verifica se o
+															// questionario é do
+															// tipo auto
+															// avaliação
 			avaliado = usuario;
 
 		}
-		if(questionarioAtual.getTipoQuestionario() == 3){ // verifica se o questionario é do tipo infraestrutura
-			if(avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario, turmaAtual).size()==1)
-			avaliado = null;
+		if (questionarioAtual.getTipoQuestionario() == 3) { // verifica se o
+															// questionario é do
+															// tipo
+															// infraestrutura
+			if (avaliacaoDAO
+					.retornaProfessoresNaoAvaliados(usuario, turmaAtual).size() == 1)
+				avaliado = null;
 		}
-		//-------------------------------------------------------------------------------
-					
+		// -------------------------------------------------------------------------------
+
 		Clients.showBusy("Salvando avaliação..");
 		if (respostas.size() != questionarioAtual.getPerguntas().size()) {
 			Clients.clearBusy();
@@ -164,23 +212,28 @@ public class HomeAlunoController extends GenericController {
 			}
 			new RespostaDAO().salvarLista(respostas);
 			Clients.clearBusy();
-			
-			//se tiver mais de um professor a ser avaliado ou nao for uma avaliação de professor, ele verifica o que mais precisa ser avaliado
-			if(questionarioAtual.getTipoQuestionario() != 1 || avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario, turmaAtual).size() >0)
 
-			Messagebox.show("Avaliação Salva com Sucesso", "Concluído",
-					Messagebox.OK, Messagebox.INFORMATION,
-					new EventListener<Event>() {
-						@Override
-						public void onEvent(Event event) throws Exception {
-							avaliarAux();
-						}
-					});
-			// se acabar de avaliar a ultima coisa(que seria o ultimo professor da turma(ou o unico)) ele finaliza as avaliaçoes e da um refresh na pagina 
-			else
-				Messagebox.show("Finalizado", "Concluído",
+			// se tiver mais de um professor a ser avaliado ou nao for uma
+			// avaliação de professor, ele verifica o que mais precisa ser
+			// avaliado
+			if (questionarioAtual.getTipoQuestionario() != 1
+					|| avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario,
+							turmaAtual).size() > 0)
+
+				Messagebox.show("Avaliação Salva com Sucesso", "Concluído",
 						Messagebox.OK, Messagebox.INFORMATION,
 						new EventListener<Event>() {
+							@Override
+							public void onEvent(Event event) throws Exception {
+								avaliarAux();
+							}
+						});
+			// se acabar de avaliar a ultima coisa(que seria o ultimo professor
+			// da turma(ou o unico)) ele finaliza as avaliaçoes e da um refresh
+			// na pagina
+			else
+				Messagebox.show("Finalizado", "Concluído", Messagebox.OK,
+						Messagebox.INFORMATION, new EventListener<Event>() {
 							@Override
 							public void onEvent(Event event) throws Exception {
 								Executions.sendRedirect(null);
@@ -190,7 +243,6 @@ public class HomeAlunoController extends GenericController {
 
 	}
 
-	
 	@Command
 	public void criarCampoResposta(@BindingParam("row") Row row,
 			@BindingParam("tipoPergunta") Integer tipoPergunta) {
@@ -211,10 +263,11 @@ public class HomeAlunoController extends GenericController {
 			component.getNextSibling().detach();
 			break;
 		case 2:
+			component.getNextSibling().detach();
+			component.getNextSibling().getNextSibling().getNextSibling()
+					.detach();
 			component.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().detach();
-			component.getNextSibling().getNextSibling().detach();
-			component.getNextSibling().detach();
 			break;
 		case 3:
 			component.getNextSibling().getNextSibling().getNextSibling()
@@ -229,14 +282,25 @@ public class HomeAlunoController extends GenericController {
 	}
 
 	@Command
+	public void radiogroup(@BindingParam("radiogroup") Radiogroup rg,
+			@BindingParam("pergunta") Pergunta p) {
+		List<RespostaEspecifica> rs = p.getRespostasEspecificas();
+		for (RespostaEspecifica r : rs) {
+			Radio radio = new Radio(r.getRespostaEspecifica());
+			radio.setValue(r.getRespostaEspecifica());
+			radio.setVisible(true);
+			rg.appendChild(radio);
+		}
+	}
+
+	@Command
 	public void jaAvaliou(@BindingParam("div") Div d,
 			@BindingParam("turma") Turma t) {
-		
-		if(!new AvaliacaoDAO().jaAvaliou(usuario, t)){
+
+		if (!new AvaliacaoDAO().jaAvaliou(usuario, t)) {
 			d.getFirstChild().setVisible(false);
 			d.getLastChild().setVisible(true);
-		}
-		else {
+		} else {
 			d.getFirstChild().setVisible(true);
 			d.getLastChild().setVisible(false);
 		}
@@ -249,6 +313,7 @@ public class HomeAlunoController extends GenericController {
 			r.detach();
 		}
 	}
+
 	@Command
 	public void escolha(@BindingParam("string") String escolha,
 			@BindingParam("pergunta") Pergunta perg) {

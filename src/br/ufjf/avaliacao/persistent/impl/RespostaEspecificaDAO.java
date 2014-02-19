@@ -6,7 +6,6 @@ import java.util.List;
 import org.hibernate.Query;
 
 import br.ufjf.avaliacao.model.Pergunta;
-import br.ufjf.avaliacao.model.Questionario;
 import br.ufjf.avaliacao.model.RespostaEspecifica;
 import br.ufjf.avaliacao.persistent.GenericoDAO;
 import br.ufjf.avaliacao.persistent.IRespostaEspecifica;
@@ -14,18 +13,19 @@ import br.ufjf.avaliacao.persistent.IRespostaEspecifica;
 public class RespostaEspecificaDAO extends GenericoDAO implements IRespostaEspecifica {
 	
 	// retorna as respostas especificas de uma pergunta
+	@SuppressWarnings("unchecked")
 	public List<RespostaEspecifica> getRespostasEspecificasPerguntas(Pergunta pergunta) {
 		try {
 			Query query = getSession()
 					.createQuery(
-							"SELECT r FROM RespostasEspecificas AS re LEFT JOIN FETCH re.pergunta AS rep  WHERE rep = :pergunta");
+							"SELECT r FROM RespostasEspecificas AS r WHERE r.pergunta = :pergunta");
 			query.setParameter("pergunta", pergunta);
 
-			List<RespostaEspecifica> r = new ArrayList<RespostaEspecifica>();
-			r = (List<RespostaEspecifica>) query.list();
+			List<RespostaEspecifica> rs = new ArrayList<RespostaEspecifica>();
+			rs = (List<RespostaEspecifica>) query.list();
 			getSession().close();
 
-			return r;
+			return rs;
 
 		} catch (Exception e) {
 			e.printStackTrace();

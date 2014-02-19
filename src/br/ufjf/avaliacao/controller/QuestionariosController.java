@@ -68,7 +68,7 @@ public class QuestionariosController extends GenericController {
 		testaPermissaoCoord();
 		if (((Questionario) session.getAttribute("questionario")) != null) {
 			questSessao = (Questionario) session.getAttribute("questionario");
-			prazosSessao = questSessao.getPrazos(); 
+			prazosSessao = questSessao.getPrazos();
 			perguntasSessao = questSessao.getPerguntas();
 		}
 	}
@@ -87,10 +87,22 @@ public class QuestionariosController extends GenericController {
 				&& (questionario.getTipoQuestionario() != null)) {
 			questionario.setCurso(usuario.getCurso());
 			if (questionarioDAO.salvar(questionario)) {
-				if(perguntaDAO.salvarLista(perguntas)) {
-					for(Pergunta p : perguntas) {
-						respostaEspecificaDAO.salvarLista(p.getRespostasEspecificas());
+				if (perguntaDAO.salvarLista(perguntas)) {
+					for (Pergunta p : perguntas) {
+						if (p.getTipoPergunta() != 0) {
+							respostaEspecificaDAO.salvarLista(p
+									.getRespostasEspecificas());
+						}
 					}
+					Messagebox.show("Questionário criado com sucesso",
+							"Concluído", Messagebox.OK, Messagebox.INFORMATION,
+							new EventListener<Event>() {
+								@Override
+								public void onEvent(Event event)
+										throws Exception {
+									Executions.sendRedirect(null);
+								}
+							});
 				}
 			}
 		}
@@ -120,8 +132,8 @@ public class QuestionariosController extends GenericController {
 
 	@Command
 	public void respostas() {
-		Window w = (Window) Executions.createComponents("/respostasEspecificas.zul",
-				null, null);
+		Window w = (Window) Executions.createComponents(
+				"/respostasEspecificas.zul", null, null);
 		w.doModal();
 	}
 
@@ -139,21 +151,54 @@ public class QuestionariosController extends GenericController {
 		}
 	}
 
+	/*
+	 * Método privado para finalizar a criação de uma pergunta
+	 * e coloca la no questionario. Verificações são feitas antes
+	 * da chamada desse método.
+	 */
+	private void finalizar(Button b) {
+		pergunta.setTituloPergunta(pergunta.getTituloPergunta().trim());
+		pergunta.setQuestionario(questionario);
+		perguntas.add(pergunta);
+		if (pergunta.getTipoPergunta() == 3) {
+			for (int i = spinnerInicio; i <= spinnerFinal; i++) {
+				resposta = new RespostaEspecifica();
+				resposta.setRespostaEspecifica(Integer.toString(i));
+				resposta.setPergunta(pergunta);
+				respostas.add(resposta);
+			}
+		}
+		pergunta.setRespostasEspecificas(respostas);
+		pergunta = new Pergunta();
+		respostas = new ArrayList<RespostaEspecifica>();
+		session.setAttribute("respostas", respostas);
+		b.setDisabled(true);
+		Button p = (Button) b.getPreviousSibling();
+		p.setDisabled(true);
+	}
+
 	@Command
 	@NotifyChange({ "perguntas", "pergunta" })
-	public void addPergunta(@BindingParam("button")Button b) {
+	public void addPergunta(@BindingParam("button") Button b) {
 		if ((new GenericBusiness().campoStrValido(pergunta.getTituloPergunta()))
 				&& (pergunta.getTipoPergunta() != null)) {
-			pergunta.setTituloPergunta(pergunta.getTituloPergunta().trim());
-			pergunta.setQuestionario(questionario);
-			perguntas.add(pergunta);
-			pergunta.setRespostasEspecificas(respostas);
-			pergunta = new Pergunta();
-			respostas = new ArrayList<RespostaEspecifica>();
-			session.setAttribute("respostas", respostas);
-			b.setDisabled(true);
-			Button p = (Button) b.getPreviousSibling();
-			p.setDisabled(true);
+			if (pergunta.getTipoPergunta() != 3) {
+				if (pergunta.getTipoPergunta() == 0) {
+					finalizar(b);
+				} else {
+					if (!respostas.isEmpty()) {
+						finalizar(b);
+					} else {
+						Messagebox.show("Nenhuma resposta cadastrada para essa pergunta.");
+					}
+				}
+			} else {
+				if (spinnerFinal > spinnerInicio) {
+					finalizar(b);
+				} else {
+					Messagebox.show("Escala inicial menor ou igual à final");
+				}
+			}
 		}
 	}
 

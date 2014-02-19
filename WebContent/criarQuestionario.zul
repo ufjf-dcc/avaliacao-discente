@@ -33,7 +33,7 @@
 			</columns>
 			<template name="model">
 				<row>
-					<textbox
+					<textbox width="85%"
 						value="@bind(each.tituloPergunta)" />
 					<div style="text-align:center">
 						<button image="/img/delete.png"

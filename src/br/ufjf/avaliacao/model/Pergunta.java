@@ -17,6 +17,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import br.ufjf.avaliacao.persistent.impl.RespostaEspecificaDAO;
+
 /**
  * DTO da Tabela {@code Pergunta} contém os atributos e relacionamentos da
  * mesma.
@@ -65,13 +67,13 @@ public class Pergunta implements Serializable {
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pergunta")
 	private List<Resposta> respostas = new ArrayList<Resposta>();
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pergunta")
 	private List<RespostaEspecifica> respostasEspecificas = new ArrayList<RespostaEspecifica>();
 
 	@Transient
 	private String nomeTipoPergunta;
-	
+
 	public List<Resposta> getRespostas() {
 		return respostas;
 	}
@@ -81,7 +83,7 @@ public class Pergunta implements Serializable {
 	}
 
 	public List<RespostaEspecifica> getRespostasEspecificas() {
-		return respostasEspecificas;
+		return (new RespostaEspecificaDAO().getRespostasEspecificasPerguntas(this));
 	}
 
 	public void setRespostasEspecificas(
@@ -125,13 +127,11 @@ public class Pergunta implements Serializable {
 		if (tipoPergunta == 0)
 			return "Texto";
 		else if (tipoPergunta == 1)
-			return "Escala numérica";
+			return "Caixa de Seleção";
 		else if (tipoPergunta == 2)
-			return "Escala conceitual";
-		else if (tipoPergunta == 3)
-			return "Sim/Não";
+			return "Múltipla Escolha";
 		else
-			return "Personalizada";
+			return "Escala Numérica";
 	}
 
 	public void setNomeTipoPergunta(String nomeTipoPergunta) {

@@ -18,18 +18,8 @@
 							onBlur="@command('escolha', string=self.value, pergunta=each)" />
 						<label value="*250 caracteres" />
 					</div>
-					<radiogroup
+					<radiogroup onCreate="@command('radiogroup', radiogroup=self, pergunta=each)"
 						onCheck="@command('escolha', string=self.selectedItem.value, pergunta=each)">
-						<radio style="font-size:16px;" label="1 "
-							value="1" />
-						<radio style="font-size:16px;" label="2 "
-							value="2" />
-						<radio style="font-size:16px;" label="3 "
-							value="3" />
-						<radio style="font-size:16px;" label="4 "
-							value="4" />
-						<radio style="font-size:16px;" label="5"
-							value="5" />
 					</radiogroup>
 					<radiogroup orient="vertical"
 						onCheck="@command('escolha', string=self.selectedItem.value, pergunta=each)">
