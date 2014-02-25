@@ -67,7 +67,8 @@
 						<div>
 							<textbox width="80%"
 								value="@bind(vm.pergunta.tituloPergunta)" />
-							<button label="Ver Respostas" onClick="@command('respostas')"/>
+							<button label="Ver Respostas"
+								onClick="@command('respostas')" />
 						</div>
 						<combobox model="@load(vm.tiposPergunta)"
 							selectedItem="@bind(vm.pergunta.tipoPergunta)"
@@ -94,7 +95,8 @@
 							<separator />
 							<button disabled="true" id="add"
 								label="Adicionar" onClick="@command('addRespostaEspecifica')" />
-							<button disabled="true" label="Finalizar" onClick="@command('addPergunta',button=self)" />
+							<button disabled="true" label="Finalizar"
+								onClick="@command('addPergunta',button=self)" />
 						</div>
 					</row>
 				</rows>
@@ -104,8 +106,8 @@
 		<!-- Botão para criar e salvar o questionario -->
 		<button style="margin-top:5px;" label="Criar Questionário"
 			onClick="@command('criarQuestionario')" />
-			<popup id="respostas">
-				<include src="/respostasEspecificas.zul"/>
-			</popup>
+		<popup id="respostas">
+			<include src="/respostasEspecificas.zul" />
+		</popup>
 	</div>
 </window>

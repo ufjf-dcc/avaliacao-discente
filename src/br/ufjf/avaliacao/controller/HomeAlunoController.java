@@ -7,16 +7,14 @@ import org.hibernate.HibernateException;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.Init;
-import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.Clients;
+import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
-import org.zkoss.zul.Radio;
-import org.zkoss.zul.Radiogroup;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.Window;
 
@@ -25,7 +23,6 @@ import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
 import br.ufjf.avaliacao.model.Resposta;
-import br.ufjf.avaliacao.model.RespostaEspecifica;
 import br.ufjf.avaliacao.model.Turma;
 import br.ufjf.avaliacao.model.Usuario;
 import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
@@ -47,7 +44,6 @@ public class HomeAlunoController extends GenericController {
 	private PrazoQuestionario prazo = new PrazoQuestionarioDAO()
 			.prazoQuestionario(questionarioProf);
 	private static Questionario questionarioAtual = new Questionario();
-	private static Turma turmaAtual = new Turma();
 
 	private Questionario questionarioCoord = questionarioDAO
 			.retornaQuestinarioParaUsuarioCoord(usuario);
@@ -71,11 +67,16 @@ public class HomeAlunoController extends GenericController {
 	public void avaliar(
 			@BindingParam("questionario") Questionario questionario,
 			@BindingParam("turma") Turma turma) {
-		// session.setAttribute("questionario", questionario);
+		session.setAttribute("questionario", questionario);
+		session.setAttribute("turma", turma);
 		HomeAlunoController.questionarioInicial = questionario;
 		questionarioAtual = questionario;
-		turmaAtual = turma;
 		avaliarAux();
+	}
+
+	@Command
+	public void iniciarAvaliacao() {
+		questionarioAtual = (Questionario) session.getAttribute("questionario");
 	}
 
 	// essa função diz quem precisa ser avaliado agora
@@ -139,14 +140,14 @@ public class HomeAlunoController extends GenericController {
 					window.doModal();
 				} else {
 					if (!avaliacaoDAO.jaAvaliouTodosProfessoresTurma(usuario,
-							turmaAtual)) {
+							(Turma) session.getAttribute("turma"))) {
 						questionarioAtual = HomeAlunoController.questionarioInicial;
 						Window window = (Window) Executions.createComponents(
 								"/avaliar.zul", null, null);
 						window.setTitle("Avaliação de Professor - "
 								+ avaliacaoDAO
 										.retornaProfessoresNaoAvaliados(
-												usuario, turmaAtual).get(0)
+												usuario, (Turma) session.getAttribute("turma")).get(0)
 										.getNome());
 						window.doModal();
 					}
@@ -175,8 +176,8 @@ public class HomeAlunoController extends GenericController {
 															// questionario é do
 															// tipo professor
 			avaliado = avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario,
-					turmaAtual).get(0);
-			turmaUsada = turmaAtual;
+					(Turma) session.getAttribute("turma")).get(0);
+			turmaUsada = (Turma) session.getAttribute("turma");
 
 		}
 		if (questionarioAtual.getTipoQuestionario() == 2) { // verifica se o
@@ -191,13 +192,13 @@ public class HomeAlunoController extends GenericController {
 															// tipo
 															// infraestrutura
 			if (avaliacaoDAO
-					.retornaProfessoresNaoAvaliados(usuario, turmaAtual).size() == 1)
+					.retornaProfessoresNaoAvaliados(usuario, (Turma) session.getAttribute("turma")).size() == 1)
 				avaliado = null;
 		}
 		// -------------------------------------------------------------------------------
 
 		Clients.showBusy("Salvando avaliação..");
-		if (respostas.size() != questionarioAtual.getPerguntas().size()) {
+		if (respostas.size() < questionarioAtual.getPerguntas().size()) {
 			Clients.clearBusy();
 			Messagebox.show("Responda todas as perguntas antes de finalizar!");
 		} else {
@@ -218,7 +219,7 @@ public class HomeAlunoController extends GenericController {
 			// avaliado
 			if (questionarioAtual.getTipoQuestionario() != 1
 					|| avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario,
-							turmaAtual).size() > 0)
+							(Turma) session.getAttribute("turma")).size() > 0)
 
 				Messagebox.show("Avaliação Salva com Sucesso", "Concluído",
 						Messagebox.OK, Messagebox.INFORMATION,
@@ -244,52 +245,28 @@ public class HomeAlunoController extends GenericController {
 	}
 
 	@Command
-	public void criarCampoResposta(@BindingParam("row") Row row,
-			@BindingParam("tipoPergunta") Integer tipoPergunta) {
-		Component component = row.getFirstChild();
-		switch (tipoPergunta) {
+	public void criarCampoResposta(@BindingParam("label") Label l,
+			@BindingParam("pergunta") Pergunta p) {
+		switch (p.getTipoPergunta()) {
 		case 0:
-			component.getNextSibling().getNextSibling().getNextSibling()
-					.getNextSibling().detach();
-			component.getNextSibling().getNextSibling().getNextSibling()
-					.detach();
-			component.getNextSibling().getNextSibling().detach();
+			l.getNextSibling().getNextSibling().getNextSibling().detach();
+			l.getNextSibling().getNextSibling().detach();
 			break;
 		case 1:
-			component.getNextSibling().getNextSibling().getNextSibling()
-					.getNextSibling().detach();
-			component.getNextSibling().getNextSibling().getNextSibling()
-					.detach();
-			component.getNextSibling().detach();
+			l.getNextSibling().getNextSibling().getNextSibling().detach();
+			l.getNextSibling().detach();
 			break;
 		case 2:
-			component.getNextSibling().detach();
-			component.getNextSibling().getNextSibling().getNextSibling()
-					.detach();
-			component.getNextSibling().getNextSibling().getNextSibling()
-					.getNextSibling().detach();
+			l.getNextSibling().getNextSibling().detach();
+			l.getNextSibling().detach();
 			break;
 		case 3:
-			component.getNextSibling().getNextSibling().getNextSibling()
-					.detach();
-			component.getNextSibling().getNextSibling().detach();
-			component.getNextSibling().detach();
+			l.getNextSibling().getNextSibling().detach();
+			l.getNextSibling().detach();
 			break;
 		default:
 			;
 			break;
-		}
-	}
-
-	@Command
-	public void radiogroup(@BindingParam("radiogroup") Radiogroup rg,
-			@BindingParam("pergunta") Pergunta p) {
-		List<RespostaEspecifica> rs = p.getRespostasEspecificas();
-		for (RespostaEspecifica r : rs) {
-			Radio radio = new Radio(r.getRespostaEspecifica());
-			radio.setValue(r.getRespostaEspecifica());
-			radio.setVisible(true);
-			rg.appendChild(radio);
 		}
 	}
 
@@ -329,6 +306,25 @@ public class HomeAlunoController extends GenericController {
 
 		respostas.add(resposta);
 		resposta = new Resposta();
+	}
+
+	@Command
+	public void doChecked(@BindingParam("string") String escolha,
+			@BindingParam("pergunta") Pergunta perg,
+			@BindingParam("check") Checkbox box) {
+		if(box.isChecked()) {
+			resposta.setResposta(escolha);
+			resposta.setPergunta(perg);
+			respostas.add(resposta);
+			resposta = new Resposta();
+		} else {
+			for(Resposta r : respostas) {
+				if(r.getResposta()==escolha) {
+					respostas.remove(r);
+					break;
+				}
+			}
+		}
 	}
 
 	@Command
@@ -401,14 +397,6 @@ public class HomeAlunoController extends GenericController {
 		this.questionarioProf = questionarioProf;
 	}
 
-	public Turma getTurmaAtual() {
-		return turmaAtual;
-	}
-
-	public void setTurmaAtual(Turma turmaAtual) {
-		HomeAlunoController.turmaAtual = turmaAtual;
-	}
-
 	public PrazoQuestionario getPrazo() {
 		return prazo;
 	}
@@ -416,5 +404,4 @@ public class HomeAlunoController extends GenericController {
 	public void setPrazo(PrazoQuestionario prazo) {
 		this.prazo = prazo;
 	}
-
 }

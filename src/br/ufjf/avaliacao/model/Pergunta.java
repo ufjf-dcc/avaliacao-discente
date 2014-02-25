@@ -82,8 +82,12 @@ public class Pergunta implements Serializable {
 		this.respostas = respostas;
 	}
 
-	public List<RespostaEspecifica> getRespostasEspecificas() {
+	public List<RespostaEspecifica> getRespostasEspecificasBanco() {
 		return (new RespostaEspecificaDAO().getRespostasEspecificasPerguntas(this));
+	}
+	
+	public List<RespostaEspecifica> getRespostasEspecificas() {
+		return this.respostasEspecificas;
 	}
 
 	public void setRespostasEspecificas(

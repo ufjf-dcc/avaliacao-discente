@@ -57,8 +57,8 @@ public class QuestionariosController extends GenericController {
 	private List<PrazoQuestionario> prazos = new ArrayList<PrazoQuestionario>();
 	private List<PrazoQuestionario> prazosSessao = new ArrayList<PrazoQuestionario>();
 	private PrazoQuestionarioDAO prazoDAO = new PrazoQuestionarioDAO();
-	private Integer spinnerInicio = 0;
-	private Integer spinnerFinal = 10;
+	private Integer spinnerInicio;
+	private Integer spinnerFinal;
 	private List<RespostaEspecifica> respostas = new ArrayList<RespostaEspecifica>();
 	private RespostaEspecifica resposta = new RespostaEspecifica();
 	private RespostaEspecificaDAO respostaEspecificaDAO = new RespostaEspecificaDAO();
@@ -152,9 +152,8 @@ public class QuestionariosController extends GenericController {
 	}
 
 	/*
-	 * Método privado para finalizar a criação de uma pergunta
-	 * e coloca la no questionario. Verificações são feitas antes
-	 * da chamada desse método.
+	 * Método privado para finalizar a criação de uma pergunta e coloca la no
+	 * questionario. Verificações são feitas antes da chamada desse método.
 	 */
 	private void finalizar(Button b) {
 		pergunta.setTituloPergunta(pergunta.getTituloPergunta().trim());
@@ -189,7 +188,8 @@ public class QuestionariosController extends GenericController {
 					if (!respostas.isEmpty()) {
 						finalizar(b);
 					} else {
-						Messagebox.show("Nenhuma resposta cadastrada para essa pergunta.");
+						Messagebox
+								.show("Nenhuma resposta cadastrada para essa pergunta.");
 					}
 				}
 			} else {
@@ -285,31 +285,36 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	@NotifyChange({ "questionariosCoord", "questionariosProf",
-			"questionariosAuto", "questionariosInfra", "questionario" })
 	public void exclui() {
+		/*
+		 * Exclusão do questionario funcionando.
+		 * Faltam apenas fazer as verificicações para
+		 * ver se não está em vigor o prazo e se o questionario
+		 * já foi avaliado por alguém, consequentemente, suas perguntas,
+		 * respostas, e respostas especificas estao todas ligados.
+		 */
+		questionario = (Questionario) session.getAttribute("questionario");
 		perguntas = questionario.getPerguntas();
-		prazos = prazoDAO.getPrazos(questionario);
-		perguntas.get(0).getTipoPergunta();
-		// tenho que excluir as repostas especificas antes AINDA NAO TESTEI
-		for (int i = 0; i < perguntas.size(); i++)
-			respostaEspecificaDAO.excluiLista(respostaEspecificaDAO
-					.getRespostasEspecificasPerguntas(perguntas.get(i)));
-		perguntaDAO.excluiLista(perguntas);
-		prazoDAO.excluiLista(prazos);
-		if (questionarioDAO.exclui(questionario)) {
-			Messagebox.show("Questionário Excluído", "Concluído",
-					Messagebox.OK, Messagebox.INFORMATION,
-					new EventListener<Event>() {
-						@Override
-						public void onEvent(Event event) throws Exception {
-							Executions.sendRedirect(null);
-						}
-					});
-			listaQuestionarios(questionario.getTipoQuestionario()).remove(
-					questionario);
+		prazos = questionario.getPrazos();
+		
+		for (Pergunta p : perguntas) {
+			respostaEspecificaDAO.excluiLista(p.getRespostasEspecificasBanco());
 		}
-
+		if (perguntaDAO.excluiLista(perguntas)) {
+			prazoDAO.excluiLista(prazos);
+			if (questionarioDAO.exclui(questionario)) {
+				Messagebox.show("Questionário Excluído", "Concluído",
+						Messagebox.OK, Messagebox.INFORMATION,
+						new EventListener<Event>() {
+							@Override
+							public void onEvent(Event event) throws Exception {
+								Executions.sendRedirect(null);
+							}
+						});
+				listaQuestionarios(questionario.getTipoQuestionario()).remove(
+						questionario);
+			}
+		}
 	}
 
 	@Command

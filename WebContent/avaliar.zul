@@ -10,29 +10,26 @@
 				<column align="left" />
 			</columns>
 			<template name="model">
-				<row
-					onCreate="@command('criarCampoResposta', row=self, tipoPergunta=each.tipoPergunta)">
-					<label value="@load(each.tituloPergunta)" />
-					<div>
-						<textbox maxlength="250" cols="60" rows="7"
-							onBlur="@command('escolha', string=self.value, pergunta=each)" />
-						<label value="*250 caracteres" />
-					</div>
-					<radiogroup onCreate="@command('radiogroup', radiogroup=self, pergunta=each)"
-						onCheck="@command('escolha', string=self.selectedItem.value, pergunta=each)">
-					</radiogroup>
-					<radiogroup orient="vertical"
-						onCheck="@command('escolha', string=self.selectedItem.value, pergunta=each)">
-						<radio label="Muito Ruim" value="Muito Ruim" />
-						<radio label="Ruim" value="Ruim" />
-						<radio label="Regular" value="Regular" />
-						<radio label="Bom" value="Bom" />
-						<radio label="Muito Bom" value="Muito Bom" />
-					</radiogroup>
-					<radiogroup
-						onCheck="@command('escolha', string=self.selectedItem.value, pergunta=each)">
-						<radio label="SIM " value="SIM" /><separator />
-						<radio label="NÃO" value="NAO" />
+				<row>
+					<label value="@load(each.tituloPergunta)"
+						onCreate="@command('criarCampoResposta', label=self, pergunta=each)" />
+					<textbox maxlength="250" cols="60" rows="7"
+						onBlur="@command('escolha', string=self.value, pergunta=each)" />
+					<vlayout
+						children="@load(each.respostasEspecificasBanco)">
+						<template name="children">
+							<checkbox
+								label="@load(each.respostaEspecifica)"
+								value="@load(each.respostaEspecifica)" onCheck="@command('doChecked', string=self.value, pergunta=each.pergunta, check=self)"/>
+						</template>
+					</vlayout>
+					<radiogroup onCheck="@command('escolha', string=self.selectedItem.value, pergunta=each)"
+						model="@load(each.respostasEspecificasBanco)">
+						<template name="model">
+							<radio
+								label="@load(each.respostaEspecifica)"
+								value="@load(each.respostaEspecifica)" />
+						</template>
 					</radiogroup>
 				</row>
 			</template>
@@ -42,4 +39,4 @@
 				onClick="@command('terminarAvaliacao', window=win)" />
 		</div>
 	</div>
-</window> 
+</window>

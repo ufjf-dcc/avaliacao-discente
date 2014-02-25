@@ -18,7 +18,7 @@ public class RespostaEspecificaDAO extends GenericoDAO implements IRespostaEspec
 		try {
 			Query query = getSession()
 					.createQuery(
-							"SELECT r FROM RespostasEspecificas AS r WHERE r.pergunta = :pergunta");
+							"SELECT r FROM RespostaEspecifica AS r WHERE r.pergunta = :pergunta");
 			query.setParameter("pergunta", pergunta);
 
 			List<RespostaEspecifica> rs = new ArrayList<RespostaEspecifica>();
