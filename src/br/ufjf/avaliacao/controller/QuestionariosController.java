@@ -160,6 +160,7 @@ public class QuestionariosController extends GenericController {
 		pergunta.setQuestionario(questionario);
 		perguntas.add(pergunta);
 		if (pergunta.getTipoPergunta() == 3) {
+			respostas = new ArrayList<RespostaEspecifica>();
 			for (int i = spinnerInicio; i <= spinnerFinal; i++) {
 				resposta = new RespostaEspecifica();
 				resposta.setRespostaEspecifica(Integer.toString(i));
@@ -167,7 +168,9 @@ public class QuestionariosController extends GenericController {
 				respostas.add(resposta);
 			}
 		}
-		pergunta.setRespostasEspecificas(respostas);
+		if (pergunta.getTipoPergunta() != 0) {
+			pergunta.setRespostasEspecificas(respostas);
+		}
 		pergunta = new Pergunta();
 		respostas = new ArrayList<RespostaEspecifica>();
 		session.setAttribute("respostas", respostas);
@@ -287,16 +290,15 @@ public class QuestionariosController extends GenericController {
 	@Command
 	public void exclui() {
 		/*
-		 * Exclusão do questionario funcionando.
-		 * Faltam apenas fazer as verificicações para
-		 * ver se não está em vigor o prazo e se o questionario
-		 * já foi avaliado por alguém, consequentemente, suas perguntas,
-		 * respostas, e respostas especificas estao todas ligados.
+		 * Exclusão do questionario funcionando. Faltam apenas fazer as
+		 * verificicações para ver se não está em vigor o prazo e se o
+		 * questionario já foi avaliado por alguém, consequentemente, suas
+		 * perguntas, respostas, e respostas especificas estao todas ligados.
 		 */
 		questionario = (Questionario) session.getAttribute("questionario");
 		perguntas = questionario.getPerguntas();
 		prazos = questionario.getPrazos();
-		
+
 		for (Pergunta p : perguntas) {
 			respostaEspecificaDAO.excluiLista(p.getRespostasEspecificasBanco());
 		}
