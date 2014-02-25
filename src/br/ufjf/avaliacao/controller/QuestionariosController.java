@@ -81,29 +81,54 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
+	@NotifyChange("perguntas")
+	public void duplicarPergunta(@BindingParam("pergunta") Pergunta p) {
+		Pergunta pergunta = new Pergunta();
+		pergunta.setTituloPergunta(p.getTituloPergunta());
+		pergunta.setTipoPergunta(p.getTipoPergunta());
+		if (p.getTipoPergunta() != 0) {
+			List<RespostaEspecifica> respostas = new ArrayList<RespostaEspecifica>();
+			for (RespostaEspecifica r : p.getRespostasEspecificas()) {
+				RespostaEspecifica re = new RespostaEspecifica();
+				re.setPergunta(pergunta);
+				re.setRespostaEspecifica(r.getRespostaEspecifica());
+				respostas.add(re);
+			}
+			pergunta.setRespostasEspecificas(respostas);
+		}
+		pergunta.setQuestionario(questionario);
+		perguntas.add(pergunta);
+	}
+
+	@Command
 	public void criarQuestionario() {
 		if ((new GenericBusiness().campoStrValido(questionario
 				.getTituloQuestionario()))
 				&& (questionario.getTipoQuestionario() != null)) {
-			questionario.setCurso(usuario.getCurso());
-			if (questionarioDAO.salvar(questionario)) {
-				if (perguntaDAO.salvarLista(perguntas)) {
-					for (Pergunta p : perguntas) {
-						if (p.getTipoPergunta() != 0) {
-							respostaEspecificaDAO.salvarLista(p
-									.getRespostasEspecificas());
+			if (!perguntas.isEmpty()) {
+				questionario.setCurso(usuario.getCurso());
+				if (questionarioDAO.salvar(questionario)) {
+					if (perguntaDAO.salvarLista(perguntas)) {
+						for (Pergunta p : perguntas) {
+							if (p.getTipoPergunta() != 0) {
+								respostaEspecificaDAO.salvarLista(p
+										.getRespostasEspecificas());
+							}
 						}
+						Messagebox.show("Questionário criado com sucesso",
+								"Concluído", Messagebox.OK,
+								Messagebox.INFORMATION,
+								new EventListener<Event>() {
+									@Override
+									public void onEvent(Event event)
+											throws Exception {
+										Executions.sendRedirect(null);
+									}
+								});
 					}
-					Messagebox.show("Questionário criado com sucesso",
-							"Concluído", Messagebox.OK, Messagebox.INFORMATION,
-							new EventListener<Event>() {
-								@Override
-								public void onEvent(Event event)
-										throws Exception {
-									Executions.sendRedirect(null);
-								}
-							});
 				}
+			} else {
+				Messagebox.show("Nenhuma pergunta adicionada ao questionário ainda. Impossível criar.");
 			}
 		}
 	}

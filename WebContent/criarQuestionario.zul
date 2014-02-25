@@ -38,6 +38,8 @@
 					<div style="text-align:center">
 						<button image="/img/delete.png"
 							onClick="@command('excluiPergunta',pergunta=each)" />
+						<button label="Duplicar"
+							onClick="@command('duplicarPergunta',pergunta=each)" />
 						<button label="top"
 							onClick="@command('top',pergunta=each)" />
 						<button image="/img/up.png"
