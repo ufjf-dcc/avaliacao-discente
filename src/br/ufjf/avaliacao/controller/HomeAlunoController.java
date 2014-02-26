@@ -37,13 +37,13 @@ public class HomeAlunoController extends GenericController {
 	private QuestionarioDAO questionarioDAO = new QuestionarioDAO();
 	private UsuarioDAO usuarioDAO = new UsuarioDAO();
 	private AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
+	private TurmaDAO turmaDAO = new TurmaDAO();
 	private Questionario questionarioProf = questionarioDAO
 			.retornaQuestionarioProf(usuario);
 	private List<Turma> turmasDoUsuario = new TurmaDAO()
 			.getTurmasUsuario(usuario);
 	private PrazoQuestionario prazo = new PrazoQuestionarioDAO()
 			.prazoQuestionario(questionarioProf);
-//	private Questionario questionarioAtual = new Questionario();
 
 	private Questionario questionarioCoord = questionarioDAO
 			.retornaQuestinarioParaUsuarioCoord(usuario);
@@ -55,7 +55,6 @@ public class HomeAlunoController extends GenericController {
 	private Resposta resposta = new Resposta();
 	private List<Resposta> respostas = new ArrayList<Resposta>();
 	private Usuario coordAvaliado = usuarioDAO.retornaCoordAvaliado(usuario);
-//	private static Questionario questionarioInicial = new Questionario();
 
 	@Init
 	public void init() throws HibernateException, Exception {
@@ -70,8 +69,8 @@ public class HomeAlunoController extends GenericController {
 		session.setAttribute("questionario", questionario);
 		session.setAttribute("turma", turma);
 		session.setAttribute("questionarioInicial", questionario);
-//		HomeAlunoController.questionarioInicial = questionario;
 		session.setAttribute("questionarioAtual", questionario);
+		session.setAttribute("numProfTurma", usuarioDAO.retornaProfessoresTurma(turma).size());
 		avaliarAux();
 	}
 
@@ -180,6 +179,7 @@ public class HomeAlunoController extends GenericController {
 			avaliado = avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario,
 					(Turma) session.getAttribute("turma")).get(0);
 			turmaUsada = (Turma) session.getAttribute("turma");
+			session.setAttribute("numProfTurma", ((int) session.getAttribute("numProfTurma")-1));
 
 		}
 		if (((Questionario) session.getAttribute("questionarioAtual")).getTipoQuestionario() == 2) { // verifica se o
@@ -220,21 +220,23 @@ public class HomeAlunoController extends GenericController {
 			// avaliação de professor, ele verifica o que mais precisa ser
 			// avaliado
 			if (((Questionario) session.getAttribute("questionarioAtual")).getTipoQuestionario() != 1
-					|| avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario,
-							(Turma) session.getAttribute("turma")).size() > 0)
-
+					|| ((int) session.getAttribute("numProfTurma")) > 0){
 				Messagebox.show("Avaliação Salva com Sucesso", "Concluído",
 						Messagebox.OK, Messagebox.INFORMATION,
 						new EventListener<Event>() {
+						
 							@Override
 							public void onEvent(Event event) throws Exception {
 								avaliarAux();
 							}
 						});
+				win.detach();
+
+			}
 			// se acabar de avaliar a ultima coisa(que seria o ultimo professor
 			// da turma(ou o unico)) ele finaliza as avaliaçoes e da um refresh
 			// na pagina
-			else
+			else{
 				Messagebox.show("Finalizado", "Concluído", Messagebox.OK,
 						Messagebox.INFORMATION, new EventListener<Event>() {
 							@Override
@@ -242,6 +244,8 @@ public class HomeAlunoController extends GenericController {
 								Executions.sendRedirect(null);
 							}
 						});
+				win.detach();
+			}
 		}
 
 	}
