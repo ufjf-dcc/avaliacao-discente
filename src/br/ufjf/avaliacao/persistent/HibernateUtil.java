@@ -7,17 +7,18 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
 
 /**
  * Classe com os métodos essenciais para utilização do Hibernate pelos DAOs
  * 
  */
 public class HibernateUtil {
-	private static SessionFactory sessionFactory;
-	private static ServiceRegistry serviceRegistry;
+	
+	private static StandardServiceRegistry serviceRegistry;
+	private static SessionFactory sessionFactory = null;
 	private static Transaction transaction;
 	private static Session session;
 
@@ -30,10 +31,8 @@ public class HibernateUtil {
 	 */
 	private static void start() {
 		try {
-			Configuration configuration = new Configuration();
-			configuration.configure();
-			serviceRegistry = new ServiceRegistryBuilder().applySettings(
-					configuration.getProperties()).buildServiceRegistry();
+			Configuration configuration = new Configuration().configure();
+			serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 			sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 		} catch (Throwable e) {
 			throw new ExceptionInInitializerError(e);
