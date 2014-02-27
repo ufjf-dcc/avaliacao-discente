@@ -1,0 +1,7 @@
+# Arquivo de configuração
+# Hibernate
+HIBERNATE.DRIVE = com.mysql.jdbc.Driver
+HIBERNATE.DIALECT = org.hibernate.dialect.MySQLDialect
+HIBERNATE.DB = jdbc:mysql://localhost/avaliacao
+HIBERNATE.USER = root
+HIBERNATE.PASS = root

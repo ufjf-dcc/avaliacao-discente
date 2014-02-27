@@ -11,12 +11,14 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
+import br.ufjf.avaliacao.library.ConfHandler;
+
 /**
  * Classe com os métodos essenciais para utilização do Hibernate pelos DAOs
  * 
  */
 public class HibernateUtil {
-	
+
 	private static StandardServiceRegistry serviceRegistry;
 	private static SessionFactory sessionFactory = null;
 	private static Transaction transaction;
@@ -32,7 +34,18 @@ public class HibernateUtil {
 	private static void start() {
 		try {
 			Configuration configuration = new Configuration().configure();
-			serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+			serviceRegistry = new StandardServiceRegistryBuilder()
+					.applySettings(configuration.getProperties())
+					.applySetting("hibernate.connection.driver_class",
+							ConfHandler.getConf("HIBERNATE.DRIVE"))
+					.applySetting("hibernate.connection.url",
+							ConfHandler.getConf("HIBERNATE.DB"))
+					.applySetting("hibernate.connection.username",
+							ConfHandler.getConf("HIBERNATE.USER"))
+					.applySetting("hibernate.connection.password",
+							ConfHandler.getConf("HIBERNATE.PASS"))
+					.applySetting("dialect",
+							ConfHandler.getConf("HIBERNATE.DIALECT")).build();
 			sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 		} catch (Throwable e) {
 			throw new ExceptionInInitializerError(e);
