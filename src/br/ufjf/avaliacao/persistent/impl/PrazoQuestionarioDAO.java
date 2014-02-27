@@ -98,4 +98,24 @@ public class PrazoQuestionarioDAO extends GenericoDAO implements
 		return false;
 	}
 
+	public PrazoQuestionario getPrazoQuestionarioDisponivel(Questionario questionario) {//dado um questionario, o prazodaquele questionario
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT p FROM PrazoQuestionario AS p LEFT JOIN FETCH p.questionario AS q WHERE q = :questionario AND :dataAtual BETWEEN p.dataInicial AND p.dataFinal");
+			query.setParameter("dataAtual", new Date());
+			query.setParameter("questionario", questionario);
+			PrazoQuestionario prazo = (PrazoQuestionario) query.uniqueResult();
+
+			getSession().close();
+
+			if (prazo != null) {
+				return prazo;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 }

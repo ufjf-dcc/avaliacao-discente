@@ -38,6 +38,7 @@ public class HomeAlunoController extends GenericController {
 	private UsuarioDAO usuarioDAO = new UsuarioDAO();
 	private AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
 	private TurmaDAO turmaDAO = new TurmaDAO();
+	private PrazoQuestionarioDAO prazoDAO = new PrazoQuestionarioDAO();
 	private Questionario questionarioProf = questionarioDAO
 			.retornaQuestionarioProf(usuario);
 	private List<Turma> turmasDoUsuario = new TurmaDAO()
@@ -164,6 +165,7 @@ public class HomeAlunoController extends GenericController {
 
 		Usuario avaliado = null;
 		Turma turmaUsada = null;
+		prazo = prazoDAO.getPrazoQuestionarioDisponivel((Questionario) session.getAttribute("questionarioAtual")); 
 
 		// setando o usuario que vai ser avaliado e a
 		// turma-----------------------------------------------------

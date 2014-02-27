@@ -65,9 +65,11 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 			
 			getSession().close();
 
+			QuestionarioDAO questionarioDAO = new QuestionarioDAO();
+			Questionario questionario = questionarioDAO.retornaQuestinarioParaUsuarioCoord(aluno);
 			if (!a.isEmpty()){// verific se esta vazio
 				for(int i=0;i<a.size();i++){ // verifica se alguma foi feita para um coordenador
-					if(a.get(i).getAvaliado().getTipoUsuario()==0) //se sim retorna true
+					if(a.get(i).getPrazoQuestionario().getQuestionario().getIdQuestionario() == questionario.getIdQuestionario()) //se sim retorna true
 						return true;
 				}
 			}
@@ -94,9 +96,12 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 			
 			getSession().close();
 
+			QuestionarioDAO questionarioDAO = new QuestionarioDAO();
+			Questionario questionario = questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(aluno);
+		
 			if (!a.isEmpty()){// verific se esta vazio
 				for(int i=0;i<a.size();i++){ // verifica se alguma foi feita para um coordenador
-					if(a.get(i).getAvaliado().getTipoUsuario()==2) //se sim retorna true
+					if(a.get(i).getPrazoQuestionario().getQuestionario().getIdQuestionario() == questionario.getIdQuestionario()) //se sim retorna true
 						return true;
 				}
 			}
@@ -123,9 +128,12 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 			
 			getSession().close();
 
+			QuestionarioDAO questionarioDAO = new QuestionarioDAO();
+			Questionario questionario = questionarioDAO.retornaQuestinarioParaUsuarioInfra(aluno);
+
 			if (!a.isEmpty()){// verific se esta vazio
 				for(int i=0;i<a.size();i++){ // verifica se alguma foi feita para um coordenador
-					if(a.get(i).getAvaliado()==null) //se sim retorna true
+					if(a.get(i).getPrazoQuestionario().getQuestionario().getIdQuestionario() == questionario.getIdQuestionario()) //se sim retorna true
 						return true;
 				}
 			}
@@ -153,6 +161,7 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 			
 			getSession().close();
 
+			
 			if (!a.isEmpty()){// verific se esta vazio
 						return true;
 			}
@@ -208,7 +217,7 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 
 		
 		//utilizado pra verificar se uma pessoa ja avaliou outra
-		public boolean avaliadoEAvaliando(Usuario avaliado, Usuario avaliando){
+		public boolean avaliadoEAvaliando(Usuario avaliado, Usuario avaliando){ // não está sendo mais usado
 			try {
 				Query query = getSession() // carrega as avaliações daquele questionario com o professor especifico
 						.createQuery(
