@@ -58,7 +58,8 @@ public class RespostaDAO extends GenericoDAO implements IRespostaDAO{
 			List<String> semestres = new ArrayList<String>();
 
 			for (int i=0 ;i<r.size();i++) {
-				semestres.add(r.get(i).getSemestre());
+				if(!semestres.contains(r.get(i).getSemestre()))
+					semestres.add(r.get(i).getSemestre());
 			}
 			return semestres;
 		} catch (Exception e) {
@@ -66,4 +67,22 @@ public class RespostaDAO extends GenericoDAO implements IRespostaDAO{
 		}
 		return null;
 	}
+	
+	public List<Resposta> retornaRespostaSemestre(String semestre) {
+		try {
+			Query query = getSession().createQuery("SELECT r FROM Resposta AS r WHERE r.semestre = : semestre");
+			query.setParameter("semestre", semestre);
+			
+			@SuppressWarnings("unchecked")
+			List<Resposta> r = query.list();
+
+			System.out.println("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT "+r.size());
+			if(r.size()>0)
+				return r;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 }

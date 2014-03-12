@@ -15,6 +15,7 @@ import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.Questionario;
 import br.ufjf.avaliacao.model.Turma;
 import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
+import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.RespostaDAO;
 import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 
@@ -22,7 +23,7 @@ public class ResultadosController extends GenericController {
 
 	private TurmaDAO turmaDAO = new TurmaDAO();
 	private RespostaDAO respostaDAO = new RespostaDAO();
-	private List<String> semestres = turmaDAO.getAllSemestres();
+	private List<String> semestres = respostaDAO.getAllSemestres();
 	private String semestre = new String();
 	private List<Turma> turmas = new ArrayList<Turma>();
 	private Turma turma = new Turma();
@@ -40,6 +41,8 @@ public class ResultadosController extends GenericController {
 		for (Turma t : new TurmaDAO().getAllTurmas(semestre)) {
 			turmas.add(t);
 		}
+		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
+		respostaDAO.retornaRespostaSemestre(semestre);
 		return turmas;
 	}
 

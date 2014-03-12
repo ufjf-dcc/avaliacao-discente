@@ -183,4 +183,25 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 		return null;
 	}
 
+	public List<Questionario> retornaQuestionariosSemestre(String semestre) {
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT q FROM Questionario AS q LEFT JOIN FETCH q.pergunta.resposta.semestre as sem WHERE sem =:semestre");
+			query.setParameter("semestre", semestre);
+
+			
+			List<Questionario> questionarios = query.list();
+
+			getSession().close();
+			
+			System.out.println("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh "+questionarios.size());
+
+			if (questionarios != null)
+				return questionarios;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
