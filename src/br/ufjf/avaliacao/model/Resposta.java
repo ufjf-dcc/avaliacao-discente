@@ -66,6 +66,23 @@ public class Resposta implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "idAvaliacao", nullable = false)
 	private Avaliacao avaliacao;
+	
+	/**
+	 * Campo com o semestre da turma. Relaciona com a coluna
+	 * {@code semestre} do banco através da anotação
+	 * {@code @Column(name = "semestre", length = 45, nullable = false)}
+	 * .
+	 */
+	@Column(name = "semestre", length = 45, nullable = true)
+	private String semestre;
+
+	public String getSemestre() {
+		return semestre;
+	}
+
+	public void setSemestre(String semestre) {
+		this.semestre = semestre;
+	}
 
 	public int getIdResposta() {
 		return idResposta;

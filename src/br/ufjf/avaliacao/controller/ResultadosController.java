@@ -21,6 +21,7 @@ import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 public class ResultadosController extends GenericController {
 
 	private TurmaDAO turmaDAO = new TurmaDAO();
+	private RespostaDAO respostaDAO = new RespostaDAO();
 	private List<String> semestres = turmaDAO.getAllSemestres();
 	private String semestre = new String();
 	private List<Turma> turmas = new ArrayList<Turma>();

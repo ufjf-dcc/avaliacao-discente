@@ -215,7 +215,9 @@ public class HomeAlunoController extends GenericController {
 			for (Resposta r : respostas) {
 				r.setAvaliacao(avaliacao);
 			}
+			System.out.println("000000000000000000000000000000000 zicaa");
 			new RespostaDAO().salvarLista(respostas);
+			System.out.println("000000000000000000000000000000000 zicaaa");
 			Clients.clearBusy();
 
 			// se tiver mais de um professor a ser avaliado ou nao for uma
@@ -305,13 +307,13 @@ public class HomeAlunoController extends GenericController {
 
 		resposta.setResposta(escolha);
 		resposta.setPergunta(perg);
-
+		resposta.setSemestre( ((Turma) session.getAttribute("turma")).getSemestre());
+		
 		for (int i = 0; i < respostas.size(); i++)
 			if (respostas.get(i).getPergunta() == resposta.getPergunta()) {
 				respostas.remove(respostas.get(i));
 				break;
 			}
-
 		respostas.add(resposta);
 		resposta = new Resposta();
 	}

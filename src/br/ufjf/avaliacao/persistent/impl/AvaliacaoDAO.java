@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
+import org.zkoss.zul.Messagebox;
+
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
@@ -278,7 +280,7 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 				
 				getSession().close();
 
-				if (!a.isEmpty()){// verific se esta vazio
+				if (a.size()>0){// verifica se esta vazio
 							return true;
 				}
 				else					//se nao retorna false
