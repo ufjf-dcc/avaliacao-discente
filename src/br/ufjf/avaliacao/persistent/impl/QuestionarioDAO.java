@@ -1,10 +1,12 @@
 package br.ufjf.avaliacao.persistent.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;
 
 import br.ufjf.avaliacao.model.Curso;
+import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.Questionario;
 import br.ufjf.avaliacao.model.Usuario;
 import br.ufjf.avaliacao.persistent.GenericoDAO;
@@ -183,25 +185,35 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 		return null;
 	}
 
-	public List<Questionario> retornaQuestionariosSemestre(String semestre) {
+
+	public Questionario retornaQuestionarioPergunta(Pergunta pergunta) { // retorna o questionario de uma pergunta
 		try {
 			Query query = getSession()
 					.createQuery(
-							"SELECT q FROM Questionario AS q LEFT JOIN FETCH q.pergunta.resposta.semestre as sem WHERE sem =:semestre");
-			query.setParameter("semestre", semestre);
-
-			
-			List<Questionario> questionarios = query.list();
-
+							"SELECT q FROM Questionario AS q LEFT JOIN FETCH q.perguntas as ps WHERE ps =:pergunta");
+			query.setParameter("pergunta", pergunta);
+		
+			Questionario questionario = (Questionario) query.uniqueResult();
 			getSession().close();
-			
-			System.out.println("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh "+questionarios.size());
 
-			if (questionarios != null)
-				return questionarios;
+			if (questionario != null)
+				return questionario;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return null;
+	}
+	
+	public List<Questionario> retornaQuestionariosSemestre(String semestre){//retornas os questionarios de um semestre
+		PerguntaDAO  perguntaDAO = new PerguntaDAO();
+		List<Pergunta> perguntas = perguntaDAO.retornaPerguntasSemestre(semestre);
+		List<Questionario> questionarios = new ArrayList<Questionario>();
+		for(int i=0;i<perguntas.size();i++){
+			if(!questionarios.contains(retornaQuestionarioPergunta(perguntas.get(i))))
+				questionarios.add(retornaQuestionarioPergunta(perguntas.get(i)));
+		}
+		if(perguntas.size()>0)
+			return questionarios;
 		return null;
 	}
 }

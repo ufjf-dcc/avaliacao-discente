@@ -51,4 +51,30 @@ public class PerguntaDAO extends GenericoDAO implements IPerguntaDAO {
 		}
 		return null;
 	}
+	
+	public List<Pergunta> retornaPerguntasSemestre(String semestre) {
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT p FROM Pergunta AS p LEFT JOIN FETCH p.respostas AS res WHERE res.semestre =:semestre");
+			query.setParameter("semestre", semestre);
+
+			List<Pergunta> ps = new ArrayList<Pergunta>();
+			ps = (List<Pergunta>) query.list();
+			getSession().close();
+		
+			
+			List<Pergunta> perguntas = new ArrayList<Pergunta>();
+			for(int i=0;i<ps.size();i++){
+				if(!perguntas.contains(ps.get(i)))
+					perguntas.add(ps.get(i));
+			}
+						
+			return perguntas;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
