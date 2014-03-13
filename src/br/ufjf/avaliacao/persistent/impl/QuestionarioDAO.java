@@ -212,7 +212,54 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 			if(!questionarios.contains(retornaQuestionarioPergunta(perguntas.get(i))))
 				questionarios.add(retornaQuestionarioPergunta(perguntas.get(i)));
 		}
-		if(perguntas.size()>0)
+		if(questionarios.size()>0)
+			return questionarios;
+		return null;
+	}
+	
+	public List<Questionario> retornaQuestionariosSemestreProfessor(String semestre){//retornas os questionarios de um semestre para professores
+		List<Questionario> questionarios = retornaQuestionariosSemestre(semestre);
+		for(int j=questionarios.size()-1;j>=0;j--)
+			if(questionarios.get(j).getTipoQuestionario()!=1){
+				questionarios.remove(j);
+			}
+	
+		if(questionarios.size()>0)
+			return questionarios;
+		return null;
+	}
+	
+	public List<Questionario> retornaQuestionariosSemestreInfraestrutura(String semestre){//retornas os questionarios de um semestre para infraestrutura
+		List<Questionario> questionarios = retornaQuestionariosSemestre(semestre);
+		for(int j=questionarios.size()-1;j>=0;j--)
+			if(questionarios.get(j).getTipoQuestionario()!=3){
+				questionarios.remove(j);
+			}
+	
+		if(questionarios.size()>0)
+			return questionarios;
+		return null;
+	}
+	
+	public List<Questionario> retornaQuestionariosSemestreCoordenador(String semestre){//retornas os questionarios de um semestre para coordenador
+		List<Questionario> questionarios = retornaQuestionariosSemestre(semestre);
+		for(int j=questionarios.size()-1;j>=0;j--)
+			if(questionarios.get(j).getTipoQuestionario()!=0){
+				questionarios.remove(j);
+			}
+	
+		if(questionarios.size()>0)
+			return questionarios;
+		return null;
+	}
+	public List<Questionario> retornaQuestionariosSemestreAutoavaliacao(String semestre){//retornas os questionarios de um semestre para autoavaliação
+		List<Questionario> questionarios = retornaQuestionariosSemestre(semestre);
+		for(int j=questionarios.size()-1;j>=0;j--)
+			if(questionarios.get(j).getTipoQuestionario()!=2){
+				questionarios.remove(j);
+			}
+	
+		if(questionarios.size()>0)
 			return questionarios;
 		return null;
 	}

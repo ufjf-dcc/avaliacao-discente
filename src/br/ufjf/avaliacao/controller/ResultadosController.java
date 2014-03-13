@@ -42,7 +42,10 @@ public class ResultadosController extends GenericController {
 			turmas.add(t);
 		}
 		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
-		respostaDAO.retornaRespostaSemestre(semestre);
+		List<Questionario> quest = questionarioDAO.retornaQuestionariosSemestreProfessor(semestre);
+		for(int i = 0;i< quest.size();i++)
+			System.out.println(quest.get(i).getNomeTipoQuestionario());
+		
 		return turmas;
 	}
 
