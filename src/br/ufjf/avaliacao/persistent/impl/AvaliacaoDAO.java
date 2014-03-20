@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
-import org.zkoss.zul.Messagebox;
 
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
@@ -178,7 +177,7 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 	@SuppressWarnings("unchecked")
 	public List<Avaliacao> avaliacoesTurma(Turma turma) {
 		try {
-			Query query = getSession().createQuery("SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.turma AS t WHERE t =: turma");
+			Query query = getSession().createQuery("SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.prazoQuestionario JOIN FETCH a.turma AS t WHERE t =:turma");
 			query.setParameter("turma", turma);
 			
 			List<Avaliacao> as = query.list();

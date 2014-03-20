@@ -23,10 +23,19 @@
 					</row>
 					<row>
 						<label value="Turma" />
-						<combobox width="98%" model="@load(vm.turmas)" selectedItem="@bind(vm.turma)">
+						<combobox width="98%" model="@load(vm.turmas)" selectedItem="@bind(vm.turma)"
+						onSelect="@command('carregarPerguntas')">
 							<template name="model">
 								<comboitem
 									label="@load(each.disciplinaLetraTurma)" />
+							</template>
+						</combobox>
+					</row>
+					<row>
+						<label value="Perguntas" />
+						<combobox width="98%" model="@load(vm.perguntas)">
+							<template name="model">
+								<comboitem label="@load(each.tituloPergunta)" />
 							</template>
 						</combobox>
 					</row>

@@ -12,6 +12,7 @@ import org.zkoss.zul.Window;
 
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Pergunta;
+import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
 import br.ufjf.avaliacao.model.Turma;
 import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
@@ -28,6 +29,8 @@ public class ResultadosController extends GenericController {
 	private List<Turma> turmas = new ArrayList<Turma>();
 	private Turma turma = new Turma();
 	private List<Avaliacao> avaliacoes = new ArrayList<Avaliacao>();
+	private PrazoQuestionario prazo = new PrazoQuestionario();
+	private List<Pergunta> perguntas = new ArrayList<>();
 
 	@Command
 	@NotifyChange("turmas")
@@ -36,16 +39,24 @@ public class ResultadosController extends GenericController {
 		turmas = getLetraDisciplinaTurma();
 	}
 
+	@Command
+	public void carregarPerguntas() {
+		avaliacoes = new AvaliacaoDAO().avaliacoesTurma(turma);
+		prazo = avaliacoes.get(0).getPrazoQuestionario();
+		setPerguntas(prazo.getQuestionario().getPerguntas());
+	}
+
 	private List<Turma> getLetraDisciplinaTurma() {
 		List<Turma> turmas = new ArrayList<Turma>();
 		for (Turma t : new TurmaDAO().getAllTurmas(semestre)) {
 			turmas.add(t);
 		}
 		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
-		List<Questionario> quest = questionarioDAO.retornaQuestionariosSemestreProfessor(semestre);
-		for(int i = 0;i< quest.size();i++)
+		List<Questionario> quest = questionarioDAO
+				.retornaQuestionariosSemestreProfessor(semestre);
+		for (int i = 0; i < quest.size(); i++)
 			System.out.println(quest.get(i).getNomeTipoQuestionario());
-		
+
 		return turmas;
 	}
 
@@ -65,31 +76,47 @@ public class ResultadosController extends GenericController {
 
 	public CategoryModel getModel() {
 		SimpleCategoryModel model = new SimpleCategoryModel();
-		Questionario q = avaliacoes.get(0).getPrazoQuestionario().getQuestionario();
-		
-		for (Pergunta p : q.getPerguntas() ) {
-			
+		Questionario q = avaliacoes.get(0).getPrazoQuestionario()
+				.getQuestionario();
+
+		for (Pergunta p : q.getPerguntas()) {
+
 			switch (p.getTipoPergunta()) {
-			case 1: model.setValue("1", p.getTituloPergunta(), new RespostaDAO().numRespostasPergunta(p, "1"));
-					model.setValue("2", p.getTituloPergunta(), new RespostaDAO().numRespostasPergunta(p, "2"));
-					model.setValue("3", p.getTituloPergunta(), new RespostaDAO().numRespostasPergunta(p, "3"));
-					model.setValue("4", p.getTituloPergunta(), new RespostaDAO().numRespostasPergunta(p, "4"));
-					model.setValue("5", p.getTituloPergunta(), new RespostaDAO().numRespostasPergunta(p, "5"));
+			case 1:
+				model.setValue("1", p.getTituloPergunta(),
+						new RespostaDAO().numRespostasPergunta(p, "1"));
+				model.setValue("2", p.getTituloPergunta(),
+						new RespostaDAO().numRespostasPergunta(p, "2"));
+				model.setValue("3", p.getTituloPergunta(),
+						new RespostaDAO().numRespostasPergunta(p, "3"));
+				model.setValue("4", p.getTituloPergunta(),
+						new RespostaDAO().numRespostasPergunta(p, "4"));
+				model.setValue("5", p.getTituloPergunta(),
+						new RespostaDAO().numRespostasPergunta(p, "5"));
 				break;
-			case 2: model.setValue("Muito Ruim", p.getTituloPergunta(), new RespostaDAO().numRespostasPergunta(p, "Muito Ruim"));
-					model.setValue("Ruim", p.getTituloPergunta(), new RespostaDAO().numRespostasPergunta(p, "Ruim"));
-					model.setValue("Regular", p.getTituloPergunta(), new RespostaDAO().numRespostasPergunta(p, "Regular"));
-					model.setValue("Bom", p.getTituloPergunta(), new RespostaDAO().numRespostasPergunta(p, "Bom"));
-					model.setValue("Muito Bom", p.getTituloPergunta(), new RespostaDAO().numRespostasPergunta(p, "Muito Bom"));
+			case 2:
+				model.setValue("Muito Ruim", p.getTituloPergunta(),
+						new RespostaDAO().numRespostasPergunta(p, "Muito Ruim"));
+				model.setValue("Ruim", p.getTituloPergunta(),
+						new RespostaDAO().numRespostasPergunta(p, "Ruim"));
+				model.setValue("Regular", p.getTituloPergunta(),
+						new RespostaDAO().numRespostasPergunta(p, "Regular"));
+				model.setValue("Bom", p.getTituloPergunta(),
+						new RespostaDAO().numRespostasPergunta(p, "Bom"));
+				model.setValue("Muito Bom", p.getTituloPergunta(),
+						new RespostaDAO().numRespostasPergunta(p, "Muito Bom"));
 				break;
-			case 3: model.setValue("Sim", p.getTituloPergunta(), new RespostaDAO().numRespostasPergunta(p, "SIM"));
-					model.setValue("Não", p.getTituloPergunta(), new RespostaDAO().numRespostasPergunta(p, "NAO"));
+			case 3:
+				model.setValue("Sim", p.getTituloPergunta(),
+						new RespostaDAO().numRespostasPergunta(p, "SIM"));
+				model.setValue("Não", p.getTituloPergunta(),
+						new RespostaDAO().numRespostasPergunta(p, "NAO"));
 			default:
 				break;
 			}
-					
-		}		
-		//model.setValue(resposta possiveis, pergunta, numero de respostas);
+
+		}
+		// model.setValue(resposta possiveis, pergunta, numero de respostas);
 		return model;
 	}
 
@@ -123,5 +150,13 @@ public class ResultadosController extends GenericController {
 
 	public void setTurma(Turma turma) {
 		this.turma = turma;
+	}
+
+	public List<Pergunta> getPerguntas() {
+		return perguntas;
+	}
+
+	public void setPerguntas(List<Pergunta> perguntas) {
+		this.perguntas = perguntas;
 	}
 }

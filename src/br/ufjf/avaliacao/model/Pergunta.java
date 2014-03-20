@@ -61,7 +61,7 @@ public class Pergunta implements Serializable {
 	 * quando retornarmos a {@link Pergunta}.
 	 * 
 	 */
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "idQuestionario", nullable = false)
 	private Questionario questionario;
 
