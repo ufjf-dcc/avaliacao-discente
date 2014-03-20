@@ -6,7 +6,7 @@
 	<session-factory>
 		
 		<property name="show_sql">true</property>
-		<property name="hibernate.format_sql">true</property>
+		<!-- <property name="hibernate.format_sql">true</property>  -->
 
 		<!-- Classes que irão mapear as Entidades do Banco -->
 		<mapping class="br.ufjf.avaliacao.model.Avaliacao" />

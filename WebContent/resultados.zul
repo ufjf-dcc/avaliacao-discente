@@ -33,7 +33,7 @@
 					</row>
 					<row>
 						<label value="Perguntas" />
-						<combobox width="98%" model="@load(vm.perguntas)">
+						<combobox width="98%" model="@load(vm.perguntas)" selectedItem="@bind(vm.perguntaSelecionada)">
 							<template name="model">
 								<comboitem label="@load(each.tituloPergunta)" />
 							</template>
@@ -42,7 +42,7 @@
 				</rows>
 			</grid>
 			<div>
-				<button onClick="@command('abrirGrafico')" label="Gerar Gráfico" />
+				<button onClick="@command('getGrafico')" label="Gerar Gráfico" />
 			</div>
 		</div>
 	</div>

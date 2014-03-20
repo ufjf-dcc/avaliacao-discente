@@ -8,7 +8,6 @@ import org.hibernate.Query;
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.Resposta;
-import br.ufjf.avaliacao.model.Turma;
 import br.ufjf.avaliacao.persistent.GenericoDAO;
 import br.ufjf.avaliacao.persistent.IRespostaDAO;
 
@@ -31,17 +30,19 @@ public class RespostaDAO extends GenericoDAO implements IRespostaDAO{
 		return null;
 	}
 	
-	@Override
+	
 	@SuppressWarnings("unchecked")
-	public Integer numRespostasPergunta(Pergunta p, String resposta) {
+	public List<Resposta> getRespostasPerguntaSemestre(Pergunta p, String semestre) {
 		try {
-			Query query = getSession().createQuery("SELECT rs FROM Resposta AS rs WHERE rs.pergunta =:pergunta AND rs.resposta =:resposta");
+			Query query = getSession().createQuery("SELECT rs FROM Resposta AS rs WHERE rs.pergunta =:pergunta AND rs.semestre =:semestre");
 			query.setParameter("pergunta", p);
-			query.setParameter("resposta", resposta);
+			query.setParameter("semestre", semestre);
 			
 			List<Resposta> respostas = query.list();
 			
-			return respostas.size();
+			getSession().close();
+			
+			return respostas;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
