@@ -23,8 +23,9 @@
 					</row>
 					<row>
 						<label value="Turma" />
-						<combobox width="98%" model="@load(vm.turmas)" selectedItem="@bind(vm.turma)"
-						onSelect="@command('carregarPerguntas')">
+						<combobox width="98%" model="@load(vm.turmas)"
+							selectedItem="@bind(vm.turma)"
+							onSelect="@command('carregarPerguntas')">
 							<template name="model">
 								<comboitem
 									label="@load(each.disciplinaLetraTurma)" />
@@ -33,17 +34,25 @@
 					</row>
 					<row>
 						<label value="Perguntas" />
-						<combobox width="98%" model="@load(vm.perguntas)" selectedItem="@bind(vm.perguntaSelecionada)">
+						<combobox width="98%"
+							model="@load(vm.perguntas)"
+							selectedItem="@bind(vm.perguntaSelecionada)">
 							<template name="model">
-								<comboitem label="@load(each.tituloPergunta)" />
+								<comboitem
+									label="@load(each.tituloPergunta)" />
 							</template>
 						</combobox>
 					</row>
 				</rows>
 			</grid>
 			<div>
-				<button onClick="@command('getGrafico')" label="Gerar Gráfico" />
+				<button onClick="@command('gerarGrafico', vlayout=graf)"
+					label="Gerar Gráfico" />
 			</div>
 		</div>
+		<vlayout id="graf" visible="false">
+			<flashchart width="500" height="250" type="pie" model="@load(vm.model)" />
+		</vlayout>
 	</div>
+		
 </zk>

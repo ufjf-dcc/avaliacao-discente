@@ -8,6 +8,7 @@ import org.hibernate.Query;
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.Resposta;
+import br.ufjf.avaliacao.model.Turma;
 import br.ufjf.avaliacao.persistent.GenericoDAO;
 import br.ufjf.avaliacao.persistent.IRespostaDAO;
 
@@ -32,11 +33,12 @@ public class RespostaDAO extends GenericoDAO implements IRespostaDAO{
 	
 	
 	@SuppressWarnings("unchecked")
-	public List<Resposta> getRespostasPerguntaSemestre(Pergunta p, String semestre) {
+	public List<Resposta> getRespostasPerguntaSemestre(Pergunta p, String semestre, Turma turma) {
 		try {
-			Query query = getSession().createQuery("SELECT rs FROM Resposta AS rs WHERE rs.pergunta =:pergunta AND rs.semestre =:semestre");
+			Query query = getSession().createQuery("SELECT rs FROM Resposta AS rs LEFT JOIN FETCH rs.avaliacao AS ava WHERE ava.turma =:turma AND rs.pergunta =:pergunta AND rs.semestre =:semestre");
 			query.setParameter("pergunta", p);
 			query.setParameter("semestre", semestre);
+			query.setParameter("turma", turma);
 			
 			List<Resposta> respostas = query.list();
 			
