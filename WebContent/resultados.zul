@@ -46,13 +46,9 @@
 				</rows>
 			</grid>
 			<div>
-				<button onClick="@command('gerarGrafico', vlayout=graf)"
+				<button onClick="@command('gerarGrafico')"
 					label="Gerar Gráfico" />
 			</div>
 		</div>
-		<vlayout id="graf" visible="false">
-			<flashchart width="500" height="250" type="pie" model="@load(vm.model)" />
-		</vlayout>
 	</div>
-		
 </zk>

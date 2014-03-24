@@ -1,16 +1,18 @@
 package br.ufjf.avaliacao.controller;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.NotifyChange;
+import org.zkoss.zk.ui.Executions;
 import org.zkoss.zul.PieModel;
 import org.zkoss.zul.SimplePieModel;
-import org.zkoss.zul.Vlayout;
+import org.zkoss.zul.Window;
 
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Pergunta;
@@ -22,8 +24,13 @@ import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
 import br.ufjf.avaliacao.persistent.impl.RespostaDAO;
 import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 
-public class ResultadosController extends GenericController {
+public class ResultadosController extends GenericController implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6731467107690993996L;
+	
 	private RespostaDAO respostaDAO = new RespostaDAO();
 	private List<String> semestres = respostaDAO.getAllSemestres();
 	private String semestre = new String();
@@ -33,7 +40,6 @@ public class ResultadosController extends GenericController {
 	private PrazoQuestionario prazo = new PrazoQuestionario();
 	private List<Pergunta> perguntas = new ArrayList<>();
 	private Pergunta perguntaSelecionada;
-	private PieModel model = new SimplePieModel();
 
 	@Command
 	@NotifyChange("turmas")
@@ -59,9 +65,15 @@ public class ResultadosController extends GenericController {
 	}
 
 	@Command
-	public void gerarGrafico(@BindingParam("vlayout")Vlayout v) {
-		getGrafico();
-		v.setVisible(true);
+	public void gerarGrafico() {
+		getGrafico();	
+		session.setAttribute("turma", turma);
+		session.setAttribute("pergunta", perguntaSelecionada);
+		Window w = (Window) Executions.createComponents("/grafico.zul", null,
+				null);
+		w.setClosable(true);
+		w.setMinimizable(true);
+		w.doOverlapped();
 	}
 
 	public void getGrafico() {
@@ -70,15 +82,16 @@ public class ResultadosController extends GenericController {
 						turma);
 		List<RespostaEspecifica> alternativas = perguntaSelecionada
 				.getRespostasEspecificasBanco();
-		HashMap<String, Integer> contagem = new HashMap<>();
+		Map<String, Integer> contagem = new LinkedHashMap<>();
+		PieModel model = new SimplePieModel();
 		for (RespostaEspecifica re : alternativas) {
 			contagem.put(re.getRespostaEspecifica(), 0);
 		}
 		for (Resposta r : respostas) {
 			for (RespostaEspecifica re : alternativas) {
 				if (r.getResposta().equals(re.getRespostaEspecifica())) {
-					int j = contagem.get(re.getRespostaEspecifica()) + 1;
-					contagem.put(re.getRespostaEspecifica(), j);
+					contagem.put(re.getRespostaEspecifica(),
+							(contagem.get(re.getRespostaEspecifica()) + 1));
 				}
 			}
 		}
@@ -87,6 +100,7 @@ public class ResultadosController extends GenericController {
 			String key = keyIterator.next();
 			model.setValue(key, contagem.get(key));
 		}
+		session.setAttribute("model", model);
 	}
 
 	public List<String> getSemestres() {
@@ -136,14 +150,5 @@ public class ResultadosController extends GenericController {
 	public void setPerguntaSelecionada(Pergunta perguntaSelecionada) {
 		this.perguntaSelecionada = perguntaSelecionada;
 	}
-
-	public PieModel getModel() {
-		return model;
-	}
-
-	public void setModel(PieModel model) {
-		this.model = model;
-	}
-
 
 }
