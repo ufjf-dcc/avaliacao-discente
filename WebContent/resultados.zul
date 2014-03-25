@@ -25,7 +25,7 @@
 						<label value="Turma" />
 						<combobox width="98%" model="@load(vm.turmas)"
 							selectedItem="@bind(vm.turma)"
-							onSelect="@command('carregarPerguntas')">
+							onSelect="@command('verificaTurma')">
 							<template name="model">
 								<comboitem
 									label="@load(each.disciplinaLetraTurma)" />

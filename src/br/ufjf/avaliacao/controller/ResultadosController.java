@@ -2,14 +2,17 @@ package br.ufjf.avaliacao.controller;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.PieModel;
 import org.zkoss.zul.SimplePieModel;
 import org.zkoss.zul.Window;
@@ -24,13 +27,14 @@ import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
 import br.ufjf.avaliacao.persistent.impl.RespostaDAO;
 import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 
-public class ResultadosController extends GenericController implements Serializable{
+public class ResultadosController extends GenericController implements
+		Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 6731467107690993996L;
-	
+
 	private RespostaDAO respostaDAO = new RespostaDAO();
 	private List<String> semestres = respostaDAO.getAllSemestres();
 	private String semestre = new String();
@@ -45,28 +49,48 @@ public class ResultadosController extends GenericController implements Serializa
 	@NotifyChange("turmas")
 	public void carregarTurmas() {
 		setTurmas(getLetraDisciplinaTurma());
-		turmas = getLetraDisciplinaTurma();
 	}
 
-	@Command
-	@NotifyChange("perguntas")
-	public void carregarPerguntas() {
-		avaliacoes = new AvaliacaoDAO().avaliacoesTurma(turma);
-		prazo = avaliacoes.get(0).getPrazoQuestionario();
-		perguntas = prazo.getQuestionario().getPerguntas();
-	}
+	// @Command
+	// @NotifyChange("perguntas")
+	// public void carregarPerguntas() {
+	// avaliacoes = new AvaliacaoDAO().avaliacoesTurma(turma);
+	// prazo = avaliacoes.get(0).getPrazoQuestionario();
+	// perguntas = prazo.getQuestionario().getPerguntas();
+	// }
 
 	private List<Turma> getLetraDisciplinaTurma() {
 		List<Turma> turmas = new ArrayList<Turma>();
 		for (Turma t : new TurmaDAO().getAllTurmas(semestre)) {
-			turmas.add(t);
+				turmas.add(t);
 		}
 		return turmas;
 	}
 
 	@Command
+	@NotifyChange("perguntas")
+	public void verificaTurma() {
+		System.out.println("Chamou !");
+		avaliacoes = new AvaliacaoDAO().avaliacoesTurma(turma);
+		if (!avaliacoes.isEmpty()) {
+			prazo = avaliacoes.get(0).getPrazoQuestionario();
+			if (prazo.getDataInicial().before(new Date())
+					&& prazo.getDataFinal().after(new Date())) {
+				Messagebox.show("Período para avaliação não terminado ainda.");
+				perguntas = null;
+			} else {
+				perguntas = prazo.getQuestionario().getPerguntas();
+			}
+		} else {
+			perguntas = null;
+			Messagebox
+					.show("Não foram feitas avaliações para essa turma e/ou período para avaliação não terminou ainda.");
+		}
+	}
+
+	@Command
 	public void gerarGrafico() {
-		getGrafico();	
+		getGrafico();
 		session.setAttribute("turma", turma);
 		session.setAttribute("pergunta", perguntaSelecionada);
 		Window w = (Window) Executions.createComponents("/grafico.zul", null,
