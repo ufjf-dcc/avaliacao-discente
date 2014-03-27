@@ -5,13 +5,22 @@
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.ResultadosController')">
 		<include src="@load(vm.menu)" />
 		<div align="center">
-			<grid width="400px">
+			<grid width="450px">
 				<columns>
-					<column width="100px" />
+					<column width="150px" />
 					<column width="300px" />
 				</columns>
 				<rows>
-					<row>
+					<row id="rowAva">
+						<label value="Tipo de Avaliação"/>
+						<combobox width="98%" onSelect="@command('avaliacaoEscolhida', row=rowAva, combo=self)">
+							<comboitem value="2" label="Auto-avaliação"/>
+							<comboitem value="0" label="Coordenador"/>
+							<comboitem value="3" label="Infraestrutura"/>
+							<comboitem value="1" label="Professor"/>
+						</combobox>
+					</row>
+					<row visible="false">
 						<label value="Semestre" />
 						<combobox width="98%"
 							model="@load(vm.semestres)" selectedItem="@bind(vm.semestre)"
@@ -21,7 +30,7 @@
 							</template>
 						</combobox>
 					</row>
-					<row>
+					<row visible="false">
 						<label value="Turma" />
 						<combobox width="98%" model="@load(vm.turmas)"
 							selectedItem="@bind(vm.turma)"
@@ -32,7 +41,7 @@
 							</template>
 						</combobox>
 					</row>
-					<row>
+					<row visible="false">
 						<label value="Perguntas" />
 						<combobox width="98%"
 							model="@load(vm.perguntas)"

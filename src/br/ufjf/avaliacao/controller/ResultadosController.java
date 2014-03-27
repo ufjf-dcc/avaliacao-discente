@@ -12,8 +12,10 @@ import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.PieModel;
+import org.zkoss.zul.Row;
 import org.zkoss.zul.SimplePieModel;
 import org.zkoss.zul.Window;
 
@@ -62,7 +64,7 @@ public class ResultadosController extends GenericController implements
 	private List<Turma> getLetraDisciplinaTurma() {
 		List<Turma> turmas = new ArrayList<Turma>();
 		for (Turma t : new TurmaDAO().getAllTurmas(semestre)) {
-				turmas.add(t);
+			turmas.add(t);
 		}
 		return turmas;
 	}
@@ -70,7 +72,6 @@ public class ResultadosController extends GenericController implements
 	@Command
 	@NotifyChange("perguntas")
 	public void verificaTurma() {
-		System.out.println("Chamou !");
 		avaliacoes = new AvaliacaoDAO().avaliacoesTurma(turma);
 		if (!avaliacoes.isEmpty()) {
 			prazo = avaliacoes.get(0).getPrazoQuestionario();
@@ -90,7 +91,7 @@ public class ResultadosController extends GenericController implements
 
 	@Command
 	public void gerarGrafico() {
-		getGrafico();
+		getGraficoProfessor();
 		session.setAttribute("turma", turma);
 		session.setAttribute("pergunta", perguntaSelecionada);
 		Window w = (Window) Executions.createComponents("/grafico.zul", null,
@@ -100,7 +101,7 @@ public class ResultadosController extends GenericController implements
 		w.doOverlapped();
 	}
 
-	public void getGrafico() {
+	public void getGraficoProfessor() {
 		List<Resposta> respostas = new RespostaDAO()
 				.getRespostasPerguntaSemestre(perguntaSelecionada, semestre,
 						turma);
@@ -125,6 +126,36 @@ public class ResultadosController extends GenericController implements
 			model.setValue(key, contagem.get(key));
 		}
 		session.setAttribute("model", model);
+	}
+
+	@Command
+	public void avaliacaoEscolhida(@BindingParam("row") Row row,
+			@BindingParam("combo") Combobox combo) {
+		switch (combo.getSelectedItem().getValue().toString()) {
+		case "0":
+			row.getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().setVisible(false);
+			row.getNextSibling().getNextSibling().getNextSibling().setVisible(false);
+			break;
+		case "1":
+			row.getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			break;
+		case "2":
+			row.getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().setVisible(false);
+			row.getNextSibling().getNextSibling().getNextSibling().setVisible(false);
+			break;
+		case "3":
+			row.getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().setVisible(false);
+			row.getNextSibling().getNextSibling().getNextSibling().setVisible(false);
+			break;
+		default:
+			;
+			break;
+		}
 	}
 
 	public List<String> getSemestres() {
