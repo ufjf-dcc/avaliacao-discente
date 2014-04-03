@@ -112,4 +112,27 @@ public class TurmaDAO extends GenericoDAO implements ITurmaDAO {
 		return null;
 	}
 
+	public List<String> getSemestresUsuario(Usuario usuario) {
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT t FROM Usuario AS u JOIN u.turmas as t WHERE u = :usuario");
+			query.setParameter("usuario", usuario);
+
+			List<Turma> turmas = query.list();
+
+			getSession().close();
+
+			if(turmas != null){
+				List<String> semestres = new ArrayList<String>();
+				for(int i=0;i<turmas.size();i++)
+					if(!semestres.contains(turmas.get(i).getSemestre()))
+						semestres.add(turmas.get(i).getSemestre());
+				return semestres;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
