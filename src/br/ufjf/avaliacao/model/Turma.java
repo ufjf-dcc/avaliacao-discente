@@ -170,6 +170,10 @@ public class Turma implements Serializable{
 	public String getDisciplinaLetraTurma(){
 		return (disciplina.getNomeDisciplina() + " - " + letraTurma);
 	}
+	
+	public String getDisciplinaLetraTurmaSemestre(){
+		return (disciplina.getNomeDisciplina() + " - " + letraTurma + " ("+semestre+")");
+	}
 			
 
 }

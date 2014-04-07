@@ -23,10 +23,10 @@
 					<row visible="false">
 						<label value="Professor" />
 						<combobox width="98%"
-							model="@load(vm.professores)" selectedItem="@bind(vm.professorEscolhido)"
+							model="@load(vm.professores)" selectedItem="@bind(vm.professor)"
 							onSelect="@command('carregarSemestres')">
 							<template name="model">
-								<comboitem label="@load(each)" />
+								<comboitem label="@load(each.nome)" />
 							</template>
 						</combobox>
 					</row>
@@ -47,7 +47,7 @@
 							onSelect="@command('verificaTurma')">
 							<template name="model">
 								<comboitem
-									label="@load(each.disciplinaLetraTurma)" />
+									label="@load(each.disciplinaLetraTurmaSemestre)" />
 							</template>
 						</combobox>
 					</row>

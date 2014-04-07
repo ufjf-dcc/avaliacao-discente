@@ -20,6 +20,7 @@ import org.zkoss.zul.SimplePieModel;
 import org.zkoss.zul.Window;
 
 import br.ufjf.avaliacao.model.Avaliacao;
+import br.ufjf.avaliacao.model.Disciplina;
 import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Resposta;
@@ -34,14 +35,11 @@ import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
 public class ResultadosController extends GenericController implements
 		Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 6731467107690993996L;
 
 	private RespostaDAO respostaDAO = new RespostaDAO();
 	private List<String> semestres = respostaDAO.getAllSemestres();
-	private String semestre = new String();
+	private String semestre = null;
 	private List<Turma> turmas = new ArrayList<Turma>();
 	private Turma turma = new Turma();
 	private List<Avaliacao> avaliacoes = new ArrayList<Avaliacao>();
@@ -49,14 +47,37 @@ public class ResultadosController extends GenericController implements
 	private List<Pergunta> perguntas = new ArrayList<>();
 	private Pergunta perguntaSelecionada;
 	private List<Usuario> professores = new ArrayList<Usuario>();
-	private String professorEscolhido = null;
+	private Usuario professor = null;
 	
 	
 	
 	@Command
-	@NotifyChange("turmas")
+	@NotifyChange("turmas") // carregando e filtrando as tumas a serem escolhidas
 	public void carregarTurmas() {
-		setTurmas(getLetraDisciplinaTurma());
+		turmas = new ArrayList<Turma>();
+		if(professor!=null && semestre!=null){
+			TurmaDAO turmaDAO = new TurmaDAO();
+			turmas = new ArrayList<Turma>();
+			Turma todas = new Turma();
+			Disciplina ndisc = new Disciplina();
+			ndisc.setNomeDisciplina("Todas");
+			todas.setDisciplina(ndisc);
+			todas.setLetraTurma("");
+			todas.setSemestre("Avaliação geral");
+			turmas.add(todas);
+			System.out.println("---"+professor.getNome()+" "+semestre);
+			if(professor.getNome()!="Todos" && semestre!="Todos") // professor e semestre selecionado
+				turmas.addAll(turmaDAO.getTurmasUsuarioSemestre(professor, semestre));
+			
+			if(professor.getNome()!="Todos" && semestre=="Todos") // professor selecionado e semestre=todos
+				turmas.addAll(turmaDAO.getTurmasUsuario(professor));
+			
+			if(professor.getNome()=="Todos" && semestre!="Todos") // professor=todos e semestre selecionado
+				turmas.addAll(turmaDAO.getTurmasCursoSemestre(semestre,usuario.getCurso()));
+			
+			if(professor.getNome()=="Todos" && semestre=="Todos") // professor=todos e semestre selecionado
+				turmas.addAll(turmaDAO.getAllTurmasCurso(semestre,usuario.getCurso()));
+		}
 	}
 	
 	@Command
@@ -66,9 +87,19 @@ public class ResultadosController extends GenericController implements
 	}
 	
 	@Command
-	@NotifyChange("professores")
+	@NotifyChange("semestres")  // carregando e filtrando os semstres a serem escolhidos
 	public void carregarSemestres() {
-		setTurmas(getLetraDisciplinaTurma());
+		semestres = new ArrayList<String>();
+		System.out.println("---"+professor);
+		semestres.add("Todos");
+		TurmaDAO turmaDAO = new TurmaDAO();
+		if(professor != null){
+			if(professor.getNome() != "Todos")
+				semestres.addAll(turmaDAO.getSemestresUsuario(professor));
+			
+			else
+				semestres.addAll(turmaDAO.getAllSemestres());
+		}
 	}
 
 	// @Command
@@ -149,7 +180,10 @@ public class ResultadosController extends GenericController implements
 	@Command
 	public void avaliacaoEscolhida(@BindingParam("row") Row row,
 			@BindingParam("combo") Combobox combo) {
-		professorEscolhido = null;
+		professor = null;
+		semestre = null;
+		carregarTurmas();
+		carregarSemestres();
 		switch (combo.getSelectedItem().getValue().toString()) {
 		case "0":
 			row.getNextSibling().setVisible(true);
@@ -182,11 +216,6 @@ public class ResultadosController extends GenericController implements
 	}
 
 	public List<String> getSemestres() {
-		semestres.add("Todos");
-		if(professorEscolhido != null){
-			TurmaDAO turmaDAO = new TurmaDAO();
-			semestres.addAll(turmaDAO.getSemestresUsuario(getProfessorEscolhido(professorEscolhido)));
-		}
 		return semestres;
 	}
 
@@ -234,34 +263,26 @@ public class ResultadosController extends GenericController implements
 		this.perguntaSelecionada = perguntaSelecionada;
 	}
 
-	public List<String> getProfessores() {
+	public List<Usuario> getProfessores() {
+		professores = new ArrayList<Usuario>();
+		Usuario todos = new Usuario();
+		todos.setNome("Todos");
+		professores.add(todos);
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
-		professores = usuarioDAO.retornaProfessorCurso(usuario.getCurso());
-		List<String> nomesProfessores = new ArrayList<String>();
-		for(int i=0;i<professores.size();i++)
-			nomesProfessores.add(professores.get(i).getNome());
-		return nomesProfessores;
+		professores.addAll(usuarioDAO.retornaProfessorCurso(usuario.getCurso()));
+		return professores;
 	}
 
 	public void setProfessores(List<Usuario> professores) {
 		this.professores = professores;
 	}
 
-	public String getProfessorEscolhido() {
-		return professorEscolhido;
+	public Usuario getProfessor() {
+		return professor;
 	}
 
-	public void setProfessorEscolhido(String professorEscolhido) {
-		this.professorEscolhido = professorEscolhido;
+	public void setProfessor(Usuario professor) {
+		this.professor = professor;
 	}
-	
-	private Usuario getProfessorEscolhido(String nomeProfessor){
-		if(professorEscolhido != null){
-			for(int i=0;i<professores.size();i++)
-				if(professores.get(i).getNome() == professorEscolhido)
-					return professores.get(i);
-		}
-		return null;
-	}
-
+		
 }
