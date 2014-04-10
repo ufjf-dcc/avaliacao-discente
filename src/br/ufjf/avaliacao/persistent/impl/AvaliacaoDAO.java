@@ -1,11 +1,13 @@
 package br.ufjf.avaliacao.persistent.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
 
 import br.ufjf.avaliacao.model.Avaliacao;
+import br.ufjf.avaliacao.model.Curso;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
 import br.ufjf.avaliacao.model.Turma;
@@ -174,25 +176,8 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 		return false;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public List<Avaliacao> avaliacoesTurma(Turma turma) {
-		try {
-			Query query = getSession().createQuery("SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.prazoQuestionario JOIN FETCH a.turma AS t WHERE t =:turma");
-			query.setParameter("turma", turma);
-			
-			List<Avaliacao> as = query.list();
-			
-			getSession().close();
-			return as;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-
 	//verifica se um professor ja foi avaliado por esse questionario para avaliar mais de um professor por turma
-		public boolean alguemJaAvaliouEsteProfessot(Questionario questionario, Usuario professor){
+		public boolean alguemJaAvaliouEsteProfessor(Questionario questionario, Usuario professor){
 			try {
 				Query query = getSession() // carrega as avaliaÃ§Ãµes daquele questionario com o professor especifico
 						.createQuery(
@@ -289,6 +274,87 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 			}
 			return false;
 		}
+
+		@SuppressWarnings("unchecked")
+		public List<Avaliacao> avaliacoesTurma(Turma turma) {
+			try {
+				Query query = getSession().createQuery("SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.prazoQuestionario JOIN FETCH a.turma AS t WHERE t =:turma");
+				query.setParameter("turma", turma);
+				
+				List<Avaliacao> as = query.list();
+				
+				getSession().close();
+				return as;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
 		
+		public List<Avaliacao> avaliacoesTodasTurmas(String semestre, Curso curso) {//usado no resultadoControler para pegar avaliaçoes filtradas
+			TurmaDAO turmaDAO = new TurmaDAO();
+			List<Turma> turmas = turmaDAO.getTurmasCursoSemestre(semestre, curso);
+			List<Avaliacao> avaliacoes = new ArrayList<Avaliacao>();
+			for(int i=0;i<turmas.size();i++){
+				List<Avaliacao> avaliacoesAux = avaliacoesTurma(turmas.get(i));
+				for(int j=0;j<avaliacoesAux.size();j++)
+					if(!avaliacoes.contains(avaliacoesAux.get(j)))
+						avaliacoes.add(avaliacoesAux.get(j));
+			}
+			return avaliacoes;
+		}
+
+		public List<Avaliacao> retornaAvaliacoesUsuarioTurmaSemestre(Usuario usuario,Turma turma, String semestre){ // carraga avaliaçoes de uma turma e um professor em um semestre
+			try {
+				Query query = getSession() 
+						.createQuery(
+								"SELECT a FROM Avaliacao AS a  LEFT JOIN FETCH a.avaliado LEFT JOIN FETCH a.turma WHERE a.avaliado = :professor AND a.turma = :turma ");
+				query.setParameter("turma", turma);
+				query.setParameter("professor", usuario);
+
+				@SuppressWarnings("unchecked")
+				List<Avaliacao> a = query.list();
+				getSession().close();
+
+				System.out.println(a.size());
+				for(int i=a.size()-1;i>=0;i--){
+					System.out.println(a.get(i).getTurma().getSemestre()+" = "+semestre);
+//					if(a.get(i).getTurma().getSemestre()!=semestre)
+//						a.remove(i);
+				}
+				System.out.println(a.size());
+				if (a!=null){// verifica se esta vazio
+					return a;
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+		
+		public List<Avaliacao> retornaAvaliacoesPrazoAvaliado(PrazoQuestionario prazo, Usuario avaliado){ // dado um prazo, ele retorna a as avaliaçoes daquele prazo
+			try {
+				Query query = getSession()
+						.createQuery(
+								"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.prazoQuestionario AS p LEFT JOIN FETCH a.avaliado AS p WHERE p = :prazo AND a.avaliado = :avaliado");
+				query.setParameter("prazo", prazo);
+				query.setParameter("avaliado", avaliado);
+
+
+				@SuppressWarnings("unchecked")
+				List<Avaliacao> a = query.list();
+				
+				getSession().close();
+
+				if (a!=null){// se sim retorna true
+					return a;
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
 }
 

@@ -6,38 +6,12 @@
 		<include src="@load(vm.menu)" />
 		<tabbox>
 			<tabs>
-				<tab label="Avaliação de Coordenadores" />
 				<tab label="Avaliação de Professores" />
+				<tab label="Avaliação de Coordenadores" />
 				<tab label="Auto-Avaliação" />
 				<tab label="Avaliação de Infraestrutura" />
 			</tabs>
 			<tabpanels>
-				<tabpanel>
-					<grid model="@load(vm.questionariosCoord)">
-						<columns>
-							<column label="Título" align="center"
-								sort="auto(tituloQuestionario)" />
-							<column label="Status" align="center"
-								sort="auto(ativo)" />
-							<column label="Opções" align="center" />
-						</columns>
-						<template name="model">
-							<row>
-								<label
-									value="@load(each.tituloQuestionario)" />
-								<label value="@load(each.status)" />
-								<div>
-									<button label="Ver"
-										onClick="@command('verQuest',questionario=each)" />
-									<button label="Ativar"
-										onClick="@command('ativa', questionario=each)" />
-									<button label="Adicionar Prazo"
-										onClick="@command('adcPrazo',questionario=each)" />
-								</div>
-							</row>
-						</template>
-					</grid>
-				</tabpanel>
 				<tabpanel>
 					<grid model="@load(vm.questionariosProf)">
 						<columns>
@@ -64,6 +38,33 @@
 						</template>
 					</grid>
 				</tabpanel>
+				<tabpanel>
+					<grid model="@load(vm.questionariosCoord)">
+						<columns>
+							<column label="Título" align="center"
+								sort="auto(tituloQuestionario)" />
+							<column label="Status" align="center"
+								sort="auto(ativo)" />
+							<column label="Opções" align="center" />
+						</columns>
+						<template name="model">
+							<row>
+								<label
+									value="@load(each.tituloQuestionario)" />
+								<label value="@load(each.status)" />
+								<div>
+									<button label="Ver"
+										onClick="@command('verQuest',questionario=each)" />
+									<button label="Ativar"
+										onClick="@command('ativa', questionario=each)" />
+									<button label="Adicionar Prazo"
+										onClick="@command('adcPrazo',questionario=each)" />
+								</div>
+							</row>
+						</template>
+					</grid>
+				</tabpanel>
+				
 				<tabpanel>
 					<grid model="@load(vm.questionariosAuto)">
 						<columns>

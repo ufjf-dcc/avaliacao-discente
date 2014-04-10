@@ -23,11 +23,14 @@ import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Disciplina;
 import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
+import br.ufjf.avaliacao.model.Questionario;
 import br.ufjf.avaliacao.model.Resposta;
 import br.ufjf.avaliacao.model.RespostaEspecifica;
 import br.ufjf.avaliacao.model.Turma;
 import br.ufjf.avaliacao.model.Usuario;
 import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
+import br.ufjf.avaliacao.persistent.impl.PerguntaDAO;
+import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.RespostaDAO;
 import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
@@ -37,6 +40,7 @@ public class ResultadosController extends GenericController implements
 
 	private static final long serialVersionUID = 6731467107690993996L;
 
+	private String opcao = new String();
 	private RespostaDAO respostaDAO = new RespostaDAO();
 	private List<String> semestres = respostaDAO.getAllSemestres();
 	private String semestre = null;
@@ -48,7 +52,8 @@ public class ResultadosController extends GenericController implements
 	private Pergunta perguntaSelecionada;
 	private List<Usuario> professores = new ArrayList<Usuario>();
 	private Usuario professor = null;
-	
+	private List<Questionario> questionarios = new ArrayList<Questionario>();
+	private Questionario questionario = null;
 	
 	
 	@Command
@@ -65,7 +70,6 @@ public class ResultadosController extends GenericController implements
 			todas.setLetraTurma("");
 			todas.setSemestre("Avalia��o geral");
 			turmas.add(todas);
-			System.out.println("---"+professor.getNome()+" "+semestre);
 			if(professor.getNome()!="Todos" && semestre!="Todos") // professor e semestre selecionado
 				turmas.addAll(turmaDAO.getTurmasUsuarioSemestre(professor, semestre));
 			
@@ -83,14 +87,12 @@ public class ResultadosController extends GenericController implements
 	@Command
 	@NotifyChange("professores")
 	public void carregarProfessores() {
-		setTurmas(getLetraDisciplinaTurma());
 	}
 	
 	@Command
 	@NotifyChange("semestres")  // carregando e filtrando os semstres a serem escolhidos
 	public void carregarSemestres() {
 		semestres = new ArrayList<String>();
-		System.out.println("---"+professor);
 		semestres.add("Todos");
 		TurmaDAO turmaDAO = new TurmaDAO();
 		if(professor != null){
@@ -101,6 +103,22 @@ public class ResultadosController extends GenericController implements
 				semestres.addAll(turmaDAO.getAllSemestres());
 		}
 	}
+	
+	@Command
+	@NotifyChange("questionarios")  // carregando e filtrando os questionarios a serem escolhidos
+	public void carregarQuestionarios() {
+		questionarios = new ArrayList<Questionario>();
+		Questionario todos = new Questionario();
+		todos.setTituloQuestionario("Todos");
+		questionarios.add(todos);
+		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
+		if(opcao=="1"){
+			if(semestre=="Todos")
+				questionarios.addAll(questionarioDAO.retornaQuestionarioProfessor(usuario.getCurso()));
+			else
+				questionarios.addAll(questionarioDAO.retornaQuestionariosSemestreProfessorCurso(semestre,usuario.getCurso()));
+		}	
+	}
 
 	// @Command
 	// @NotifyChange("perguntas")
@@ -109,6 +127,18 @@ public class ResultadosController extends GenericController implements
 	// prazo = avaliacoes.get(0).getPrazoQuestionario();
 	// perguntas = prazo.getQuestionario().getPerguntas();
 	// }
+
+	@Command
+	public void gerarGrafico() {
+		getGraficoProfessor();
+		session.setAttribute("turma", turma);
+		session.setAttribute("pergunta", perguntaSelecionada);
+		Window w = (Window) Executions.createComponents("/grafico.zul", null,
+				null);
+		w.setClosable(true);
+		w.setMinimizable(true);
+		w.doOverlapped();
+	}
 
 	private List<Turma> getLetraDisciplinaTurma() {
 		List<Turma> turmas = new ArrayList<Turma>();
@@ -121,33 +151,24 @@ public class ResultadosController extends GenericController implements
 	@Command
 	@NotifyChange("perguntas")
 	public void verificaTurma() {
-		avaliacoes = new AvaliacaoDAO().avaliacoesTurma(turma);
-		if (!avaliacoes.isEmpty()) {
-			prazo = avaliacoes.get(0).getPrazoQuestionario();
-			if (prazo.getDataInicial().before(new Date())
-					&& prazo.getDataFinal().after(new Date())) {
-				Messagebox.show("Período para avaliação não terminado ainda.");
-				perguntas = null;
-			} else {
-				perguntas = prazo.getQuestionario().getPerguntas();
-			}
-		} else {
-			perguntas = null;
-			Messagebox
-					.show("Não foram feitas avaliações para essa turma e/ou período para avaliação não terminou ainda.");
-		}
-	}
+		perguntas = new ArrayList<Pergunta>();
+		System.out.println(professor.getNome());
+		System.out.println(semestre);
+		System.out.println(turma.getDisciplinaLetraTurmaSemestre());
+		if(professor!=null && semestre!=null && turma!=null){
+			PerguntaDAO perguntaDAO = new PerguntaDAO();
+			Pergunta teste = new Pergunta();
+			teste.setTituloPergunta("Teste");
+			if(professor.getNome()!="Todos" && semestre!= "Todos" && turma.getDisciplina().getNomeDisciplina()!="Todos"){
+				AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
+				List<Avaliacao> avaliacoes = avaliacaoDAO.retornaAvaliacoesUsuarioTurmaSemestre(professor, turma, semestre);
+				System.out.println("--))"+avaliacoes.size());
+				System.out.println("--))"+avaliacoes.get(0).getAvaliado().getNome());
+				System.out.println("--))"+avaliacoes.get(0).getPrazoQuestionario());
 
-	@Command
-	public void gerarGrafico() {
-		getGraficoProfessor();
-		session.setAttribute("turma", turma);
-		session.setAttribute("pergunta", perguntaSelecionada);
-		Window w = (Window) Executions.createComponents("/grafico.zul", null,
-				null);
-		w.setClosable(true);
-		w.setMinimizable(true);
-		w.doOverlapped();
+				//				perguntas.addAll(perguntaDAO.retornaPerguntasUsuarioTurmaSemestre(professor, turma, semestre));
+			}
+		}
 	}
 
 	public void getGraficoProfessor() {
@@ -184,7 +205,8 @@ public class ResultadosController extends GenericController implements
 		semestre = null;
 		carregarTurmas();
 		carregarSemestres();
-		switch (combo.getSelectedItem().getValue().toString()) {
+		opcao = combo.getSelectedItem().getValue().toString();
+		switch (opcao) {
 		case "0":
 			row.getNextSibling().setVisible(true);
 			row.getNextSibling().getNextSibling().setVisible(false);
@@ -284,5 +306,23 @@ public class ResultadosController extends GenericController implements
 	public void setProfessor(Usuario professor) {
 		this.professor = professor;
 	}
+	
+
+	public List<Questionario> getQuestionarios() {
+		return questionarios;
+	}
+
+	public void setQuestionarios(List<Questionario> questionarios) {
+		this.questionarios = questionarios;
+	}
+
+	public Questionario getQuestionario() {
+		return questionario;
+	}
+
+	public void setQuestionario(Questionario questionario) {
+		this.questionario = questionario;
+	}
+
 		
 }

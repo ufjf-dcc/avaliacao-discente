@@ -1,12 +1,16 @@
 package br.ufjf.avaliacao.persistent.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
 
+import br.ufjf.avaliacao.model.Avaliacao;
+import br.ufjf.avaliacao.model.Curso;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
+import br.ufjf.avaliacao.model.Usuario;
 import br.ufjf.avaliacao.persistent.GenericoDAO;
 import br.ufjf.avaliacao.persistent.IPrazoQuestionarioDAO;
 
@@ -117,5 +121,29 @@ public class PrazoQuestionarioDAO extends GenericoDAO implements
 		}
 		return null;
 	}
+	
+	public PrazoQuestionario getPrazoAvaliacao(Avaliacao avaliacao) {
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT p FROM PrazoQuestionario AS p LEFT JOIN FETCH p.avaliacao AS a ");
+
+
+			List<PrazoQuestionario> prazos = query.list();
+
+			getSession().close();
+
+			for(int i=0;i<prazos.size();i++)
+				System.out.println(prazos.get(i));
+			
+			if (prazos != null) {
+				return prazos.get(0);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+		}
+	
 	
 }

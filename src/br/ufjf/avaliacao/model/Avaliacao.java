@@ -16,6 +16,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import br.ufjf.avaliacao.persistent.impl.PrazoQuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.RespostaDAO;
 
 /**
@@ -140,7 +141,8 @@ public class Avaliacao implements Serializable{
 	}
 
 	public PrazoQuestionario getPrazoQuestionario() {
-		return prazoQuestionario;
+		PrazoQuestionarioDAO prazoDAO = new PrazoQuestionarioDAO();
+		return prazoDAO.getPrazoAvaliacao(this);
 	}
 
 	public void setPrazoQuestionario(PrazoQuestionario prazoQuestionario) {

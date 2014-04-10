@@ -5,8 +5,11 @@ import java.util.List;
 
 import org.hibernate.Query;
 
+import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.Questionario;
+import br.ufjf.avaliacao.model.Turma;
+import br.ufjf.avaliacao.model.Usuario;
 import br.ufjf.avaliacao.persistent.GenericoDAO;
 import br.ufjf.avaliacao.persistent.IPerguntaDAO;
 
@@ -51,7 +54,7 @@ public class PerguntaDAO extends GenericoDAO implements IPerguntaDAO {
 		}
 		return null;
 	}
-	
+
 	public List<Pergunta> retornaPerguntasSemestre(String semestre) {
 		try {
 			Query query = getSession()
@@ -62,19 +65,27 @@ public class PerguntaDAO extends GenericoDAO implements IPerguntaDAO {
 			List<Pergunta> ps = new ArrayList<Pergunta>();
 			ps = (List<Pergunta>) query.list();
 			getSession().close();
-		
-			
+
+
 			List<Pergunta> perguntas = new ArrayList<Pergunta>();
 			for(int i=0;i<ps.size();i++){
 				if(!perguntas.contains(ps.get(i)))
 					perguntas.add(ps.get(i));
 			}
-						
+
 			return perguntas;
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	public List<Pergunta> retornaPerguntasUsuarioTurmaSemestre(Usuario usuario,Turma turma, String semestre){
+		AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
+		List<Avaliacao> avaliacoes = avaliacaoDAO.retornaAvaliacoesUsuarioTurmaSemestre(usuario, turma, semestre);
+		List<Pergunta> perguntas = new ArrayList<Pergunta>();
+		for(int i=0;i<avaliacoes.size();i++)
+			perguntas.addAll(avaliacoes.get(i).getPrazoQuestionario().getQuestionario().getPerguntas());
+		return perguntas;
 	}
 }
