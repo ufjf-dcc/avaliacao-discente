@@ -257,7 +257,7 @@ public class QuestionariosController extends GenericController {
 				Messagebox.show("Prazo Adicionado!");
 			}
 		} else {
-			Messagebox.show("Data final e/ ou inicial inválida");
+			Messagebox.show("Data final e/ ou inicial invalida");
 		}
 		w.detach();
 	}
@@ -267,11 +267,21 @@ public class QuestionariosController extends GenericController {
 			Messagebox.show("Data final antes da data inicial");
 			return false;
 		}
-		if (questionario.getPrazos() != null)
-			for (int i = 0; i < questionario.getPrazos().size(); i++) {
-				if (questionario.getPrazos().get(i).getDataFinal()
-						.after(prazo.getDataInicial())) {
-					Messagebox.show("Não pode criar nessa data");
+		System.out.println("QuestionarioController");
+		System.out.println(prazosSessao);
+		System.out.println(prazosSessao.size());
+		System.out.println(prazosSessao.get(0).getDataFinal());
+		if (prazosSessao != null)
+			for (int i = prazosSessao.size()-1; i >= 0; i--) {
+				boolean invalido=true;
+
+				System.out.println(" -- " +prazosSessao.get(i).getDataInicial());
+				if(prazosSessao.get(i).getDataFinal().before(prazo.getDataInicial()))
+					invalido = false;
+				if(prazosSessao.get(i).getDataInicial().after(prazo.getDataInicial()))
+					invalido = false;
+				if (invalido) {
+					Messagebox.show("N�o pode criar nessa data");
 					return false;
 				}
 			}
@@ -286,7 +296,7 @@ public class QuestionariosController extends GenericController {
 																				// for
 																				// possivel
 		if (avaliacaoDAO.alguemJaAvaliou(questionario))
-			Messagebox.show("Prazo não pode ser excluido, já está em uso");
+			Messagebox.show("Prazo nao pode ser excluido, ja esta em uso");
 
 		else {
 			prazoDAO.exclui(prazo); // exclui o prazo
@@ -295,7 +305,7 @@ public class QuestionariosController extends GenericController {
 				questionarioDAO.editar(questionario);
 			}
 
-			Messagebox.show("Prazo excluido", "Concluído", Messagebox.OK,
+			Messagebox.show("Prazo excluido", "Concluido", Messagebox.OK,
 					Messagebox.INFORMATION, new EventListener<Event>() {
 						@Override
 						public void onEvent(Event event) throws Exception {
@@ -438,10 +448,8 @@ public class QuestionariosController extends GenericController {
 				if (q.getIdQuestionario() == questionario.getIdQuestionario()){					
 					if(!q.isAtivo())
 						q.setAtivo(true);
-						
 					else
 						q.setAtivo(false);
-					
 				}
 				else
 					q.setAtivo(false);

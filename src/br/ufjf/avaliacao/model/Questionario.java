@@ -183,7 +183,8 @@ public class Questionario implements Serializable {
 	}
 
 	public List<PrazoQuestionario> getPrazos() {
-		return (new PrazoQuestionarioDAO().getPrazos(this));
+		List<PrazoQuestionario> prazos = new PrazoQuestionarioDAO().getPrazos(this);
+		return prazos;
 	}
 
 	public void setPrazos(List<PrazoQuestionario> prazos) {

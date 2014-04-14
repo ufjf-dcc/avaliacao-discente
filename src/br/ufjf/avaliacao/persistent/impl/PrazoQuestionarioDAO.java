@@ -28,7 +28,7 @@ public class PrazoQuestionarioDAO extends GenericoDAO implements
 			List<PrazoQuestionario> prazos = query.list();
 
 			getSession().close();
-
+			
 			return prazos;
 
 		} catch (Exception e) {
