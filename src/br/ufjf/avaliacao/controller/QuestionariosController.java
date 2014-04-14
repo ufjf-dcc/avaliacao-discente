@@ -267,15 +267,9 @@ public class QuestionariosController extends GenericController {
 			Messagebox.show("Data final antes da data inicial");
 			return false;
 		}
-		System.out.println("QuestionarioController");
-		System.out.println(prazosSessao);
-		System.out.println(prazosSessao.size());
-		System.out.println(prazosSessao.get(0).getDataFinal());
 		if (prazosSessao != null)
 			for (int i = prazosSessao.size()-1; i >= 0; i--) {
 				boolean invalido=true;
-
-				System.out.println(" -- " +prazosSessao.get(i).getDataInicial());
 				if(prazosSessao.get(i).getDataFinal().before(prazo.getDataInicial()))
 					invalido = false;
 				if(prazosSessao.get(i).getDataInicial().after(prazo.getDataInicial()))

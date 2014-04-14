@@ -222,10 +222,7 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 			if(questionarios.get(j).getTipoQuestionario()!=1 || questionarios.get(j).getCurso()!=curso){
 				questionarios.remove(j);
 			}
-	
-		if(questionarios.size()>0)
-			return questionarios;
-		return null;
+		return questionarios;
 	}
 	
 	public List<Questionario> retornaQuestionariosSemestreInfraestrutura(String semestre){//retornas os questionarios de um semestre para infraestrutura

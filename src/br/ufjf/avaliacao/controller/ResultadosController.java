@@ -82,6 +82,9 @@ public class ResultadosController extends GenericController implements
 			if(professor.getNome()=="Todos" && semestre=="Todos") // professor=todos e semestre selecionado
 				turmas.addAll(turmaDAO.getAllTurmasCurso(semestre,usuario.getCurso()));
 		}
+		questionarios = new ArrayList<Questionario>();
+		questionario = null;
+		perguntas = new ArrayList<Pergunta>();
 	}
 	
 	@Command
@@ -102,6 +105,11 @@ public class ResultadosController extends GenericController implements
 			else
 				semestres.addAll(turmaDAO.getAllSemestres());
 		}
+		turmas = new ArrayList<Turma>();
+		turma = null;
+		questionarios = new ArrayList<Questionario>();
+		questionario = null;
+		perguntas = new ArrayList<Pergunta>();
 	}
 	
 	@Command
@@ -112,22 +120,28 @@ public class ResultadosController extends GenericController implements
 		todos.setTituloQuestionario("Todos");
 		questionarios.add(todos);
 		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
-		if(opcao=="1"){
-			if(semestre=="Todos")
-				questionarios.addAll(questionarioDAO.retornaQuestionarioProfessor(usuario.getCurso()));
-			else
-				questionarios.addAll(questionarioDAO.retornaQuestionariosSemestreProfessorCurso(semestre,usuario.getCurso()));
+		if(Integer.parseInt(opcao)==1){
+				questionarios.addAll(questionarioDAO.retornaQuestionarioProfessor(usuario.getCurso()));// retorna todos os questionarios de professor
 		}	
+		perguntas = new ArrayList<Pergunta>();
 	}
 
-	// @Command
-	// @NotifyChange("perguntas")
-	// public void carregarPerguntas() {
-	// avaliacoes = new AvaliacaoDAO().avaliacoesTurma(turma);
-	// prazo = avaliacoes.get(0).getPrazoQuestionario();
-	// perguntas = prazo.getQuestionario().getPerguntas();
-	// }
-
+	@Command
+	@NotifyChange("perguntas")  // carregando e filtrando os semstres a serem escolhidos
+	public void carregarPerguntas() {
+		perguntas = new ArrayList<Pergunta>();
+		if(professor != null && questionario!=null && semestre!=null && turma!=null)
+			if(questionario.getTituloQuestionario()!="Todos")
+				perguntas.addAll(questionario.getPerguntas());
+			else{
+				QuestionarioDAO questionarioDAO = new QuestionarioDAO();
+				questionarios = questionarioDAO.retornaQuestionarioProfessor(usuario.getCurso());
+				for(int i=0;i<questionarios.size();i++)
+					perguntas.addAll(questionarios.get(i).getPerguntas());
+			}
+			System.out.println("teste");
+	}
+		
 	@Command
 	public void gerarGrafico() {
 		getGraficoProfessor();
@@ -152,9 +166,7 @@ public class ResultadosController extends GenericController implements
 	@NotifyChange("perguntas")
 	public void verificaTurma() {
 		perguntas = new ArrayList<Pergunta>();
-		System.out.println(professor.getNome());
-		System.out.println(semestre);
-		System.out.println(turma.getDisciplinaLetraTurmaSemestre());
+
 		if(professor!=null && semestre!=null && turma!=null){
 			PerguntaDAO perguntaDAO = new PerguntaDAO();
 			Pergunta teste = new Pergunta();
@@ -162,9 +174,7 @@ public class ResultadosController extends GenericController implements
 			if(professor.getNome()!="Todos" && semestre!= "Todos" && turma.getDisciplina().getNomeDisciplina()!="Todos"){
 				AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
 				List<Avaliacao> avaliacoes = avaliacaoDAO.retornaAvaliacoesUsuarioTurmaSemestre(professor, turma, semestre);
-				System.out.println("--))"+avaliacoes.size());
-				System.out.println("--))"+avaliacoes.get(0).getAvaliado().getNome());
-				System.out.println("--))"+avaliacoes.get(0).getPrazoQuestionario());
+
 
 				//				perguntas.addAll(perguntaDAO.retornaPerguntasUsuarioTurmaSemestre(professor, turma, semestre));
 			}
@@ -201,40 +211,52 @@ public class ResultadosController extends GenericController implements
 	@Command
 	public void avaliacaoEscolhida(@BindingParam("row") Row row,
 			@BindingParam("combo") Combobox combo) {
-		professor = null;
-		semestre = null;
-		carregarTurmas();
-		carregarSemestres();
+
 		opcao = combo.getSelectedItem().getValue().toString();
 		switch (opcao) {
 		case "0":
-			row.getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().setVisible(false);
+			row.getNextSibling().setVisible(false);
+			row.getNextSibling().getNextSibling().setVisible(true);
 			row.getNextSibling().getNextSibling().getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
 			break;
 		case "1":
 			row.getNextSibling().setVisible(true);
 			row.getNextSibling().getNextSibling().setVisible(true);
 			row.getNextSibling().getNextSibling().getNextSibling().setVisible(true);
 			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
 			break;
 		case "2":
-			row.getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().setVisible(false);
+			row.getNextSibling().setVisible(false);
+			row.getNextSibling().getNextSibling().setVisible(true);
 			row.getNextSibling().getNextSibling().getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
 			break;
 		case "3":
-			row.getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().setVisible(false);
+			row.getNextSibling().setVisible(false);
+			row.getNextSibling().getNextSibling().setVisible(true);
 			row.getNextSibling().getNextSibling().getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
 			break;
 		default:
 			;
 			break;
 		}
+		professores = new ArrayList<Usuario>();
+		professor = null;
+		semestres = new ArrayList<String>();
+		semestre = null;
+		turmas = new ArrayList<Turma>();
+		turma = null;
+		questionarios = new ArrayList<Questionario>();
+		questionario = null;
+		perguntas = new ArrayList<Pergunta>();
+		carregarTurmas();
+		carregarSemestres();
 	}
 
 	public List<String> getSemestres() {

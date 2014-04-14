@@ -47,8 +47,10 @@ public class PerguntaDAO extends GenericoDAO implements IPerguntaDAO {
 			ps = (List<Pergunta>) query.list();
 			getSession().close();
 
+			System.out.print(ps.size());
 			return ps;
 
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

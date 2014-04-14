@@ -55,7 +55,7 @@
 						<label value="Questionario" />
 						<combobox width="98%" model="@load(vm.questionarios)"
 							selectedItem="@bind(vm.questionario)"
-							onSelect="@command('verificaTurma')">
+							onSelect="@command('carregarPerguntas')">
 							<template name="model">
 								<comboitem
 									label="@load(each.tituloQuestionario)" />
