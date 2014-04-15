@@ -13,7 +13,6 @@ import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zul.Combobox;
-import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.PieModel;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.SimplePieModel;
@@ -66,8 +65,9 @@ public class ResultadosController extends GenericController implements
 			Turma todas = new Turma();
 			Disciplina ndisc = new Disciplina();
 			ndisc.setNomeDisciplina("Todas");
+			ndisc.setCodDisciplina("Sem codigo");
 			todas.setDisciplina(ndisc);
-			todas.setLetraTurma("");
+			todas.setLetraTurma("Sem letra");
 			todas.setSemestre("Avaliação geral");
 			turmas.add(todas);
 			if(professor.getNome()!="Todos" && semestre!="Todos") // professor e semestre selecionado
@@ -176,15 +176,59 @@ public class ResultadosController extends GenericController implements
 				List<Avaliacao> avaliacoes = avaliacaoDAO.retornaAvaliacoesUsuarioTurmaSemestre(professor, turma, semestre);
 
 
-				//				perguntas.addAll(perguntaDAO.retornaPerguntasUsuarioTurmaSemestre(professor, turma, semestre));
 			}
 		}
 	}
 
 	public void getGraficoProfessor() {
-		List<Resposta> respostas = new RespostaDAO()
-				.getRespostasPerguntaSemestre(perguntaSelecionada, semestre,
-						turma);
+		List<Resposta> respostas;
+		System.out.println("Disciplina:");
+
+		System.out.println(turma.getDisciplina().getNomeDisciplina());
+		RespostaDAO respostaDAO = new RespostaDAO();
+		if(professor.getNome()!="Todos"){
+			if(semestre!="Todos"){
+				if(turma.getLetraTurma()!="Sem letra"){
+					respostas = respostaDAO.getRespostasPerguntaTurmaSemestreAvaliado(perguntaSelecionada, semestre, turma, professor);
+				}
+				else{
+					respostas = respostaDAO.getRespostasPerguntaSemestreAvaliado(perguntaSelecionada, semestre, professor);
+					System.out.println("Aqui1");
+				}
+			}
+			else{
+				if(turma.getLetraTurma()!="Sem letra"){
+					respostas = respostaDAO.getRespostasPerguntaTurmaAvaliado(perguntaSelecionada, turma, professor);
+				}
+				else{
+					respostas = respostaDAO.getRespostasPerguntaAvaliado(perguntaSelecionada, professor);
+					System.out.println("Aqui2");
+				}
+			}
+		}
+		else{
+			if(semestre!="Todos"){
+				if(turma.getLetraTurma()!="Sem letra"){
+					respostas = respostaDAO.getRespostasPerguntaTurmaSemestre(perguntaSelecionada, semestre, turma);
+				}
+				else{
+					respostas = respostaDAO.getRespostasPerguntaSemestre(perguntaSelecionada, semestre);
+					System.out.println("Aqui3");
+				}
+			}
+			else{
+				if(turma.getLetraTurma()!="Sem letra"){
+					respostas = respostaDAO.getRespostasPerguntaTurma(perguntaSelecionada, turma);
+				}
+				else{
+					System.out.println("Aqui4");
+					respostas = respostaDAO.getRespostasPergunta(perguntaSelecionada);
+				}
+			}
+		}
+		System.out.println("respostas.size() : ");
+		System.out.println(respostas.size());
+
 		List<RespostaEspecifica> alternativas = perguntaSelecionada
 				.getRespostasEspecificasBanco();
 		Map<String, Integer> contagem = new LinkedHashMap<>();
