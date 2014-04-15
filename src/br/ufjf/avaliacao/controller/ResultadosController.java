@@ -51,6 +51,8 @@ public class ResultadosController extends GenericController implements
 	private Pergunta perguntaSelecionada;
 	private List<Usuario> professores = new ArrayList<Usuario>();
 	private Usuario professor = null;
+	private List<Usuario> coordenadores = new ArrayList<Usuario>();
+	private Usuario coordenador = null;
 	private List<Questionario> questionarios = new ArrayList<Questionario>();
 	private Questionario questionario = null;
 	
@@ -261,30 +263,34 @@ public class ResultadosController extends GenericController implements
 		case "0":
 			row.getNextSibling().setVisible(false);
 			row.getNextSibling().getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);
 			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
 			break;
 		case "1":
 			row.getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().setVisible(false);
 			row.getNextSibling().getNextSibling().getNextSibling().setVisible(true);
 			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
 			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
 			break;
 		case "2":
 			row.getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().setVisible(false);
+			row.getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);
 			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
 			break;
 		case "3":
 			row.getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().setVisible(false);
+			row.getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);
 			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
 			break;
 		default:
 			;
@@ -388,6 +394,21 @@ public class ResultadosController extends GenericController implements
 
 	public void setQuestionario(Questionario questionario) {
 		this.questionario = questionario;
+	}
+	public List<Usuario> getCoordenadores() {
+		return coordenadores;
+	}
+
+	public void setCoordenadores(List<Usuario> coordenadores) {
+		this.coordenadores = coordenadores;
+	}
+
+	public Usuario getCoordenador() {
+		return coordenador;
+	}
+
+	public void setCoordenador(Usuario coordenador) {
+		this.coordenador = coordenador;
 	}
 
 		

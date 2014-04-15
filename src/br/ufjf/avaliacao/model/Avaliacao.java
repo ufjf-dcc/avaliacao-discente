@@ -141,8 +141,7 @@ public class Avaliacao implements Serializable{
 	}
 
 	public PrazoQuestionario getPrazoQuestionario() {
-		PrazoQuestionarioDAO prazoDAO = new PrazoQuestionarioDAO();
-		return prazoDAO.getPrazoAvaliacao(this);
+		return prazoQuestionario;
 	}
 
 	public void setPrazoQuestionario(PrazoQuestionario prazoQuestionario) {

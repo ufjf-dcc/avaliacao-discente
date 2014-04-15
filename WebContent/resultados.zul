@@ -31,6 +31,17 @@
 						</combobox>
 					</row>
 					<row visible="false">
+						<label value="Coordenador" />
+						<combobox width="98%"
+							model="@load(vm.coordenadores)" selectedItem="@bind(vm.coordenador)"
+							onSelect="@command('carregarSemestres')">
+							<template name="model">
+								<comboitem label="@load(each)" />
+							</template>
+						</combobox>
+					</row>
+
+					<row visible="false">
 						<label value="Semestre" />
 						<combobox width="98%"
 							model="@load(vm.semestres)" selectedItem="@bind(vm.semestre)"
