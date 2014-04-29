@@ -7,6 +7,7 @@ import org.hibernate.Query;
 
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Curso;
+import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
 import br.ufjf.avaliacao.model.Turma;
@@ -234,4 +235,5 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 		}
 		return null;
 	}
+	
 }

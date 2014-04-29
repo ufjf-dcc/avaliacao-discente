@@ -126,8 +126,7 @@ public class Avaliacao implements Serializable{
 	}
 
 	public Usuario getAvaliado() {
-		AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
-		return avaliacaoDAO.getAvaliado(this);
+		return avaliado;
 	}
 
 	public void setAvaliado(Usuario avaliado) {

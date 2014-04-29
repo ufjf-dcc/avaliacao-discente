@@ -55,6 +55,8 @@ public class ResultadosController extends GenericController implements
 	private Usuario coordenador = new Usuario();
 	private List<Questionario> questionarios = new ArrayList<Questionario>();
 	private Questionario questionario = null;
+	private List<Questionario> questCoor = null;
+	private List<Avaliacao> avaCoor = null;
 	
 	
 	@Command
@@ -92,28 +94,11 @@ public class ResultadosController extends GenericController implements
 	@Command
 	@NotifyChange("professores")
 	public void carregarProfessores() {
-		System.out.println("Aqui");
-//		if(Integer.parseInt(opcao)==2){
-//			carregarCoordenadores();
-//			System.out.println("Aqui");
-//		}
 	}
 	
 	
 	@NotifyChange("coordenadores")
 	public void carregarCoordenadores() {
-//		coordenadores = new ArrayList<Usuario>();
-//		Usuario todos = new Usuario();
-//		todos.setNome("Todos");
-//		coordenadores.add(todos);
-//		AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
-//		List<Avaliacao> aux = avaliacaoDAO.getAvaliacoesCoordenador();
-//		System.out.println("Aqui");
-//		System.out.println(aux.size());
-//		System.out.println(aux.get(0).getAvaliado());
-//		for(int i=0;i<aux.size();i++)
-//			if(!coordenadores.contains(aux.get(i).getAvaliado()))
-//				coordenadores.add(aux.get(i).getAvaliado());
 	}
 	
 	@Command
@@ -122,7 +107,12 @@ public class ResultadosController extends GenericController implements
 		semestres = new ArrayList<String>();
 		semestres.add("Todos");
 		TurmaDAO turmaDAO = new TurmaDAO();
-
+		
+		if(Integer.parseInt(opcao)==0){
+			for(int i=0;i<avaCoor.size();i++){
+				semestres.add(avaCoor.get(i).getRespostas().get(0).getSemestre());
+			}
+		}
 		if(Integer.parseInt(opcao)==1){
 			if(professor != null){
 				if(professor.getNome() != "Todos")
@@ -137,16 +127,7 @@ public class ResultadosController extends GenericController implements
 			questionario = null;
 			perguntas = new ArrayList<Pergunta>();
 		}
-		if(Integer.parseInt(opcao)==2){
-			
-//			AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
-//			List<Avaliacao> avaliacoes = avaliacaoDAO.getAvaliacoesUsuarioAvaliado(avaliado);
-//			System.out.println("Aqui");
-//			System.out.println(turmas.size());
-//			for(int i=0;i<turmas.size();i++){
-				semestres.addAll(turmaDAO.getAllSemestres());
-//			}
-		}
+	
 	}
 	
 	@Command
@@ -158,7 +139,7 @@ public class ResultadosController extends GenericController implements
 		questionarios.add(todos);
 		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
 		if(Integer.parseInt(opcao)==0){
-			questionarios.addAll(questionarioDAO.retornaQuestinariosCursoTipo(usuario.getCurso(), 0));// retorna todos os questionarios de professor
+			questionarios.addAll(questCoor);
 		}	
 		if(Integer.parseInt(opcao)==1){
 			questionarios.addAll(questionarioDAO.retornaQuestionarioProfessor(usuario.getCurso()));// retorna todos os questionarios de professor
@@ -180,7 +161,6 @@ public class ResultadosController extends GenericController implements
 				for(int i=0;i<questionarios.size();i++)
 					perguntas.addAll(questionarios.get(i).getPerguntas());
 			}
-			System.out.println("teste");
 	}
 		
 	@Command
@@ -254,7 +234,6 @@ public class ResultadosController extends GenericController implements
 				}
 				else{
 					respostas = respostaDAO.getRespostasPerguntaSemestre(perguntaSelecionada, semestre);
-					System.out.println("Aqui3");
 				}
 			}
 			else{
@@ -262,7 +241,6 @@ public class ResultadosController extends GenericController implements
 					respostas = respostaDAO.getRespostasPerguntaTurma(perguntaSelecionada, turma);
 				}
 				else{
-					System.out.println("Aqui4");
 					respostas = respostaDAO.getRespostasPergunta(perguntaSelecionada);
 				}
 			}
@@ -441,22 +419,21 @@ public class ResultadosController extends GenericController implements
 		this.questionario = questionario;
 	}
 	public List<Usuario> getCoordenadores() {
+		
 		coordenadores = new ArrayList<Usuario>();
 		Usuario todos = new Usuario();
 		todos.setNome("Todos");
 		coordenadores.add(todos);
 		AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
 		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
-		List<Questionario> questAux = questionarioDAO.retornaQuestinariosCursoTipo(usuario.getCurso(), 0);
-		for(int i=0;i<questAux.size();i++){
-			List<PrazoQuestionario> prazosAux = questAux.get(i).getPrazos();
+		questCoor = questionarioDAO.retornaQuestinariosCursoTipo(usuario.getCurso(), 0);
+		for(int i=0;i<questCoor.size();i++){
+			List<PrazoQuestionario> prazosAux = questCoor.get(i).getPrazos();
 			for(int j=0;j<prazosAux.size();j++){
 				List<Avaliacao> avaAux = avaliacaoDAO.getAvaliacoesPrazoQuestionario(prazosAux.get(j));
 				for(int k=0;k<avaAux.size();k++){
-					System.out.println(avaAux.get(i));
-
-//					if(!coordenadores.contains(avaliacaoDAO.getAvaliado(avaAux.get(k))))
-//						coordenadores.add(avaliacaoDAO.getAvaliado(avaAux.get(k)));
+					if(!coordenadores.contains(avaliacaoDAO.getAvaliado(avaAux.get(k))))
+						coordenadores.add(avaliacaoDAO.getAvaliado(avaAux.get(k)));
 				}
 			}
 		}

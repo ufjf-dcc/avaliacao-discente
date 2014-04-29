@@ -8,6 +8,7 @@ import org.hibernate.Query;
 
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Curso;
+import br.ufjf.avaliacao.model.Disciplina;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
 import br.ufjf.avaliacao.model.Turma;
@@ -407,25 +408,23 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 		
 		public Usuario getAvaliado(Avaliacao avaliacao){
 			try {
-					Query query = getSession() // carrega as avaliações daquele questionario com o professor especifico
-							.createQuery(
-									"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.avaliado WHERE a = :ava");
-					query.setParameter("ava", avaliacao);
-				
-					@SuppressWarnings("unchecked")
-					
-//					Avaliacao a = (Avaliacao) query.uniqueResult();
+				Query query = getSession() 
+						.createQuery(
+								"SELECT a FROM Avaliacao AS a  LEFT JOIN FETCH a.avaliado WHERE a = :aval");
+				query.setParameter("aval", avaliacao);
 
-					List<Avaliacao> a = query.list();
-					getSession().close();
-					
-					return a.get(0).getAvaliado();
-									
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				return null;
+				@SuppressWarnings("unchecked")
+				Avaliacao a = (Avaliacao) query.uniqueResult();
+				
+				getSession().close();
+				
+				return a.getAvaliado();
+
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+			return null;
+		}
 	}
 		
 		
