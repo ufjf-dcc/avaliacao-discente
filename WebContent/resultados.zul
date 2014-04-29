@@ -36,7 +36,7 @@
 							model="@load(vm.coordenadores)" selectedItem="@bind(vm.coordenador)"
 							onSelect="@command('carregarSemestres')">
 							<template name="model">
-								<comboitem label="@load(each)" />
+								<comboitem label="@load(each.nome)" />
 							</template>
 						</combobox>
 					</row>

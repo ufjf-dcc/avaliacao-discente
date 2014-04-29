@@ -183,7 +183,6 @@ public class HomeAlunoController extends GenericController {
 			// questionario é do
 			// tipo coodenador
 			avaliado = usuarioDAO.retornaCoordenadorCurso(usuario.getCurso());
-
 		}
 		if (((Questionario) session.getAttribute("questionarioAtual"))
 				.getTipoQuestionario() == 1) { // verifica se o
@@ -227,7 +226,9 @@ public class HomeAlunoController extends GenericController {
 			avaliacao.setPrazoQuestionario(prazo);
 			avaliacao.setTurma(turmaUsada);
 			new AvaliacaoDAO().salvar(avaliacao);
+
 			for (Resposta r : respostas) {
+				System.out.println("erro aqui");
 				r.setAvaliacao(avaliacao);
 			}
 			new RespostaDAO().salvarLista(respostas);

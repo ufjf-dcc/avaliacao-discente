@@ -132,9 +132,6 @@ public class PrazoQuestionarioDAO extends GenericoDAO implements
 			List<PrazoQuestionario> prazos = query.list();
 
 			getSession().close();
-
-			for(int i=0;i<prazos.size();i++)
-				System.out.println(prazos.get(i));
 			
 			if (prazos != null) {
 				return prazos.get(0);

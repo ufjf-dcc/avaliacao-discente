@@ -27,7 +27,7 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 
 	}
 
-	// procura se há alguma avaliação no que possua o prazo em questão
+	// procura se ha alguma avaliação no que possua o prazo em questao
 	public boolean jaAvaliouNestePrazo(PrazoQuestionario prazo, Usuario aluno) {
 		try {
 			Query query = getSession()
@@ -67,9 +67,10 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 			List<Avaliacao> a = query.list();
 			
 			getSession().close();
-
+			
 			QuestionarioDAO questionarioDAO = new QuestionarioDAO();
 			Questionario questionario = questionarioDAO.retornaQuestinarioParaUsuarioCoord(aluno);
+		
 			if (!a.isEmpty()){// verific se esta vazio
 				for(int i=0;i<a.size();i++){ // verifica se alguma foi feita para um coordenador
 					if(a.get(i).getPrazoQuestionario().getQuestionario().getIdQuestionario() == questionario.getIdQuestionario()) //se sim retorna true
@@ -83,6 +84,8 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 		}
 		return false;
 	}
+	
+
 	
 	// verifica se o usuario ja se avaliou com o prazo dentro da data atual.
 	public boolean jaSeAvaliorDataAtual(Usuario aluno){
@@ -154,7 +157,7 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 		try {
 			Query query = getSession() // carrega as avaliações daquele questionario naquela data
 					.createQuery(
-							"SELECT a FROM Avaliacao AS a  LEFT JOIN FETCH a.prazoQuestionario AS p LEFT JOIN FETCH p.questionario WHERE :dataAtual BETWEEN p.dataInicial AND p.dataFinal AND p.questionario = :questionario");
+							"SELECT a FROM Avaliacao AS a  LEFT JOIN FETCH a.prazoQuestionario AS p WHERE :dataAtual BE");
 			query.setParameter("dataAtual", new Date());
 			query.setParameter("questionario", questionario);
 
@@ -356,5 +359,76 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 			}
 			return null;
 		}
-}
+		
+		public List<Avaliacao> getAvaliacoesUsuarioAvaliado(Usuario avaliado){
+			try {
+				Query query = getSession()
+						.createQuery(
+								"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.avaliado AS p WHERE a.avaliado = :avaliado");
+				query.setParameter("avaliado", avaliado);
+
+
+				@SuppressWarnings("unchecked")
+				List<Avaliacao> a = query.list();
+				
+				getSession().close();
+
+				if (a!=null){// se sim retorna true
+					return a;
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+	
+		public List<Avaliacao> getAvaliacoesPrazoQuestionario(PrazoQuestionario prazo){ // dado um prazo, ele retorna a as avalia�oes daquele prazo
+			try {
+				Query query = getSession()
+						.createQuery(
+								"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.prazoQuestionario AS p WHERE p = :prazo");
+				query.setParameter("prazo", prazo);
+
+				@SuppressWarnings("unchecked")
+				List<Avaliacao> a = query.list();
+				
+				getSession().close();
+
+				if (a!=null){// se sim retorna true
+					return a;
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+		
+		public Usuario getAvaliado(Avaliacao avaliacao){
+			try {
+					Query query = getSession() // carrega as avaliações daquele questionario com o professor especifico
+							.createQuery(
+									"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.avaliado WHERE a = :ava");
+					query.setParameter("ava", avaliacao);
+				
+					@SuppressWarnings("unchecked")
+					
+//					Avaliacao a = (Avaliacao) query.uniqueResult();
+
+					List<Avaliacao> a = query.list();
+					getSession().close();
+					
+					return a.get(0).getAvaliado();
+									
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+	}
+		
+		
+
+
 

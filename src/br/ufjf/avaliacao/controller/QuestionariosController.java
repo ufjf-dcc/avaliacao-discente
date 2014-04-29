@@ -451,6 +451,7 @@ public class QuestionariosController extends GenericController {
 				questionarioDAO.editar(q);
 				ativo=q.isAtivo();
 			}
+
 			if(ativo){
 			Messagebox.show("Ativado", "Concluido", Messagebox.OK,
 					Messagebox.INFORMATION, new EventListener<Event>() {
