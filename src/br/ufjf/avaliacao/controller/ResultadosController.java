@@ -44,7 +44,7 @@ public class ResultadosController extends GenericController implements
 	private List<String> semestres = respostaDAO.getAllSemestres();
 	private String semestre = null;
 	private List<Turma> turmas = new ArrayList<Turma>();
-	private Turma turma = new Turma();
+	private Turma turma = null;
 	private List<Avaliacao> avaliacoes = new ArrayList<Avaliacao>();
 	private PrazoQuestionario prazo = new PrazoQuestionario();
 	private List<Pergunta> perguntas = new ArrayList<>();
@@ -63,29 +63,42 @@ public class ResultadosController extends GenericController implements
 	@NotifyChange("turmas") // carregando e filtrando as tumas a serem escolhidas
 	public void carregarTurmas() {
 		turmas = new ArrayList<Turma>();
-		if(professor!=null && semestre!=null){
-			TurmaDAO turmaDAO = new TurmaDAO();
-			turmas = new ArrayList<Turma>();
-			Turma todas = new Turma();
-			Disciplina ndisc = new Disciplina();
-			ndisc.setNomeDisciplina("Todas");
-			ndisc.setCodDisciplina("Sem codigo");
-			todas.setDisciplina(ndisc);
-			todas.setLetraTurma("Sem letra");
-			todas.setSemestre("Avaliação geral");
-			turmas.add(todas);
-			if(professor.getNome()!="Todos" && semestre!="Todos") // professor e semestre selecionado
-				turmas.addAll(turmaDAO.getTurmasUsuarioSemestre(professor, semestre));
-			
-			if(professor.getNome()!="Todos" && semestre=="Todos") // professor selecionado e semestre=todos
-				turmas.addAll(turmaDAO.getTurmasUsuario(professor));
-			
-			if(professor.getNome()=="Todos" && semestre!="Todos") // professor=todos e semestre selecionado
-				turmas.addAll(turmaDAO.getTurmasCursoSemestre(semestre,usuario.getCurso()));
-			
-			if(professor.getNome()=="Todos" && semestre=="Todos") // professor=todos e semestre selecionado
-				turmas.addAll(turmaDAO.getAllTurmasCurso(semestre,usuario.getCurso()));
+		if(Integer.parseInt(opcao)==0){
+//			System.out.println("!");
+//			questionarios = new ArrayList<Questionario>();
+//			Questionario todos = new Questionario();
+//			todos.setTituloQuestionario("Todos");
+//			questionarios.add(todos);
+//			for(int i=0;i<avaCoor.size();i++)
+//				questionarios.add(avaCoor.get(i).getPrazoQuestionario().getQuestionario());
+
 		}
+		if(Integer.parseInt(opcao)==1){
+			if(professor!=null && semestre!=null){
+				TurmaDAO turmaDAO = new TurmaDAO();
+				turmas = new ArrayList<Turma>();
+				Turma todas = new Turma();
+				Disciplina ndisc = new Disciplina();
+				ndisc.setNomeDisciplina("Todas");
+				ndisc.setCodDisciplina("Sem codigo");
+				todas.setDisciplina(ndisc);
+				todas.setLetraTurma("Sem letra");
+				todas.setSemestre("Avaliação geral");
+				turmas.add(todas);
+				if(professor.getNome()!="Todos" && semestre!="Todos") // professor e semestre selecionado
+					turmas.addAll(turmaDAO.getTurmasUsuarioSemestre(professor, semestre));
+				
+				if(professor.getNome()!="Todos" && semestre=="Todos") // professor selecionado e semestre=todos
+					turmas.addAll(turmaDAO.getTurmasUsuario(professor));
+				
+				if(professor.getNome()=="Todos" && semestre!="Todos") // professor=todos e semestre selecionado
+					turmas.addAll(turmaDAO.getTurmasCursoSemestre(semestre,usuario.getCurso()));
+				
+				if(professor.getNome()=="Todos" && semestre=="Todos") // professor=todos e semestre selecionado
+					turmas.addAll(turmaDAO.getAllTurmasCurso(semestre,usuario.getCurso()));
+			}
+		}
+		
 		questionarios = new ArrayList<Questionario>();
 		questionario = null;
 		perguntas = new ArrayList<Pergunta>();
@@ -102,15 +115,24 @@ public class ResultadosController extends GenericController implements
 	}
 	
 	@Command
-	@NotifyChange("semestres")  // carregando e filtrando os semstres a serem escolhidos
+	@NotifyChange("semestres")  // carregando e filtrando os semestres a serem escolhidos
 	public void carregarSemestres() {
 		semestres = new ArrayList<String>();
 		semestres.add("Todos");
 		TurmaDAO turmaDAO = new TurmaDAO();
 		
 		if(Integer.parseInt(opcao)==0){
-			for(int i=0;i<avaCoor.size();i++){
-				semestres.add(avaCoor.get(i).getRespostas().get(0).getSemestre());
+			AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
+			if(avaCoor!=null){
+				for(int i=0;i<avaCoor.size();i++){
+					if(coordenador.getNome()=="Todos" || avaliacaoDAO.getAvaliado(avaCoor.get(i)).getIdUsuario()==coordenador.getIdUsuario()){
+						semestres.add(avaCoor.get(i).getRespostas().get(0).getSemestre());
+						if(!(avaliacaoDAO.getAvaliado(avaCoor.get(i)).getIdUsuario()==coordenador.getIdUsuario())){
+							avaCoor.remove(i);
+							i--;
+						}
+					}
+				}
 			}
 		}
 		if(Integer.parseInt(opcao)==1){
@@ -121,11 +143,7 @@ public class ResultadosController extends GenericController implements
 				else
 					semestres.addAll(turmaDAO.getAllSemestres());
 			}
-			turmas = new ArrayList<Turma>();
-			turma = null;
-			questionarios = new ArrayList<Questionario>();
-			questionario = null;
-			perguntas = new ArrayList<Pergunta>();
+
 		}
 	
 	}
@@ -138,12 +156,14 @@ public class ResultadosController extends GenericController implements
 		todos.setTituloQuestionario("Todos");
 		questionarios.add(todos);
 		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
-		if(Integer.parseInt(opcao)==0){
-			questionarios.addAll(questCoor);
-		}	
-		if(Integer.parseInt(opcao)==1){
+
+		if(Integer.parseInt(opcao)==0)
+			for(int i=0;i<avaCoor.size();i++)
+				questionarios.add(avaCoor.get(i).getPrazoQuestionario().getQuestionario());
+
+			if(Integer.parseInt(opcao)==1)
 			questionarios.addAll(questionarioDAO.retornaQuestionarioProfessor(usuario.getCurso()));// retorna todos os questionarios de professor
-		}	
+		
 		
 		perguntas = new ArrayList<Pergunta>();
 	}
@@ -203,9 +223,7 @@ public class ResultadosController extends GenericController implements
 
 	public void getGraficoProfessor() {
 		List<Resposta> respostas;
-		System.out.println("Disciplina:");
 
-		System.out.println(turma.getDisciplina().getNomeDisciplina());
 		RespostaDAO respostaDAO = new RespostaDAO();
 		if(professor.getNome()!="Todos"){
 			if(semestre!="Todos"){
@@ -214,7 +232,6 @@ public class ResultadosController extends GenericController implements
 				}
 				else{
 					respostas = respostaDAO.getRespostasPerguntaSemestreAvaliado(perguntaSelecionada, semestre, professor);
-					System.out.println("Aqui1");
 				}
 			}
 			else{
@@ -223,7 +240,6 @@ public class ResultadosController extends GenericController implements
 				}
 				else{
 					respostas = respostaDAO.getRespostasPerguntaAvaliado(perguntaSelecionada, professor);
-					System.out.println("Aqui2");
 				}
 			}
 		}
@@ -245,8 +261,6 @@ public class ResultadosController extends GenericController implements
 				}
 			}
 		}
-		System.out.println("respostas.size() : ");
-		System.out.println(respostas.size());
 
 		List<RespostaEspecifica> alternativas = perguntaSelecionada
 				.getRespostasEspecificasBanco();
@@ -276,22 +290,27 @@ public class ResultadosController extends GenericController implements
 			@BindingParam("combo") Combobox combo) {
 
 		opcao = combo.getSelectedItem().getValue().toString();
+		
 		switch (opcao) {
 		case "0":
 			row.getNextSibling().setVisible(false);
 			row.getNextSibling().getNextSibling().setVisible(true);
 			row.getNextSibling().getNextSibling().getNextSibling().setVisible(true);
 			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);
 			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+
 			break;
 		case "1":
 			row.getNextSibling().setVisible(true);
 			row.getNextSibling().getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().setVisible(false);
 			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
 			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
 			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+
 			break;
 		case "2":
 			row.getNextSibling().setVisible(false);
@@ -300,7 +319,7 @@ public class ResultadosController extends GenericController implements
 			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);
 			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
 			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
-			carregarSemestres();
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
 			break;
 		case "3":
 			row.getNextSibling().setVisible(false);
@@ -309,26 +328,16 @@ public class ResultadosController extends GenericController implements
 			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);
 			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
 			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+
 			break;
 		default:
 			;
 			break;
 			
+
 		}
-		professores = new ArrayList<Usuario>();
-		professor = null;
-		coordenadores = new ArrayList<Usuario>();
-		coordenador = null;
-		semestres = new ArrayList<String>();
-		semestre = null;
-		turmas = new ArrayList<Turma>();
-		turma = null;
-		questionarios = new ArrayList<Questionario>();
-		questionario = null;
-		perguntas = new ArrayList<Pergunta>();
-//		carregarCoordenadores();
-//		carregarTurmas();
-//		carregarSemestres();
+
 		
 	}
 
@@ -423,14 +432,17 @@ public class ResultadosController extends GenericController implements
 		coordenadores = new ArrayList<Usuario>();
 		Usuario todos = new Usuario();
 		todos.setNome("Todos");
+		todos.setIdUsuario(-1);
 		coordenadores.add(todos);
 		AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
 		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
 		questCoor = questionarioDAO.retornaQuestinariosCursoTipo(usuario.getCurso(), 0);
+		avaCoor = new ArrayList<Avaliacao>();
 		for(int i=0;i<questCoor.size();i++){
 			List<PrazoQuestionario> prazosAux = questCoor.get(i).getPrazos();
 			for(int j=0;j<prazosAux.size();j++){
 				List<Avaliacao> avaAux = avaliacaoDAO.getAvaliacoesPrazoQuestionario(prazosAux.get(j));
+				avaCoor.addAll(avaAux);
 				for(int k=0;k<avaAux.size();k++){
 					if(!coordenadores.contains(avaliacaoDAO.getAvaliado(avaAux.get(k))))
 						coordenadores.add(avaliacaoDAO.getAvaliado(avaAux.get(k)));

@@ -45,6 +45,16 @@
 						<label value="Semestre" />
 						<combobox width="98%"
 							model="@load(vm.semestres)" selectedItem="@bind(vm.semestre)"
+							onSelect="@command('carregarQuestionarios')">
+							<template name="model">
+								<comboitem label="@load(each)" />
+							</template>
+						</combobox>
+					</row>
+					<row visible="false">
+						<label value="Semestre" />
+						<combobox width="98%"
+							model="@load(vm.semestres)" selectedItem="@bind(vm.semestre)"
 							onSelect="@command('carregarTurmas')">
 							<template name="model">
 								<comboitem label="@load(each)" />
