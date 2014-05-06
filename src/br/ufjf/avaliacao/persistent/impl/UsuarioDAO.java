@@ -217,6 +217,25 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 		return null;
 	}
 	
+	public List<Usuario> retornaAlunoCurso(Curso curso){
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT u FROM Usuario AS u WHERE u.curso = :curso AND u.tipoUsuario = :tipoUsuario");
+			query.setParameter("curso", curso);
+			query.setParameter("tipoUsuario", 2);
+
+			List<Usuario> usuarios = query.list();
+
+			getSession().close();
+			if (usuarios != null) {
+				return usuarios;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	public List<Usuario> getUsuarioCursoTipoQuestionario(Curso curso,int tipoQuestionario){
 		QuestionarioDAO questionarioDAO = new QuestionarioDAO();

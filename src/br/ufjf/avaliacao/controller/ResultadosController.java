@@ -39,40 +39,36 @@ public class ResultadosController extends GenericController implements
 
 	private static final long serialVersionUID = 6731467107690993996L;
 
-	private String opcao = new String();
-	private RespostaDAO respostaDAO = new RespostaDAO();
-	private List<String> semestres = respostaDAO.getAllSemestres();
-	private String semestre = null;
-	private List<Turma> turmas = new ArrayList<Turma>();
-	private Turma turma = null;
+	private String opcao = "0";
+	Row combobox = null;
+	
+	private List<Questionario> questionarios = new ArrayList<Questionario>();
+	private Questionario questionario = null;
+	private List<Questionario> questCoor = null;
+	private Usuario aluno = null;
+	private List<Usuario> alunos = new ArrayList<Usuario>();
 	private List<Avaliacao> avaliacoes = new ArrayList<Avaliacao>();
+	private List<Avaliacao> avaCoor = null;
+	private List<Avaliacao> avaCoorSelect = null;
+	private List<Usuario> coordenadores = new ArrayList<Usuario>();
+	private Usuario coordenador = new Usuario();
 	private PrazoQuestionario prazo = new PrazoQuestionario();
 	private List<Pergunta> perguntas = new ArrayList<>();
 	private Pergunta perguntaSelecionada;
 	private List<Usuario> professores = new ArrayList<Usuario>();
 	private Usuario professor = null;
-	private List<Usuario> coordenadores = new ArrayList<Usuario>();
-	private Usuario coordenador = new Usuario();
-	private List<Questionario> questionarios = new ArrayList<Questionario>();
-	private Questionario questionario = null;
-	private List<Questionario> questCoor = null;
-	private List<Avaliacao> avaCoor = null;
-	
+	private RespostaDAO respostaDAO = new RespostaDAO();
+	private List<String> semestres = respostaDAO.getAllSemestres();
+	private String semestre = null;
+	private List<Turma> turmas = new ArrayList<Turma>();
+	private Turma turma = null;
+
 	
 	@Command
 	@NotifyChange("turmas") // carregando e filtrando as tumas a serem escolhidas
 	public void carregarTurmas() {
 		turmas = new ArrayList<Turma>();
-		if(Integer.parseInt(opcao)==0){
-//			System.out.println("!");
-//			questionarios = new ArrayList<Questionario>();
-//			Questionario todos = new Questionario();
-//			todos.setTituloQuestionario("Todos");
-//			questionarios.add(todos);
-//			for(int i=0;i<avaCoor.size();i++)
-//				questionarios.add(avaCoor.get(i).getPrazoQuestionario().getQuestionario());
 
-		}
 		if(Integer.parseInt(opcao)==1){
 			if(professor!=null && semestre!=null){
 				TurmaDAO turmaDAO = new TurmaDAO();
@@ -80,10 +76,10 @@ public class ResultadosController extends GenericController implements
 				Turma todas = new Turma();
 				Disciplina ndisc = new Disciplina();
 				ndisc.setNomeDisciplina("Todas");
-				ndisc.setCodDisciplina("Sem codigo");
+				ndisc.setCodDisciplina(" ");
 				todas.setDisciplina(ndisc);
-				todas.setLetraTurma("Sem letra");
-				todas.setSemestre("Avaliação geral");
+				todas.setLetraTurma(" ");
+				todas.setSemestre(" ");
 				turmas.add(todas);
 				if(professor.getNome()!="Todos" && semestre!="Todos") // professor e semestre selecionado
 					turmas.addAll(turmaDAO.getTurmasUsuarioSemestre(professor, semestre));
@@ -124,12 +120,21 @@ public class ResultadosController extends GenericController implements
 		if(Integer.parseInt(opcao)==0){
 			AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
 			if(avaCoor!=null){
+				avaCoorSelect = new ArrayList<Avaliacao>();
+				avaCoorSelect.addAll(avaCoor);
 				for(int i=0;i<avaCoor.size();i++){
-					if(coordenador.getNome()=="Todos" || avaliacaoDAO.getAvaliado(avaCoor.get(i)).getIdUsuario()==coordenador.getIdUsuario()){
+				if(avaliacaoDAO.getAvaliado(avaCoor.get(i)).getIdUsuario()==coordenador.getIdUsuario()){ // para um coordenador especificio
+					if(!semestres.contains(avaCoor.get(i).getRespostas().get(0).getSemestre()))
 						semestres.add(avaCoor.get(i).getRespostas().get(0).getSemestre());
-						if(!(avaliacaoDAO.getAvaliado(avaCoor.get(i)).getIdUsuario()==coordenador.getIdUsuario())){
-							avaCoor.remove(i);
+						if(!(avaliacaoDAO.getAvaliado(avaCoorSelect.get(i)).getIdUsuario()==coordenador.getIdUsuario())){
+							avaCoorSelect.remove(i);
 							i--;
+						}
+					}
+					else{
+						if(coordenador.getNome()=="Todos"){//para coordenador = todos
+							if(!semestres.contains(avaCoor.get(i).getRespostas().get(0).getSemestre()))
+								semestres.add(avaCoor.get(i).getRespostas().get(0).getSemestre());
 						}
 					}
 				}
@@ -141,11 +146,25 @@ public class ResultadosController extends GenericController implements
 					semestres.addAll(turmaDAO.getSemestresUsuario(professor));
 				
 				else
-					semestres.addAll(turmaDAO.getAllSemestres());
+					semestres.addAll(turmaDAO.getAllSemestres()); //MELHORAR
 			}
 
 		}
 	
+		if(Integer.parseInt(opcao)==2){
+			if(aluno.getNome()=="Todos"){
+				for(int i=0;i<alunos.size();i++)
+					if(alunos.get(i).getNome()!="Todos"){
+						List<String> semesAux = turmaDAO.getSemestresUsuario(alunos.get(i));
+						for(int k=0;k<semesAux.size();k++)
+							if(!semestres.contains(semesAux.get(k)))
+								semestres.add(semesAux.get(k));
+					}
+			}
+			else{
+				semestres.addAll(turmaDAO.getSemestresUsuario(aluno));
+			}
+		}
 	}
 	
 	@Command
@@ -157,50 +176,72 @@ public class ResultadosController extends GenericController implements
 		questionarios.add(todos);
 		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
 
-		if(Integer.parseInt(opcao)==0)
+		if(Integer.parseInt(opcao)==0)//coordenador
 			for(int i=0;i<avaCoor.size();i++)
 				questionarios.add(avaCoor.get(i).getPrazoQuestionario().getQuestionario());
 
-			if(Integer.parseInt(opcao)==1)
-			questionarios.addAll(questionarioDAO.retornaQuestionarioProfessor(usuario.getCurso()));// retorna todos os questionarios de professor
+		if(Integer.parseInt(opcao)==1)//professor
+			questionarios.addAll(questionarioDAO.retornaQuestionariosTipo(usuario.getCurso(),1));// retorna todos os questionarios de professor
 		
-		
-		perguntas = new ArrayList<Pergunta>();
+		if(Integer.parseInt(opcao)==2)//autoavaliação
+			questionarios.addAll(questionarioDAO.retornaQuestionariosTipo(usuario.getCurso(),2));// retorna todos os questionarios de autoavaliação
+
+		if(Integer.parseInt(opcao)==3)//infraestrutura
+			questionarios.addAll(questionarioDAO.retornaQuestionariosTipo(usuario.getCurso(),3));// retorna todos os questionarios de infraestrutura
+
 	}
 
 	@Command
 	@NotifyChange("perguntas")  // carregando e filtrando os semstres a serem escolhidos
 	public void carregarPerguntas() {
 		perguntas = new ArrayList<Pergunta>();
-		if(professor != null && questionario!=null && semestre!=null && turma!=null)
-			if(questionario.getTituloQuestionario()!="Todos")
-				perguntas.addAll(questionario.getPerguntas());
-			else{
-				QuestionarioDAO questionarioDAO = new QuestionarioDAO();
-				questionarios = questionarioDAO.retornaQuestionarioProfessor(usuario.getCurso());
-				for(int i=0;i<questionarios.size();i++)
-					perguntas.addAll(questionarios.get(i).getPerguntas());
-			}
+		
+		if(questionario.getTituloQuestionario()!="Todos")// questionario especifico
+			perguntas.addAll(questionario.getPerguntas());
+		else{//todos os questionarios
+			QuestionarioDAO questionarioDAO = new QuestionarioDAO();
+			questionarios = questionarioDAO.retornaQuestionariosTipo(usuario.getCurso(),1);
+			for(int i=0;i<questionarios.size();i++)
+			perguntas.addAll(questionarios.get(i).getPerguntas());
+		}
 	}
 		
 	@Command
 	public void gerarGrafico() {
-		getGraficoProfessor();
-		session.setAttribute("turma", turma);
-		session.setAttribute("pergunta", perguntaSelecionada);
-		Window w = (Window) Executions.createComponents("/grafico.zul", null,
+		Window w = null;
+		if(Integer.parseInt(opcao)==0){//coorednador
+			getGraficoCoordenador();
+			session.setAttribute("coordenador", coordenador);
+			session.setAttribute("semestre", semestre);
+			session.setAttribute("pergunta", perguntaSelecionada);
+			w = (Window) Executions.createComponents("/graficoCoordenador.zul", null,
 				null);
-		w.setClosable(true);
-		w.setMinimizable(true);
-		w.doOverlapped();
-	}
-
-	private List<Turma> getLetraDisciplinaTurma() {
-		List<Turma> turmas = new ArrayList<Turma>();
-		for (Turma t : new TurmaDAO().getAllTurmas(semestre)) {
-			turmas.add(t);
 		}
-		return turmas;
+		if(Integer.parseInt(opcao)==1){//professor
+			getGraficoProfessor();
+			session.setAttribute("turma", turma);
+			session.setAttribute("pergunta", perguntaSelecionada);
+			w = (Window) Executions.createComponents("/grafico.zul", null,
+				null);
+		}
+		if(Integer.parseInt(opcao)==2){//autoavalição
+			getGraficoAutoavaliacao();
+			session.setAttribute("aluno", aluno);
+			session.setAttribute("semestre", semestre);
+			session.setAttribute("pergunta", perguntaSelecionada);
+			w = (Window) Executions.createComponents("/graficoAutoavaliacao.zul", null,
+				null);
+		}
+		if(Integer.parseInt(opcao)==3){//infraestrutura
+			getGraficoInfraestrutura();
+			session.setAttribute("semestre", semestre);
+			session.setAttribute("pergunta", perguntaSelecionada);
+			w = (Window) Executions.createComponents("/graficoInfraestrutura.zul", null,
+				null);
+		}
+		w.setClosable(true);
+		w.setMinimizable(false);
+		w.doOverlapped();
 	}
 
 	@Command
@@ -221,13 +262,58 @@ public class ResultadosController extends GenericController implements
 		}
 	}
 
+	public void getGraficoCoordenador() {
+		List<Resposta> respostas;
+
+		RespostaDAO respostaDAO = new RespostaDAO();
+		if(coordenador.getNome()!="Todos"){
+			if(semestre!="Todos"){
+				respostas = respostaDAO.getRespostasPerguntaSemestreAvaliado(perguntaSelecionada, semestre, coordenador);
+			}
+			else{
+				respostas = respostaDAO.getRespostasPerguntaAvaliado(perguntaSelecionada, coordenador);
+			}
+		}
+		else{
+			if(semestre!="Todos"){
+				respostas = respostaDAO.getRespostasPerguntaSemestre(perguntaSelecionada, semestre);
+			}
+			else{
+				respostas = respostaDAO.getRespostasPergunta(perguntaSelecionada);
+			}
+			
+		}
+
+		List<RespostaEspecifica> alternativas = perguntaSelecionada
+				.getRespostasEspecificasBanco();
+		Map<String, Integer> contagem = new LinkedHashMap<>();
+		PieModel model = new SimplePieModel();
+		for (RespostaEspecifica re : alternativas) {
+			contagem.put(re.getRespostaEspecifica(), 0);
+		}
+		for (Resposta r : respostas) {
+			for (RespostaEspecifica re : alternativas) {
+				if (r.getResposta().equals(re.getRespostaEspecifica())) {
+					contagem.put(re.getRespostaEspecifica(),
+							(contagem.get(re.getRespostaEspecifica()) + 1));
+				}
+			}
+		}
+		Iterator<String> keyIterator = contagem.keySet().iterator();
+		while (keyIterator.hasNext()) {
+			String key = keyIterator.next();
+			model.setValue(key, contagem.get(key));
+		}
+		session.setAttribute("model", model);
+	}
+	
 	public void getGraficoProfessor() {
 		List<Resposta> respostas;
 
 		RespostaDAO respostaDAO = new RespostaDAO();
 		if(professor.getNome()!="Todos"){
 			if(semestre!="Todos"){
-				if(turma.getLetraTurma()!="Sem letra"){
+				if(turma.getLetraTurma()!=" "){
 					respostas = respostaDAO.getRespostasPerguntaTurmaSemestreAvaliado(perguntaSelecionada, semestre, turma, professor);
 				}
 				else{
@@ -235,7 +321,7 @@ public class ResultadosController extends GenericController implements
 				}
 			}
 			else{
-				if(turma.getLetraTurma()!="Sem letra"){
+				if(turma.getLetraTurma()!=" "){
 					respostas = respostaDAO.getRespostasPerguntaTurmaAvaliado(perguntaSelecionada, turma, professor);
 				}
 				else{
@@ -245,7 +331,7 @@ public class ResultadosController extends GenericController implements
 		}
 		else{
 			if(semestre!="Todos"){
-				if(turma.getLetraTurma()!="Sem letra"){
+				if(turma.getLetraTurma()!=" "){
 					respostas = respostaDAO.getRespostasPerguntaTurmaSemestre(perguntaSelecionada, semestre, turma);
 				}
 				else{
@@ -253,7 +339,7 @@ public class ResultadosController extends GenericController implements
 				}
 			}
 			else{
-				if(turma.getLetraTurma()!="Sem letra"){
+				if(turma.getLetraTurma()!=" "){
 					respostas = respostaDAO.getRespostasPerguntaTurma(perguntaSelecionada, turma);
 				}
 				else{
@@ -285,94 +371,205 @@ public class ResultadosController extends GenericController implements
 		session.setAttribute("model", model);
 	}
 
+	public void getGraficoAutoavaliacao() {
+		List<Resposta> respostas;
+
+		RespostaDAO respostaDAO = new RespostaDAO();
+		if(aluno.getNome()!="Todos"){
+			if(semestre!="Todos"){
+				respostas = respostaDAO.getRespostasPerguntaSemestreAvaliado(perguntaSelecionada, semestre, aluno);
+			}
+			else{
+				respostas = respostaDAO.getRespostasPerguntaAvaliado(perguntaSelecionada, aluno);
+			}
+		}
+		else{
+			if(semestre!="Todos"){
+				respostas = respostaDAO.getRespostasPerguntaSemestre(perguntaSelecionada, semestre);
+			}
+			else{
+				respostas = respostaDAO.getRespostasPergunta(perguntaSelecionada);
+			}
+			
+		}
+
+		List<RespostaEspecifica> alternativas = perguntaSelecionada
+				.getRespostasEspecificasBanco();
+		Map<String, Integer> contagem = new LinkedHashMap<>();
+		PieModel model = new SimplePieModel();
+		for (RespostaEspecifica re : alternativas) {
+			contagem.put(re.getRespostaEspecifica(), 0);
+		}
+		for (Resposta r : respostas) {
+			for (RespostaEspecifica re : alternativas) {
+				if (r.getResposta().equals(re.getRespostaEspecifica())) {
+					contagem.put(re.getRespostaEspecifica(),
+							(contagem.get(re.getRespostaEspecifica()) + 1));
+				}
+			}
+		}
+		Iterator<String> keyIterator = contagem.keySet().iterator();
+		while (keyIterator.hasNext()) {
+			String key = keyIterator.next();
+			model.setValue(key, contagem.get(key));
+		}
+		session.setAttribute("model", model);
+	}
+
+	public void getGraficoInfraestrutura() {
+		List<Resposta> respostas;
+
+		RespostaDAO respostaDAO = new RespostaDAO();
+
+		if(semestre!="Todos"){
+			respostas = respostaDAO.getRespostasPerguntaSemestre(perguntaSelecionada, semestre);
+		}
+		else{
+			respostas = respostaDAO.getRespostasPergunta(perguntaSelecionada);
+		}
+	
+
+		List<RespostaEspecifica> alternativas = perguntaSelecionada
+				.getRespostasEspecificasBanco();
+		Map<String, Integer> contagem = new LinkedHashMap<>();
+		PieModel model = new SimplePieModel();
+		for (RespostaEspecifica re : alternativas) {
+			contagem.put(re.getRespostaEspecifica(), 0);
+		}
+		for (Resposta r : respostas) {
+			for (RespostaEspecifica re : alternativas) {
+				if (r.getResposta().equals(re.getRespostaEspecifica())) {
+					contagem.put(re.getRespostaEspecifica(),
+							(contagem.get(re.getRespostaEspecifica()) + 1));
+				}
+			}
+		}
+		Iterator<String> keyIterator = contagem.keySet().iterator();
+		while (keyIterator.hasNext()) {
+			String key = keyIterator.next();
+			model.setValue(key, contagem.get(key));
+		}
+		session.setAttribute("model", model);
+	}
+
 	@Command
-	public void avaliacaoEscolhida(@BindingParam("row") Row row,
+	public void avaliacaoEscolhida(@BindingParam("row") Row row, //vai tornar visivel ou nao o combobox escolhido, dependendo de o que quer visualizar
 			@BindingParam("combo") Combobox combo) {
 
 		opcao = combo.getSelectedItem().getValue().toString();
-		
+		combobox=row;
 		switch (opcao) {
-		case "0":
-			row.getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+		case "0"://coordenador
+			row.getNextSibling().setVisible(false);//professor
+			row.getNextSibling().getNextSibling().setVisible(true);//coordenador
+			row.getNextSibling().getNextSibling().getNextSibling().setVisible(false);//aluno
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);//semestre para coordenador
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);//semestre para professor
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);//turma
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);//questionario
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);//pergunta
 
 			break;
-		case "1":
-			row.getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+		case "1"://professor
+			row.getNextSibling().setVisible(true);//professor
+			row.getNextSibling().getNextSibling().setVisible(false);//coordenador
+			row.getNextSibling().getNextSibling().getNextSibling().setVisible(false);//aluno
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);//semestre sem turma
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);//semestre para professor
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);//turma
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);//questionario
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);//pergunta
 
 			break;
-		case "2":
-			row.getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
-			break;
-		case "3":
-			row.getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
-			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);
+		case "2"://autoavaliação
+			row.getNextSibling().setVisible(false);//professor
+			row.getNextSibling().getNextSibling().setVisible(false);//coordenador
+			row.getNextSibling().getNextSibling().getNextSibling().setVisible(true);//aluno
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);//semestre sem turma
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);//semestre para professor
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);//turma
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);//questionario
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);//pergunta
 
+			break;
+		case "3"://infraestrutura
+			row.getNextSibling().setVisible(false);//professor
+			row.getNextSibling().getNextSibling().setVisible(false);//coordenador
+			row.getNextSibling().getNextSibling().getNextSibling().setVisible(false);//aluno
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);//semestre sem turma
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(false);//semestre para professor
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);//questionario
+			row.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().setVisible(true);//pergunta
 			break;
 		default:
 			;
 			break;
-			
-
 		}
 
 		
 	}
 
-	public List<String> getSemestres() {
-		return semestres;
+	public Usuario getAluno() {
+		return aluno;
 	}
 
-	public void setSemestres(List<String> semestres) {
-		this.semestres = semestres;
+	public void setAluno(Usuario aluno) {
+		this.aluno = aluno;
 	}
 
-	public String getSemestre() {
-		return semestre;
+	public List<Usuario> getAlunos() {
+		alunos=new ArrayList<Usuario>();
+		Usuario todos = new Usuario();
+		todos.setNome("Todos");
+		alunos.add(todos);
+		UsuarioDAO usuarioDAO = new UsuarioDAO();
+		alunos.addAll(usuarioDAO.retornaAlunoCurso(usuario.getCurso()));
+		return alunos;
 	}
 
-	public void setSemestre(String semestre) {
-		this.semestre = semestre;
+	public void setAlunos(List<Usuario> alunos) {
+		this.alunos = alunos;
 	}
 
-	public List<Turma> getTurmas() {
-		return turmas;
+public List<Usuario> getCoordenadores() {
+		
+		coordenadores = new ArrayList<Usuario>();
+		Usuario todos = new Usuario();
+		todos.setNome("Todos");
+		todos.setIdUsuario(-1);
+		coordenadores.add(todos);
+		AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
+		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
+		questCoor = questionarioDAO.retornaQuestinariosCursoTipo(usuario.getCurso(), 0);
+		avaCoor = new ArrayList<Avaliacao>();
+		for(int i=0;i<questCoor.size();i++){
+			List<PrazoQuestionario> prazosAux = questCoor.get(i).getPrazos();
+			for(int j=0;j<prazosAux.size();j++){
+				List<Avaliacao> avaAux = avaliacaoDAO.getAvaliacoesPrazoQuestionario(prazosAux.get(j));
+				avaCoor.addAll(avaAux);
+				for(int k=0;k<avaAux.size();k++){
+					if(!coordenadores.contains(avaliacaoDAO.getAvaliado(avaAux.get(k))))
+						coordenadores.add(avaliacaoDAO.getAvaliado(avaAux.get(k)));
+				}
+			}
+		}
+
+		return coordenadores;
+		
 	}
 
-	public void setTurmas(List<Turma> turmas) {
-		this.turmas = turmas;
+	public void setCoordenadores(List<Usuario> coordenadores) {
+		this.coordenadores = coordenadores;
 	}
 
-	public Turma getTurma() {
-		return turma;
+	public Usuario getCoordenador() {
+		return coordenador;
 	}
 
-	public void setTurma(Turma turma) {
-		this.turma = turma;
+	public void setCoordenador(Usuario coordenador) {
+		this.coordenador = coordenador;
 	}
-
+	
 	public List<Pergunta> getPerguntas() {
 		return perguntas;
 	}
@@ -411,7 +608,6 @@ public class ResultadosController extends GenericController implements
 		this.professor = professor;
 	}
 	
-
 	public List<Questionario> getQuestionarios() {
 		return questionarios;
 	}
@@ -427,44 +623,42 @@ public class ResultadosController extends GenericController implements
 	public void setQuestionario(Questionario questionario) {
 		this.questionario = questionario;
 	}
-	public List<Usuario> getCoordenadores() {
-		
-		coordenadores = new ArrayList<Usuario>();
-		Usuario todos = new Usuario();
-		todos.setNome("Todos");
-		todos.setIdUsuario(-1);
-		coordenadores.add(todos);
-		AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
-		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
-		questCoor = questionarioDAO.retornaQuestinariosCursoTipo(usuario.getCurso(), 0);
-		avaCoor = new ArrayList<Avaliacao>();
-		for(int i=0;i<questCoor.size();i++){
-			List<PrazoQuestionario> prazosAux = questCoor.get(i).getPrazos();
-			for(int j=0;j<prazosAux.size();j++){
-				List<Avaliacao> avaAux = avaliacaoDAO.getAvaliacoesPrazoQuestionario(prazosAux.get(j));
-				avaCoor.addAll(avaAux);
-				for(int k=0;k<avaAux.size();k++){
-					if(!coordenadores.contains(avaliacaoDAO.getAvaliado(avaAux.get(k))))
-						coordenadores.add(avaliacaoDAO.getAvaliado(avaAux.get(k)));
-				}
-			}
-		}
+	
+	public List<String> getSemestres() {
+		semestres = new ArrayList<String>();
+		semestres.add("Todos");
+		TurmaDAO turmaDAO = new TurmaDAO();
+		semestres.addAll(turmaDAO.getAllSemestres());
 
-		return coordenadores;
-		
+		return semestres;
 	}
 
-	public void setCoordenadores(List<Usuario> coordenadores) {
-		this.coordenadores = coordenadores;
+	public void setSemestres(List<String> semestres) {
+		this.semestres = semestres;
 	}
 
-	public Usuario getCoordenador() {
-		return coordenador;
+	public String getSemestre() {
+		return semestre;
 	}
 
-	public void setCoordenador(Usuario coordenador) {
-		this.coordenador = coordenador;
+	public void setSemestre(String semestre) {
+		this.semestre = semestre;
 	}
 
+	public List<Turma> getTurmas() {
+		return turmas;
+	}
+
+	public void setTurmas(List<Turma> turmas) {
+		this.turmas = turmas;
+	}
+
+	public Turma getTurma() {
+		return turma;
+	}
+
+	public void setTurma(Turma turma) {
+		this.turma = turma;
+	}
 		
 }

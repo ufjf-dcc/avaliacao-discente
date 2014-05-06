@@ -40,6 +40,16 @@
 							</template>
 						</combobox>
 					</row>
+					<row visible="false">
+						<label value="Aluno" />
+						<combobox width="98%"
+							model="@load(vm.alunos)" selectedItem="@bind(vm.aluno)"
+							onSelect="@command('carregarSemestres')">
+							<template name="model">
+								<comboitem label="@load(each.nome)" />
+							</template>
+						</combobox>
+					</row>
 
 					<row visible="false">
 						<label value="Semestre" />

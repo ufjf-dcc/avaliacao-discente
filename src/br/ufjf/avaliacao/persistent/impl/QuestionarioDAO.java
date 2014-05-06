@@ -184,6 +184,8 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 		}
 		return null;
 	}
+	
+	
 
 
 	public Questionario retornaQuestionarioPergunta(Pergunta pergunta) { // retorna o questionario de uma pergunta
@@ -260,13 +262,13 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 		return null;
 	}
 	
-	public List<Questionario> retornaQuestionarioProfessor(Curso curso) {
+	public List<Questionario> retornaQuestionariosTipo(Curso curso, int tipo) {
 		try {
 			Query query = getSession()
 					.createQuery(
 							"SELECT q FROM Questionario AS q WHERE q.curso = :curso AND q.tipoQuestionario = :tipoQuestionario");
 			query.setParameter("curso", curso);
-			query.setParameter("tipoQuestionario", 1);
+			query.setParameter("tipoQuestionario", tipo);
 			
 			List<Questionario> q = query.list();
 			

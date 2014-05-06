@@ -4,12 +4,8 @@
 	border="normal" title=" ">
 	<vlayout>
 		<hlayout>
-			<label value="Disciplina: " />
-			<label value="@load(vm.turma.disciplina.codNomeDisciplina)" />
-		</hlayout>
-		<hlayout>
-			<label value="Turma: " />
-			<label value="@load(vm.turma.letraTurma)" />
+			<label value="Semestre: " />
+			<label value="@load(vm.semestre)" />
 		</hlayout>
 		<hlayout>
 			<label value="Pergunta: " />
