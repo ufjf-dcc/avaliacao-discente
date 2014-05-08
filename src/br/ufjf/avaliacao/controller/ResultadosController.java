@@ -12,9 +12,11 @@ import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Executions;
+import org.zkoss.zul.CategoryModel;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.PieModel;
 import org.zkoss.zul.Row;
+import org.zkoss.zul.SimpleCategoryModel;
 import org.zkoss.zul.SimplePieModel;
 import org.zkoss.zul.Window;
 
@@ -351,7 +353,19 @@ public class ResultadosController extends GenericController implements
 		List<RespostaEspecifica> alternativas = perguntaSelecionada
 				.getRespostasEspecificasBanco();
 		Map<String, Integer> contagem = new LinkedHashMap<>();
-		PieModel model = new SimplePieModel();
+		
+//		PieModel model = new SimplePieModel();
+//		session.setAttribute("type", "pie");
+		
+//		CategoryModel model = new SimpleCategoryModel();
+//		session.setAttribute("type", "bar");
+		
+//		CategoryModel model = new SimpleCategoryModel();
+//		session.setAttribute("type", "line");
+		
+		CategoryModel model = new SimpleCategoryModel();
+		session.setAttribute("type", "column");
+		
 		for (RespostaEspecifica re : alternativas) {
 			contagem.put(re.getRespostaEspecifica(), 0);
 		}
@@ -366,7 +380,7 @@ public class ResultadosController extends GenericController implements
 		Iterator<String> keyIterator = contagem.keySet().iterator();
 		while (keyIterator.hasNext()) {
 			String key = keyIterator.next();
-			model.setValue(key, contagem.get(key));
+			model.setValue(key,"teste", contagem.get(key));
 		}
 		session.setAttribute("model", model);
 	}

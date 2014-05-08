@@ -17,7 +17,8 @@
 			<label value=" - Tipo: "/>
 			<label value="@load(vm.perguntaSelecionada.nomeTipoPergunta)"/>
 		</hlayout>
-		<flashchart width="450" height="250" type="pie"
+		<flashchart width="450" height="250"
+			type="@bind(vm.type)"
 			model="@load(vm.model) " />
 	</vlayout>
 </window>
