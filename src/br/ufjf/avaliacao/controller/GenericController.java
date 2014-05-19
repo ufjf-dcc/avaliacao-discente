@@ -10,13 +10,11 @@ import br.ufjf.avaliacao.business.UsuarioBusiness;
 import br.ufjf.avaliacao.model.Usuario;
 
 public class GenericController {
-	
-	
+
 	protected Session session = Sessions.getCurrent();
 	protected Usuario usuario = (Usuario) session.getAttribute("usuario");
 	protected UsuarioBusiness usuarioBusiness;
-	
-	
+
 	public boolean testaLogado() throws HibernateException, Exception {
 		usuario = (Usuario) session.getAttribute("usuario");
 		usuarioBusiness = new UsuarioBusiness();
@@ -27,22 +25,21 @@ public class GenericController {
 		}
 		return true;
 	}
-	
-	
-	public void testaPermissao(int tipoUsuario) throws HibernateException, Exception {
+
+	public void testaPermissao(int tipoUsuario) throws HibernateException,
+			Exception {
 		usuario = (Usuario) session.getAttribute("usuario");
 		usuarioBusiness = new UsuarioBusiness();
 		if (usuarioBusiness.checaLogin(usuario)) {
 			if (usuario.getTipoUsuario() != tipoUsuario) {
 				Executions.sendRedirect("/home.zul");
 			}
-		}
-		else{
+		} else {
 			Executions.sendRedirect("/index.zul");
 			usuario = new Usuario();
 		}
 	}
-	
+
 	public void testaPermissaoAluno() throws HibernateException, Exception {
 		usuario = (Usuario) session.getAttribute("usuario");
 		usuarioBusiness = new UsuarioBusiness();
@@ -50,13 +47,12 @@ public class GenericController {
 			if (usuario.getTipoUsuario() != Usuario.ALUNO) {
 				Executions.sendRedirect("/home.zul");
 			}
-		}
-		else{
+		} else {
 			Executions.sendRedirect("/index.zul");
 			usuario = new Usuario();
 		}
 	}
-	
+
 	public void testaPermissaoAdmin() throws HibernateException, Exception {
 		usuario = (Usuario) session.getAttribute("usuario");
 		usuarioBusiness = new UsuarioBusiness();
@@ -64,13 +60,12 @@ public class GenericController {
 			if (usuario.getTipoUsuario() != Usuario.ADMIN) {
 				Executions.sendRedirect("/home.zul");
 			}
-		}
-		else{
+		} else {
 			Executions.sendRedirect("/index.zul");
 			usuario = new Usuario();
 		}
 	}
-	
+
 	public void testaPermissaoProf() throws HibernateException, Exception {
 		usuario = (Usuario) session.getAttribute("usuario");
 		usuarioBusiness = new UsuarioBusiness();
@@ -78,13 +73,12 @@ public class GenericController {
 			if (usuario.getTipoUsuario() != Usuario.PROFESSOR) {
 				Executions.sendRedirect("/home.zul");
 			}
-		}
-		else{
+		} else {
 			Executions.sendRedirect("/index.zul");
 			usuario = new Usuario();
 		}
 	}
-	
+
 	public void testaPermissaoCoord() throws HibernateException, Exception {
 		usuario = (Usuario) session.getAttribute("usuario");
 		usuarioBusiness = new UsuarioBusiness();
@@ -92,34 +86,33 @@ public class GenericController {
 			if (usuario.getTipoUsuario() != Usuario.COORDENADOR) {
 				Executions.sendRedirect("/home.zul");
 			}
-		}
-		else{
+		} else {
 			Executions.sendRedirect("/index.zul");
 			usuario = new Usuario();
 		}
 	}
-	
+
 	public String getMenu() {
 		usuario = (Usuario) session.getAttribute("usuario");
-		if (usuario!=null) {
-		int tipoUsuario = usuario.getTipoUsuario();
-		if (tipoUsuario == Usuario.COORDENADOR)
-			return "/menuCoordenador.zul";
-		if (tipoUsuario == Usuario.PROFESSOR)
-			return "/menuProfessor.zul";
-		if (tipoUsuario == Usuario.ALUNO)
-			return "/menuAluno.zul";
-		return "/menuAdministrador.zul";
+		if (usuario != null) {
+			int tipoUsuario = usuario.getTipoUsuario();
+			if (tipoUsuario == Usuario.COORDENADOR)
+				return "/menuCoordenador.zul";
+			if (tipoUsuario == Usuario.PROFESSOR)
+				return "/menuProfessor.zul";
+			if (tipoUsuario == Usuario.ALUNO)
+				return "/menuAluno.zul";
+			return "/menuAdministrador.zul";
 		}
 		return null;
-	} 
-	
+	}
+
 	@Command
-	public void exit(){
+	public void exit() {
 		session.invalidate();
 		Executions.sendRedirect("/index.zul");
 	}
-	
+
 	public Usuario getUsuario() {
 		return usuario;
 	}
@@ -127,5 +120,5 @@ public class GenericController {
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
 	}
-	
+
 }

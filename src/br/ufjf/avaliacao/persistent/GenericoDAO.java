@@ -8,7 +8,7 @@ import org.hibernate.Session;
 import br.ufjf.avaliacao.persistent.HibernateUtil;
 
 public class GenericoDAO implements IGenericoDAO {
-	
+
 	private Session session;
 	HibernateUtil hibernateUtil = new HibernateUtil();
 
@@ -33,7 +33,7 @@ public class GenericoDAO implements IGenericoDAO {
 		}
 		return retorno;
 	}
-	
+
 	@Override
 	public boolean editar(Object objeto) throws HibernateException {
 		boolean retorno = false;
@@ -67,7 +67,6 @@ public class GenericoDAO implements IGenericoDAO {
 		}
 		return objeto;
 	}
-	
 
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -103,13 +102,12 @@ public class GenericoDAO implements IGenericoDAO {
 		}
 		return retorno;
 	}
-	
+
 	public Session getSession() throws Exception {
-		if(session == null){
+		if (session == null) {
 			session = HibernateUtil.getInstance();
-		}
-		else{
-			if (!session.isOpen()){
+		} else {
+			if (!session.isOpen()) {
 				session = HibernateUtil.getInstance();
 			}
 		}

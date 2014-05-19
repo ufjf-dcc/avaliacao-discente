@@ -128,7 +128,8 @@ public class QuestionariosController extends GenericController {
 					}
 				}
 			} else {
-				Messagebox.show("Nenhuma pergunta adicionada ao questionário ainda. Impossível criar.");
+				Messagebox
+						.show("Nenhuma pergunta adicionada ao questionário ainda. Impossível criar.");
 			}
 		}
 	}
@@ -268,11 +269,13 @@ public class QuestionariosController extends GenericController {
 			return false;
 		}
 		if (prazosSessao != null)
-			for (int i = prazosSessao.size()-1; i >= 0; i--) {
-				boolean invalido=true;
-				if(prazosSessao.get(i).getDataFinal().before(prazo.getDataInicial()))
+			for (int i = prazosSessao.size() - 1; i >= 0; i--) {
+				boolean invalido = true;
+				if (prazosSessao.get(i).getDataFinal()
+						.before(prazo.getDataInicial()))
 					invalido = false;
-				if(prazosSessao.get(i).getDataInicial().after(prazo.getDataInicial()))
+				if (prazosSessao.get(i).getDataInicial()
+						.after(prazo.getDataInicial()))
 					invalido = false;
 				if (invalido) {
 					Messagebox.show("N�o pode criar nessa data");
@@ -439,29 +442,27 @@ public class QuestionariosController extends GenericController {
 			boolean ativo = true;
 			for (Questionario q : listaQuestionarios(questionario
 					.getTipoQuestionario())) {
-				if (q.getIdQuestionario() == questionario.getIdQuestionario()){					
-					if(!q.isAtivo())
+				if (q.getIdQuestionario() == questionario.getIdQuestionario()) {
+					if (!q.isAtivo())
 						q.setAtivo(true);
 					else
 						q.setAtivo(false);
-				}
-				else
+				} else
 					q.setAtivo(false);
-				
+
 				questionarioDAO.editar(q);
-				ativo=q.isAtivo();
+				ativo = q.isAtivo();
 			}
 
-			if(ativo){
-			Messagebox.show("Ativado", "Concluido", Messagebox.OK,
-					Messagebox.INFORMATION, new EventListener<Event>() {
-						@Override
-						public void onEvent(Event event) throws Exception {
-							Executions.sendRedirect(null);
-						}
-					});
-			}
-			else{
+			if (ativo) {
+				Messagebox.show("Ativado", "Concluido", Messagebox.OK,
+						Messagebox.INFORMATION, new EventListener<Event>() {
+							@Override
+							public void onEvent(Event event) throws Exception {
+								Executions.sendRedirect(null);
+							}
+						});
+			} else {
 				Messagebox.show("Desativado", "Concluido", Messagebox.OK,
 						Messagebox.INFORMATION, new EventListener<Event>() {
 							@Override

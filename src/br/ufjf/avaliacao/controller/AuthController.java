@@ -12,9 +12,8 @@ import org.zkoss.zk.ui.util.Initiator;
 import br.ufjf.avaliacao.business.UsuarioBusiness;
 import br.ufjf.avaliacao.model.Usuario;
 
-
 public class AuthController implements Initiator {
-	
+
 	@Override
 	public void doInit(Page page, Map<String, Object> args) throws Exception {
 		Clients.showBusy("Aguarde o redirecionamento...");

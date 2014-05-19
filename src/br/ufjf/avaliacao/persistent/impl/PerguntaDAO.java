@@ -47,10 +47,8 @@ public class PerguntaDAO extends GenericoDAO implements IPerguntaDAO {
 			ps = (List<Pergunta>) query.list();
 			getSession().close();
 
-			System.out.print(ps.size());
 			return ps;
 
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -68,10 +66,9 @@ public class PerguntaDAO extends GenericoDAO implements IPerguntaDAO {
 			ps = (List<Pergunta>) query.list();
 			getSession().close();
 
-
 			List<Pergunta> perguntas = new ArrayList<Pergunta>();
-			for(int i=0;i<ps.size();i++){
-				if(!perguntas.contains(ps.get(i)))
+			for (int i = 0; i < ps.size(); i++) {
+				if (!perguntas.contains(ps.get(i)))
 					perguntas.add(ps.get(i));
 			}
 
@@ -82,12 +79,16 @@ public class PerguntaDAO extends GenericoDAO implements IPerguntaDAO {
 		}
 		return null;
 	}
-	public List<Pergunta> retornaPerguntasUsuarioTurmaSemestre(Usuario usuario,Turma turma, String semestre){
+
+	public List<Pergunta> retornaPerguntasUsuarioTurmaSemestre(Usuario usuario,
+			Turma turma, String semestre) {
 		AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
-		List<Avaliacao> avaliacoes = avaliacaoDAO.retornaAvaliacoesUsuarioTurmaSemestre(usuario, turma, semestre);
+		List<Avaliacao> avaliacoes = avaliacaoDAO
+				.retornaAvaliacoesUsuarioTurmaSemestre(usuario, turma, semestre);
 		List<Pergunta> perguntas = new ArrayList<Pergunta>();
-		for(int i=0;i<avaliacoes.size();i++)
-			perguntas.addAll(avaliacoes.get(i).getPrazoQuestionario().getQuestionario().getPerguntas());
+		for (int i = 0; i < avaliacoes.size(); i++)
+			perguntas.addAll(avaliacoes.get(i).getPrazoQuestionario()
+					.getQuestionario().getPerguntas());
 		return perguntas;
 	}
 }

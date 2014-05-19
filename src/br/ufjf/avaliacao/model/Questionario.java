@@ -35,8 +35,8 @@ public class Questionario implements Serializable {
 	/**
 	 * Campo com ID do questionário. Relaciona com a coluna
 	 * {@code idQuestionario} do banco e é gerado por autoincrement do MySQL
-	 * através das anotações {@code @GeneratedValue(generator = "increment")} e
-	 * {@code @GenericGenerator(name = "increment", strategy = "increment")}
+	 * através das anotações {@code @GeneratedValue(generator = "increment")}
+	 * e {@code @GenericGenerator(name = "increment", strategy = "increment")}
 	 * 
 	 */
 	@Id
@@ -52,8 +52,8 @@ public class Questionario implements Serializable {
 	private Integer tipoQuestionario;
 
 	/**
-	 * Campo com a situação do questionário(ativo ou inativo). Relaciona com a
-	 * coluna {@code ativo} do banco através da anotação
+	 * Campo com a situação do questionário(ativo ou inativo). Relaciona com
+	 * a coluna {@code ativo} do banco através da anotação
 	 * {@code @Column(name = "ativo", nullable = false)}.
 	 */
 	@Column(name = "ativo", nullable = false)
@@ -69,7 +69,6 @@ public class Questionario implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "questionario")
 	private List<Pergunta> perguntas = new ArrayList<Pergunta>();
 
-
 	/**
 	 * Relacionamento N para 1 entre questionario e curso. Mapeando
 	 * {@link Curso} na variável {@code curso} e retorno do tipo {@code LAZY}
@@ -83,9 +82,9 @@ public class Questionario implements Serializable {
 
 	/**
 	 * Relacionamento 1 para N entre questionario e prazoQuestionario. Mapeada
-	 * em {@link PrazoQuestionario} pela variável {@code questionario} e retorno
-	 * do tipo {@code LAZY} que indica que não será carregado automáticamente
-	 * este dado quando retornarmos a {@link Questionario} .
+	 * em {@link PrazoQuestionario} pela variável {@code questionario} e
+	 * retorno do tipo {@code LAZY} que indica que não será carregado
+	 * automáticamente este dado quando retornarmos a {@link Questionario} .
 	 * 
 	 */
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "questionario")
@@ -183,7 +182,8 @@ public class Questionario implements Serializable {
 	}
 
 	public List<PrazoQuestionario> getPrazos() {
-		List<PrazoQuestionario> prazos = new PrazoQuestionarioDAO().getPrazos(this);
+		List<PrazoQuestionario> prazos = new PrazoQuestionarioDAO()
+				.getPrazos(this);
 		return prazos;
 	}
 

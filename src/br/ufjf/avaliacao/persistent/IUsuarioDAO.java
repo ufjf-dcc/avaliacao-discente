@@ -7,9 +7,9 @@ import org.hibernate.HibernateException;
 import br.ufjf.avaliacao.model.Turma;
 import br.ufjf.avaliacao.model.Usuario;
 
-
 public interface IUsuarioDAO {
-	public Usuario retornaUsuarioEmail(String email) throws HibernateException, Exception;
+	public Usuario retornaUsuarioEmail(String email) throws HibernateException,
+			Exception;
 
 	public Usuario retornaUsuario(String email, String senha);
 

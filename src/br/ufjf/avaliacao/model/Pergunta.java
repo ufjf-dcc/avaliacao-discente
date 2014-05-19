@@ -57,8 +57,8 @@ public class Pergunta implements Serializable {
 	/**
 	 * Relacionamento N para 1 entre pergunta e questionário. Mapeando
 	 * {@link Questionario} na variável {@code questionario} e retorno do tipo
-	 * {@code LAZY} que indica que não será carregado automáticamente este dado
-	 * quando retornarmos a {@link Pergunta}.
+	 * {@code LAZY} que indica que não será carregado automáticamente este
+	 * dado quando retornarmos a {@link Pergunta}.
 	 * 
 	 */
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -83,9 +83,10 @@ public class Pergunta implements Serializable {
 	}
 
 	public List<RespostaEspecifica> getRespostasEspecificasBanco() {
-		return (new RespostaEspecificaDAO().getRespostasEspecificasPerguntas(this));
+		return (new RespostaEspecificaDAO()
+				.getRespostasEspecificasPerguntas(this));
 	}
-	
+
 	public List<RespostaEspecifica> getRespostasEspecificas() {
 		return this.respostasEspecificas;
 	}

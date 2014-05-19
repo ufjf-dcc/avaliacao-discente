@@ -177,7 +177,7 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 		return null;
 	}
 
-	public Usuario retornaCoordenadorCurso(Curso curso){
+	public Usuario retornaCoordenadorCurso(Curso curso) {
 		try {
 			Query query = getSession()
 					.createQuery(
@@ -196,8 +196,8 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 		}
 		return null;
 	}
-	
-	public List<Usuario> retornaProfessorCurso(Curso curso){
+
+	public List<Usuario> retornaProfessorCurso(Curso curso) {
 		try {
 			Query query = getSession()
 					.createQuery(
@@ -216,8 +216,8 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 		}
 		return null;
 	}
-	
-	public List<Usuario> retornaAlunoCurso(Curso curso){
+
+	public List<Usuario> retornaAlunoCurso(Curso curso) {
 		try {
 			Query query = getSession()
 					.createQuery(
@@ -236,23 +236,38 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 		}
 		return null;
 	}
-	
-	public List<Usuario> getUsuarioCursoTipoQuestionario(Curso curso,int tipoQuestionario){
+
+	public List<Usuario> getUsuarioCursoTipoQuestionario(Curso curso,
+			int tipoQuestionario) {
 		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
-		List<Questionario> questionarios = questionarioDAO.retornaQuestinariosCursoTipo(curso, tipoQuestionario);// pega os questionarios para coordenadores
+		List<Questionario> questionarios = questionarioDAO
+				.retornaQuestinariosCursoTipo(curso, tipoQuestionario);// pega
+																		// os
+																		// questionarios
+																		// para
+																		// coordenadores
 		List<PrazoQuestionario> prazos = new ArrayList<PrazoQuestionario>();
-		for(int i=0;i<questionarios.size();i++)
-			prazos.addAll(questionarios.get(i).getPrazos()); // pega os prazos desses quesntionarios
+		for (int i = 0; i < questionarios.size(); i++)
+			prazos.addAll(questionarios.get(i).getPrazos()); // pega os prazos
+																// desses
+																// quesntionarios
 		List<Avaliacao> avaliacoes = new ArrayList<Avaliacao>();
 		AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
-		for(int i=0;i<prazos.size();i++)
-			avaliacoes.addAll(avaliacaoDAO.getAvaliacoesPrazoQuestionario(prazos.get(i))); // olha a quais avaliaçoes esse quesntionario pertence
+		for (int i = 0; i < prazos.size(); i++)
+			avaliacoes.addAll(avaliacaoDAO
+					.getAvaliacoesPrazoQuestionario(prazos.get(i))); // olha a
+																		// quais
+																		// avaliaçoes
+																		// esse
+																		// quesntionario
+																		// pertence
 		List<Usuario> coordenadores = new ArrayList<Usuario>();
-		for(int i=0;i<avaliacoes.size();i++){
-			if(!coordenadores.contains(avaliacoes.get(i).getAvaliado()));
-				coordenadores.add(avaliacoes.get(i).getAvaliado());
+		for (int i = 0; i < avaliacoes.size(); i++) {
+			if (!coordenadores.contains(avaliacoes.get(i).getAvaliado()))
+				;
+			coordenadores.add(avaliacoes.get(i).getAvaliado());
 		}
 		return null;
 	}
-	
+
 }

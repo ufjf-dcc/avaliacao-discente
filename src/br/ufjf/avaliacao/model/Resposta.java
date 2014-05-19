@@ -22,11 +22,11 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "Resposta")
 public class Resposta implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
-	 * Campo com ID da resposta. Relaciona com a coluna
-	 * {@code idResposta} do banco e é gerado por autoincrement do MySQL
-	 * através das anotações {@code @GeneratedValue(generator = "increment")} e
+	 * Campo com ID da resposta. Relaciona com a coluna {@code idResposta} do
+	 * banco e é gerado por autoincrement do MySQL através das anotações
+	 * {@code @GeneratedValue(generator = "increment")} e
 	 * {@code @GenericGenerator(name = "increment", strategy = "increment")}
 	 * 
 	 */
@@ -35,43 +35,41 @@ public class Resposta implements Serializable {
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
 	private int idResposta;
-	
+
 	/**
 	 * Campo com a descrição da resposta. Relaciona com a coluna
 	 * {@code resposta} do banco através da anotação
-	 * {@code @Column(name = "resposta", length = 45, nullable = false)}
-	 * .
+	 * {@code @Column(name = "resposta", length = 45, nullable = false)} .
 	 */
 	@Column(name = "resposta", length = 250, nullable = false)
 	private String resposta;
-	
+
 	/**
 	 * Relacionamento N para 1 entre resposta e pergunta. Mapeando
 	 * {@link Pergunta} na variável {@code pergunta} e retorno do tipo
-	 * {@code LAZY} que indica que não será carregado automáticamente este dado
-	 * quando retornarmos o {@link Resposta}.
+	 * {@code LAZY} que indica que não será carregado automáticamente este
+	 * dado quando retornarmos o {@link Resposta}.
 	 * 
 	 */
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "idPergunta", nullable = false)
 	private Pergunta pergunta;
-	
+
 	/**
 	 * Relacionamento N para 1 entre resposta e avaliação. Mapeando
 	 * {@link Avaliacao} na variável {@code avaliacao} e retorno do tipo
-	 * {@code LAZY} que indica que não será carregado automáticamente este dado
-	 * quando retornarmos o {@link Resposta}.
+	 * {@code LAZY} que indica que não será carregado automáticamente este
+	 * dado quando retornarmos o {@link Resposta}.
 	 * 
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "idAvaliacao", nullable = false)
 	private Avaliacao avaliacao;
-	
+
 	/**
-	 * Campo com o semestre da turma. Relaciona com a coluna
-	 * {@code semestre} do banco através da anotação
-	 * {@code @Column(name = "semestre", length = 45, nullable = false)}
-	 * .
+	 * Campo com o semestre da turma. Relaciona com a coluna {@code semestre} do
+	 * banco através da anotação
+	 * {@code @Column(name = "semestre", length = 45, nullable = false)} .
 	 */
 	@Column(name = "semestre", length = 45, nullable = true)
 	private String semestre;

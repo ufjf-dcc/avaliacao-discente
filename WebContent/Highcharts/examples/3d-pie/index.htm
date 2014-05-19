@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Highcharts Example</title>
+
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js" charset="utf-8"></script>
+		<script type="text/javascript" charset="utf-8">
+$(function () {
+
+	//nome,quantidade de colunas, quantidade de linhas, tipo_coluna1,tipo_coluna2,...,item 11,item 12, item1..., item21, item 22, item ...
+	var url   = window.location.search.replace("?", "");
+	var itens = url.split("&");
+	var uri_dec = decodeURIComponent(itens[0]);
+	
+	var contador = 0;
+	
+	//NOME
+	var nome = decodeURIComponent(itens[contador]);
+	contador = contador + 1;
+	
+	//CRIANDO VETOR
+	var linhas = itens[contador];
+	contador = contador + 1;
+	
+	var colunas = itens[contador];
+	contador = contador + 1;
+	
+	
+	var tipo = new Array(colunas);
+	for(var f = 0; f < colunas; f++)
+	{
+		tipo[f] = itens[contador];
+		contador = contador + 1; 
+	}
+	
+	var info = new Array(linhas);
+	for (var i = 0; i < linhas; i++)
+	{
+		info[i] = new Array(tipo.length);
+	}
+		
+	//PREENCENDO VETOR
+
+	//file:///C:/Users/Lucas/Desktop/hc/examples/3d-pie/index.htm?nome_da_tabela&2&4&nome&1&nome2&2&nome3&3&nome4&4
+
+	for (var j = 0; j < linhas; j++) {
+		for(var i = 0; i < colunas; i++)
+		{
+			if(tipo[i] == 'string'){
+				info[j][i] = decodeURIComponent(itens[contador]);
+			}
+			if(tipo[i] == 'float'){
+				info[j][i] = parseFloat(itens[contador]);
+			}	
+			if(tipo[i] == 'int'){
+				info[j][i] =  parseInt(itens[contador]);
+			}				
+			contador = contador + 1;
+		}
+	
+	}	
+	
+	
+    $('#container').highcharts({
+        chart: {
+            type: 'pie',
+            options3d: {
+				enabled: true,
+                alpha: 45,
+                beta: 0
+            }
+        },
+        title: {
+            text: nome
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                depth: 35,
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.name}'
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: 'Porcentagem',
+            data: info
+        }]
+    });
+});
+		</script>
+	</head>
+	<body>
+
+<script src="../../js/highcharts.js" charset="utf-8"></script>
+<script src="../../js/highcharts-3d.js" charset="utf-8"></script>
+<script src="../../js/modules/exporting.js" charset="utf-8"></script>
+
+<div id="container" style="height: 350px"></div>
+	</body>
+</html>

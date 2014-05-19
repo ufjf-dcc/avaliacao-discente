@@ -29,6 +29,5 @@ public class RespostasEspecificasController extends GenericController {
 	public void setRespostas(List<RespostaEspecifica> respostas) {
 		this.respostas = respostas;
 	}
-	
-	
+
 }

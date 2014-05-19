@@ -58,7 +58,8 @@ public class LoginController {
 										Executions.sendRedirect("/home.zul");
 										break;
 									case 2:
-										Executions.sendRedirect("/homeAluno.zul");
+										Executions
+												.sendRedirect("/homeAluno.zul");
 										break;
 									case 3:
 										Executions.sendRedirect("/home.zul");

@@ -18,23 +18,23 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
-
 /**
- * DTO da Tabela {@code PrazoQuestionario} contém os atributos e relacionamentos da
- * mesma.
+ * DTO da Tabela {@code PrazoQuestionario} contém os atributos e
+ * relacionamentos da mesma.
  * 
  */
 
 @Entity
 @Table(name = "PrazoQuestionario")
-public class PrazoQuestionario implements Serializable{
-	
+public class PrazoQuestionario implements Serializable {
+
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * Campo com ID do prazo do questionario. Relaciona com a coluna
-	 * {@code idPrazoQuesionario} do banco e é gerado por autoincrement do MySQL
-	 * através das anotações {@code @GeneratedValue(generator = "increment")} e
+	 * {@code idPrazoQuesionario} do banco e é gerado por autoincrement do
+	 * MySQL através das anotações
+	 * {@code @GeneratedValue(generator = "increment")} e
 	 * {@code @GenericGenerator(name = "increment", strategy = "increment")}
 	 * 
 	 */
@@ -43,37 +43,33 @@ public class PrazoQuestionario implements Serializable{
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
 	private int idPrazoQuestionario;
-	
-	
+
 	/**
 	 * Campo com a data inicial do questionario. Relaciona com a coluna
 	 * {@code dataInicial} do banco através da anotação
-	 * {@code @Column(name = "dataInicial", nullable = false)}
-	 * .
+	 * {@code @Column(name = "dataInicial", nullable = false)} .
 	 */
 	@Column(name = "dataInicial", nullable = false)
 	private Date dataInicial;
 
-	
 	/**
 	 * Campo com a data final do questionario. Relaciona com a coluna
 	 * {@code dataFinal} do banco através da anotação
-	 * {@code @Column(name = "dataFinal", nullable = false)}
-	 * .
+	 * {@code @Column(name = "dataFinal", nullable = false)} .
 	 */
 	@Column(name = "dataFinal", nullable = false)
 	private Date dataFinal;
-	
+
 	/**
-	 * Relacionamento 1 para N entre prazoQuestionário e avaliação. Mapeada em
-	 * {@link Avaliação} pela variável {@code prazoquestionario} e retorno do tipo
-	 * {@code LAZY} que indica que não será carregado automáticamente este dado
-	 * quando retornarmos o {@link PrazoQuestionario} .
+	 * Relacionamento 1 para N entre prazoQuestionário e avaliação. Mapeada
+	 * em {@link Avaliação} pela variável {@code prazoquestionario} e retorno
+	 * do tipo {@code LAZY} que indica que não será carregado automáticamente
+	 * este dado quando retornarmos o {@link PrazoQuestionario} .
 	 * 
 	 */
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "prazoQuestionario" )
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "prazoQuestionario")
 	private List<Avaliacao> avaliacoes = new ArrayList<Avaliacao>();
-	
+
 	/**
 	 * Relacionamento N para 1 entre prazoQuestionario e questionario. Mapeando
 	 * {@link Questionario} na variável {@code questionario} e retorno do tipo
@@ -84,14 +80,13 @@ public class PrazoQuestionario implements Serializable{
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "idQuestionario", nullable = false)
 	private Questionario questionario;
-			
+
 	@Transient
 	private String dataFinalFormatada;
 
 	@Transient
 	private String dataInicialFormatada;
-	
-	
+
 	public int getIdPrazoQuestionario() {
 		return idPrazoQuestionario;
 	}
@@ -115,7 +110,6 @@ public class PrazoQuestionario implements Serializable{
 	public void setDataFinal(Date dataFinal) {
 		this.dataFinal = dataFinal;
 	}
-	
 
 	public Questionario getQuestionario() {
 		return questionario;
@@ -152,5 +146,5 @@ public class PrazoQuestionario implements Serializable{
 	public void setAvaliacoes(List<Avaliacao> avaliacoes) {
 		this.avaliacoes = avaliacoes;
 	}
-	
+
 }

@@ -27,74 +27,71 @@ import br.ufjf.avaliacao.persistent.impl.RespostaDAO;
  */
 @Entity
 @Table(name = "Avaliacao")
-public class Avaliacao implements Serializable{
- 
+public class Avaliacao implements Serializable {
+
 	private static final long serialVersionUID = 1L;
-	
-	
+
 	/**
-	 * Campo com ID da avaliação. Relaciona com a coluna {@code idAvaliacao} do banco e
-	 * é gerado por autoincrement do MySQL através das anotações
+	 * Campo com ID da avaliação. Relaciona com a coluna {@code idAvaliacao}
+	 * do banco e é gerado por autoincrement do MySQL através das anotações
 	 * {@code @GeneratedValue(generator = "increment")} e
 	 * {@code @GenericGenerator(name = "increment", strategy = "increment")}
 	 * 
 	 */
 	@Id
 	@Column(name = "idAvaliacao", unique = true, nullable = false)
-	@GeneratedValue (generator = "increment")
-	@GenericGenerator (name = "increment", strategy = "increment")
+	@GeneratedValue(generator = "increment")
+	@GenericGenerator(name = "increment", strategy = "increment")
 	private int idAvaliacao;
-	
-	
+
 	/**
 	 * Relacionamento N para 1 entre avaliação e usuário. Mapeando
 	 * {@link Usuario} na variável {@code avaliando} e retorno do tipo
-	 * {@code LAZY} que indica que não será carregado automáticamente este dado
-	 * quando retornarmos a {@link Avaliacao}.
+	 * {@code LAZY} que indica que não será carregado automáticamente este
+	 * dado quando retornarmos a {@link Avaliacao}.
 	 * 
 	 */
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "idAvaliando", nullable = false)
 	private Usuario avaliando;
-	
-	
+
 	/**
 	 * Relacionamento N para 1 entre avaliação e usuário. Mapeando
 	 * {@link Usuario} na variável {@code avaliado} e retorno do tipo
-	 * {@code LAZY} que indica que não será carregado automáticamente este dado
-	 * quando retornarmos a {@link Avaliacao}.
+	 * {@code LAZY} que indica que não será carregado automáticamente este
+	 * dado quando retornarmos a {@link Avaliacao}.
 	 * 
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "idAvaliado", nullable = true)
 	private Usuario avaliado;
-	
+
 	/**
 	 * Relacionamento 1 para N entre avaliacao e respostas. Mapeada em
 	 * {@link Resposta} pela variável {@code avaliacao} e retorno do tipo
-	 * {@code LAZY} que indica que não será carregado automáticamente este dado
-	 * quando retornarmos o {@link Avaliacao} .
+	 * {@code LAZY} que indica que não será carregado automáticamente este
+	 * dado quando retornarmos o {@link Avaliacao} .
 	 * 
 	 */
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "avaliacao" )
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "avaliacao")
 	private List<Resposta> respostas = new ArrayList<Resposta>();
-	
+
 	/**
-	 * Relacionamento N para 1 entre avaliação e turma. Mapeando
-	 * {@link Turma} na variável {@code turma} e retorno do tipo
-	 * {@code LAZY} que indica que não será carregado automáticamente este dado
-	 * quando retornarmos a {@link Avaliacao}.
+	 * Relacionamento N para 1 entre avaliação e turma. Mapeando {@link Turma}
+	 * na variável {@code turma} e retorno do tipo {@code LAZY} que indica que
+	 * não será carregado automáticamente este dado quando retornarmos a
+	 * {@link Avaliacao}.
 	 * 
-	 */	
+	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "idTurma", nullable = true)
 	private Turma turma;
-	
+
 	/**
 	 * Relacionamento N para 1 entre avaliação e questionário. Mapeando
 	 * {@link Questionario} na variável {@code questionario} e retorno do tipo
-	 * {@code LAZY} que indica que não será carregado automáticamente este dado
-	 * quando retornarmos a {@link Avaliacao}.
+	 * {@code LAZY} que indica que não será carregado automáticamente este
+	 * dado quando retornarmos a {@link Avaliacao}.
 	 * 
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)

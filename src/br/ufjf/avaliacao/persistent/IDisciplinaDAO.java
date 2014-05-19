@@ -11,6 +11,5 @@ public interface IDisciplinaDAO {
 	public Disciplina retornaDisciplinaCod(String codDisciplina);
 
 	public List<Disciplina> getTodasDisciplinas();
-	
 
 }

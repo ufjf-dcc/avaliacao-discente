@@ -97,12 +97,28 @@
 						<label value="Perguntas" />
 						<combobox width="98%"
 							model="@load(vm.perguntas)"
-							selectedItem="@bind(vm.perguntaSelecionada)">
+							selectedItem="@bind(vm.perguntaSelecionada)" onSelect="@command('carregarGraficos')">
 							<template name="model">
 								<comboitem
 									label="@load(each.tituloPergunta)" />
 							</template>
 						</combobox>
+					</row>
+					<row>
+						<label value="Graficos" />
+						<combobox width="98%"
+							model="@load(vm.graficos)"
+							selectedItem="@bind(vm.grafico)" onSelect="@command('carregarGraficos')">
+							<template name="model">
+								<comboitem
+									label="@load(each.nome)" />
+									
+							</template>
+						</combobox>
+					</row>
+					<row>
+						<button onClick="@command('')"
+						label="mudar foco..." />
 					</row>
 				</rows>
 			</grid>

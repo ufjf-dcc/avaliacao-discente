@@ -83,7 +83,8 @@ public class HomeAlunoController extends GenericController {
 
 	// essa função diz quem precisa ser avaliado agora
 	private void avaliarAux() {
-		// se ainda não fez a avaliação de coordenador e se tem uma avaliação de
+		// se ainda não fez a avaliação de coordenador e se tem uma
+		// avaliação de
 		// coordenador pra fazer
 		if (!avaliacaoDAO.jaAvaliouCoordenadorDataAtual(usuario)
 				&& questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario) != null) {
@@ -108,7 +109,8 @@ public class HomeAlunoController extends GenericController {
 			window.doModal();
 
 		} else {
-			// se ainda não fez a auto avaliação e se tem uma auto avaliação pra
+			// se ainda não fez a auto avaliação e se tem uma auto
+			// avaliação pra
 			// fazer
 			if (!avaliacaoDAO.jaSeAvaliorDataAtual(usuario)
 					&& questionarioDAO

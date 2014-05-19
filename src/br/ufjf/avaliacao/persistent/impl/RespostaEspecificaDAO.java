@@ -10,11 +10,13 @@ import br.ufjf.avaliacao.model.RespostaEspecifica;
 import br.ufjf.avaliacao.persistent.GenericoDAO;
 import br.ufjf.avaliacao.persistent.IRespostaEspecifica;
 
-public class RespostaEspecificaDAO extends GenericoDAO implements IRespostaEspecifica {
-	
+public class RespostaEspecificaDAO extends GenericoDAO implements
+		IRespostaEspecifica {
+
 	// retorna as respostas especificas de uma pergunta
 	@SuppressWarnings("unchecked")
-	public List<RespostaEspecifica> getRespostasEspecificasPerguntas(Pergunta pergunta) {
+	public List<RespostaEspecifica> getRespostasEspecificasPerguntas(
+			Pergunta pergunta) {
 		try {
 			Query query = getSession()
 					.createQuery(
@@ -32,6 +34,5 @@ public class RespostaEspecificaDAO extends GenericoDAO implements IRespostaEspec
 		}
 		return null;
 	}
-	
 
 }

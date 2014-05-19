@@ -64,7 +64,8 @@ public class TurmasController extends GenericController {
 	}
 
 	@Command("uploadTurmas")
-	// FORMATO DE ENTRADA: código da disciplina, nome da disciplina,turma,semestre, nome do prof,
+	// FORMATO DE ENTRADA: código da disciplina, nome da
+	// disciplina,turma,semestre, nome do prof,
 	// email,senha do professor;
 	public void uploadTurmas(@BindingParam("evt") UploadEvent evt)
 			throws IOException {
@@ -180,16 +181,15 @@ public class TurmasController extends GenericController {
 							}
 						});
 
-		}
-		catch(Exception e){
+		} catch (Exception e) {
 			Messagebox.show("Erro");
 
-			
 		}
 	}
 
 	@Command("uploadAlunos")
-	// FORMATO DE ENTRADA:nome, email, senha, tipo de usuario, id curso, código da disciplina,letra da turma, semestre
+	// FORMATO DE ENTRADA:nome, email, senha, tipo de usuario, id curso, código
+	// da disciplina,letra da turma, semestre
 	public void uploadAlunos(@BindingParam("evt") UploadEvent evt)
 			throws IOException {
 		Media media = evt.getMedia();
@@ -198,8 +198,8 @@ public class TurmasController extends GenericController {
 					.show("Este não é um arquivo válido! Apenas CSV são aceitos.");
 			return;
 		}
-		boolean operacao =  false;
-		
+		boolean operacao = false;
+
 		try {
 
 			// Leitura com o BufferReader que e mais rapido
@@ -233,19 +233,21 @@ public class TurmasController extends GenericController {
 
 				turma = turmaDAO.retornaTurma(conteudo[6], conteudo[7],
 						disciplinaDAO.retornaDisciplinaCod(conteudo[5]));
-				
-				if(usuarioDAO.retornaUsuario(conteudo[0])==null){
+
+				if (usuarioDAO.retornaUsuario(conteudo[0]) == null) {
 					List<Usuario> users = usuarioDAO.retornaAlunosTurma(turma);
 					users.addAll(usuarioDAO.retornaProfessoresTurma(turma));
 					users.add(nusuario);
 					turma.setUsuarios(users);
 					operacao = turmaDAO.editar(turma);
 				}
-				
+
 			}
 
 			if (operacao)
-				Messagebox.show("Usuarios cadastrados em suas turmas com sucesso", null,
+				Messagebox.show(
+						"Usuarios cadastrados em suas turmas com sucesso",
+						null,
 						new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
 							public void onEvent(ClickEvent e) {
 								if (e.getButton() == Messagebox.Button.OK)
@@ -254,8 +256,7 @@ public class TurmasController extends GenericController {
 									Executions.sendRedirect(null);
 							}
 						});
-			
-		
+
 		} catch (IllegalStateException e) {
 			String csv = new String(media.getByteData());
 			String linhas[] = csv.split("\\r?\\n");
@@ -284,8 +285,8 @@ public class TurmasController extends GenericController {
 
 				turma = turmaDAO.retornaTurma(conteudo[6], conteudo[7],
 						disciplinaDAO.retornaDisciplinaCod(conteudo[5]));
-				
-				if(usuarioDAO.retornaUsuario(conteudo[0])==null){
+
+				if (usuarioDAO.retornaUsuario(conteudo[0]) == null) {
 					List<Usuario> users = usuarioDAO.retornaAlunosTurma(turma);
 					users.addAll(usuarioDAO.retornaProfessoresTurma(turma));
 					users.add(nusuario);

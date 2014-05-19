@@ -10,14 +10,9 @@
 		<hlayout>
 			<label value="Semestre: " />
 			<label value="@load(vm.semestre)" />
-		</hlayout>
-		<hlayout>
-			<label value="Pergunta: " />
-			<label value="@load(vm.perguntaSelecionada.tituloPergunta)" />
 			<label value=" - Tipo: "/>
 			<label value="@load(vm.perguntaSelecionada.nomeTipoPergunta)"/>
 		</hlayout>
-		<flashchart width="450" height="250" type="pie"
-			model="@load(vm.model) " />
+		<iframe id="iframe" src="@load(vm.url)" width="450px" height="420px"/>
 	</vlayout>
 </window>

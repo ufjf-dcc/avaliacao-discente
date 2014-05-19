@@ -170,31 +170,33 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 			query.setParameter("curso", usuario.getCurso());
 			query.setParameter("ativo", true);
 			query.setParameter("tipoQuestionario", 1);
-			
+
 			Questionario q = (Questionario) query.uniqueResult();
-			
+
 			getSession().close();
-			
-			if(q!=null) {
+
+			if (q != null) {
 				return q;
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
-	
 
-
-	public Questionario retornaQuestionarioPergunta(Pergunta pergunta) { // retorna o questionario de uma pergunta
+	public Questionario retornaQuestionarioPergunta(Pergunta pergunta) { // retorna
+																			// o
+																			// questionario
+																			// de
+																			// uma
+																			// pergunta
 		try {
 			Query query = getSession()
 					.createQuery(
 							"SELECT q FROM Questionario AS q LEFT JOIN FETCH q.perguntas as ps WHERE ps =:pergunta");
 			query.setParameter("pergunta", pergunta);
-		
+
 			Questionario questionario = (Questionario) query.uniqueResult();
 			getSession().close();
 
@@ -205,63 +207,83 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 		}
 		return null;
 	}
-	
-	public List<Questionario> retornaQuestionariosSemestre(String semestre){//retornas os questionarios de um semestre
-		PerguntaDAO  perguntaDAO = new PerguntaDAO();
-		List<Pergunta> perguntas = perguntaDAO.retornaPerguntasSemestre(semestre);
+
+	public List<Questionario> retornaQuestionariosSemestre(String semestre) {// retornas
+																				// os
+																				// questionarios
+																				// de
+																				// um
+																				// semestre
+		PerguntaDAO perguntaDAO = new PerguntaDAO();
+		List<Pergunta> perguntas = perguntaDAO
+				.retornaPerguntasSemestre(semestre);
 		List<Questionario> questionarios = new ArrayList<Questionario>();
-		for(int i=0;i<perguntas.size();i++){
-			if(!questionarios.contains(retornaQuestionarioPergunta(perguntas.get(i))))
-				questionarios.add(retornaQuestionarioPergunta(perguntas.get(i)));
+		for (int i = 0; i < perguntas.size(); i++) {
+			if (!questionarios.contains(retornaQuestionarioPergunta(perguntas
+					.get(i))))
+				questionarios
+						.add(retornaQuestionarioPergunta(perguntas.get(i)));
 		}
 		return questionarios;
-		
+
 	}
-	
-	public List<Questionario> retornaQuestionariosSemestreProfessorCurso(String semestre, Curso curso){//retornas os questionarios de um semestre para professores
+
+	public List<Questionario> retornaQuestionariosSemestreProfessorCurso(
+			String semestre, Curso curso) {// retornas os questionarios de um
+											// semestre para professores
 		List<Questionario> questionarios = retornaQuestionariosSemestre(semestre);
-		for(int j=questionarios.size()-1;j>=0;j--)
-			if(questionarios.get(j).getTipoQuestionario()!=1 || questionarios.get(j).getCurso()!=curso){
+		for (int j = questionarios.size() - 1; j >= 0; j--)
+			if (questionarios.get(j).getTipoQuestionario() != 1
+					|| questionarios.get(j).getCurso() != curso) {
 				questionarios.remove(j);
 			}
 		return questionarios;
 	}
-	
-	public List<Questionario> retornaQuestionariosSemestreInfraestrutura(String semestre){//retornas os questionarios de um semestre para infraestrutura
+
+	public List<Questionario> retornaQuestionariosSemestreInfraestrutura(
+			String semestre) {// retornas os questionarios de um semestre para
+								// infraestrutura
 		List<Questionario> questionarios = retornaQuestionariosSemestre(semestre);
-		for(int j=questionarios.size()-1;j>=0;j--)
-			if(questionarios.get(j).getTipoQuestionario()!=3){
+		for (int j = questionarios.size() - 1; j >= 0; j--)
+			if (questionarios.get(j).getTipoQuestionario() != 3) {
 				questionarios.remove(j);
 			}
-	
-		if(questionarios.size()>0)
+
+		if (questionarios.size() > 0)
 			return questionarios;
 		return null;
 	}
-	
-	public List<Questionario> retornaQuestionariosSemestreCoordenador(String semestre, Curso curso){//retornas os questionarios de um semestre para coordenador
+
+	public List<Questionario> retornaQuestionariosSemestreCoordenador(
+			String semestre, Curso curso) {// retornas os questionarios de um
+											// semestre para coordenador
 		List<Questionario> questionarios = retornaQuestionariosSemestre(semestre);
-		for(int j=questionarios.size()-1;j>=0;j--)
-			if(questionarios.get(j).getTipoQuestionario()!=0 || questionarios.get(j).getCurso()!=curso){
+		for (int j = questionarios.size() - 1; j >= 0; j--)
+			if (questionarios.get(j).getTipoQuestionario() != 0
+					|| questionarios.get(j).getCurso() != curso) {
 				questionarios.remove(j);
 			}
-	
-		if(questionarios.size()>0)
+
+		if (questionarios.size() > 0)
 			return questionarios;
 		return null;
 	}
-	public List<Questionario> retornaQuestionariosSemestreAutoavaliacao(String semestre, Curso curso){//retornas os questionarios de um semestre para autoavaliação
+
+	public List<Questionario> retornaQuestionariosSemestreAutoavaliacao(
+			String semestre, Curso curso) {// retornas os questionarios de um
+											// semestre para autoavaliação
 		List<Questionario> questionarios = retornaQuestionariosSemestre(semestre);
-		for(int j=questionarios.size()-1;j>=0;j--)
-			if(questionarios.get(j).getTipoQuestionario()!=2 || questionarios.get(j).getCurso()!=curso){
+		for (int j = questionarios.size() - 1; j >= 0; j--)
+			if (questionarios.get(j).getTipoQuestionario() != 2
+					|| questionarios.get(j).getCurso() != curso) {
 				questionarios.remove(j);
 			}
-	
-		if(questionarios.size()>0)
+
+		if (questionarios.size() > 0)
 			return questionarios;
 		return null;
 	}
-	
+
 	public List<Questionario> retornaQuestionariosTipo(Curso curso, int tipo) {
 		try {
 			Query query = getSession()
@@ -269,15 +291,15 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 							"SELECT q FROM Questionario AS q WHERE q.curso = :curso AND q.tipoQuestionario = :tipoQuestionario");
 			query.setParameter("curso", curso);
 			query.setParameter("tipoQuestionario", tipo);
-			
+
 			List<Questionario> q = query.list();
-			
+
 			getSession().close();
-			
-			if(q!=null) {
+
+			if (q != null) {
 				return q;
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -285,4 +307,3 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 	}
 
 }
-

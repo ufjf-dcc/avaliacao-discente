@@ -120,8 +120,8 @@ public class HibernateUtil {
 	}
 
 	/**
-	 * Atualiza ou salva um objeto passado por parâmetro retornando {@code true}
-	 * caso tenha sucesso e {@code false} caso não atualize.
+	 * Atualiza ou salva um objeto passado por parâmetro retornando
+	 * {@code true} caso tenha sucesso e {@code false} caso não atualize.
 	 * 
 	 * @param obj
 	 * @return boolean

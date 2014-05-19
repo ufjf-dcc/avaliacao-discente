@@ -28,7 +28,7 @@ public class PrazoQuestionarioDAO extends GenericoDAO implements
 			List<PrazoQuestionario> prazos = query.list();
 
 			getSession().close();
-			
+
 			return prazos;
 
 		} catch (Exception e) {
@@ -102,7 +102,9 @@ public class PrazoQuestionarioDAO extends GenericoDAO implements
 		return false;
 	}
 
-	public PrazoQuestionario getPrazoQuestionarioDisponivel(Questionario questionario) {//dado um questionario, o prazodaquele questionario
+	public PrazoQuestionario getPrazoQuestionarioDisponivel(
+			Questionario questionario) {// dado um questionario, o prazodaquele
+										// questionario
 		try {
 			Query query = getSession()
 					.createQuery(
@@ -121,18 +123,17 @@ public class PrazoQuestionarioDAO extends GenericoDAO implements
 		}
 		return null;
 	}
-	
+
 	public PrazoQuestionario getPrazoAvaliacao(Avaliacao avaliacao) {
 		try {
 			Query query = getSession()
 					.createQuery(
 							"SELECT p FROM PrazoQuestionario AS p LEFT JOIN FETCH p.avaliacao AS a ");
 
-
 			List<PrazoQuestionario> prazos = query.list();
 
 			getSession().close();
-			
+
 			if (prazos != null) {
 				return prazos.get(0);
 			}
@@ -140,7 +141,6 @@ public class PrazoQuestionarioDAO extends GenericoDAO implements
 			e.printStackTrace();
 		}
 		return null;
-		}
-	
-	
+	}
+
 }

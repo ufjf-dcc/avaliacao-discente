@@ -37,7 +37,6 @@ public class TurmaDAO extends GenericoDAO implements ITurmaDAO {
 		return null;
 	}
 
-	
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Turma> getTodasTurmas() {
@@ -96,23 +95,23 @@ public class TurmaDAO extends GenericoDAO implements ITurmaDAO {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public List<Turma> getAllTurmas(String semestre) {
 		try {
-			Query query = getSession().createQuery("SELECT t FROM Turma AS t WHERE t.semestre =:semestre");
+			Query query = getSession().createQuery(
+					"SELECT t FROM Turma AS t WHERE t.semestre =:semestre");
 			query.setParameter("semestre", semestre);
 
 			@SuppressWarnings("unchecked")
 			List<Turma> turmas = query.list();
-			
+
 			return turmas;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
 
 	public List<String> getSemestresUsuario(Usuario usuario) {
 		try {
@@ -125,10 +124,10 @@ public class TurmaDAO extends GenericoDAO implements ITurmaDAO {
 
 			getSession().close();
 
-			if(turmas != null){
+			if (turmas != null) {
 				List<String> semestres = new ArrayList<String>();
-				for(int i=0;i<turmas.size();i++)
-					if(!semestres.contains(turmas.get(i).getSemestre()))
+				for (int i = 0; i < turmas.size(); i++)
+					if (!semestres.contains(turmas.get(i).getSemestre()))
 						semestres.add(turmas.get(i).getSemestre());
 				return semestres;
 			}
@@ -137,7 +136,7 @@ public class TurmaDAO extends GenericoDAO implements ITurmaDAO {
 		}
 		return null;
 	}
-	
+
 	public List<Turma> getTurmasUsuarioSemestre(Usuario usuario, String semestre) {
 		try {
 			Query query = getSession()
@@ -163,26 +162,27 @@ public class TurmaDAO extends GenericoDAO implements ITurmaDAO {
 		List<Usuario> professores = usuarioDAO.retornaProfessorCurso(curso);
 		List<Turma> turmas = new ArrayList<Turma>();
 		List<Integer> aux = new ArrayList<Integer>();
-		for(int i=0;i<professores.size(); i++){
-			List<Turma> turmasAux = getTurmasUsuarioSemestre(professores.get(i), semestre);
-			for(int j=0;j<turmasAux.size();j++)
-				if(!aux.contains(turmasAux.get(j).getIdTurma())){
+		for (int i = 0; i < professores.size(); i++) {
+			List<Turma> turmasAux = getTurmasUsuarioSemestre(
+					professores.get(i), semestre);
+			for (int j = 0; j < turmasAux.size(); j++)
+				if (!aux.contains(turmasAux.get(j).getIdTurma())) {
 					aux.add(turmasAux.get(j).getIdTurma());
 					turmas.add(turmasAux.get(j));
 				}
 		}
 		return turmas;
 	}
-	
+
 	public List<Turma> getAllTurmasCurso(String semestre, Curso curso) {
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
 		List<Usuario> professores = usuarioDAO.retornaProfessorCurso(curso);
 		List<Turma> turmas = new ArrayList<Turma>();
 		List<Integer> aux = new ArrayList<Integer>();
-		for(int i=0;i<professores.size(); i++){
+		for (int i = 0; i < professores.size(); i++) {
 			List<Turma> turmasAux = getTurmasUsuario(professores.get(i));
-			for(int j=0;j<turmasAux.size();j++){
-				if(!aux.contains(turmasAux.get(j).getIdTurma())){
+			for (int j = 0; j < turmasAux.size(); j++) {
+				if (!aux.contains(turmasAux.get(j).getIdTurma())) {
 					aux.add(turmasAux.get(j).getIdTurma());
 					turmas.add(turmasAux.get(j));
 				}
@@ -190,5 +190,5 @@ public class TurmaDAO extends GenericoDAO implements ITurmaDAO {
 		}
 		return turmas;
 	}
-	
+
 }

@@ -15,15 +15,13 @@ import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
-* DTO da Tabela {@code Curso} contém os atributos e relacionamentos da
-* mesma.
-* 
-*/
+ * DTO da Tabela {@code Curso} contém os atributos e relacionamentos da mesma.
+ * 
+ */
 @Entity
 @Table(name = "Curso")
-public class Curso implements Serializable{
-	
-		
+public class Curso implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -38,8 +36,7 @@ public class Curso implements Serializable{
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
 	private int idCurso;
-	
-	
+
 	/**
 	 * Campo com o nome do curso. Relaciona com a coluna {@code nomeCurso} do
 	 * banco através da anotação
@@ -47,13 +44,12 @@ public class Curso implements Serializable{
 	 */
 	@Column(name = "nomeCurso", length = 45, nullable = false)
 	private String nomeCurso;
-	
-	
+
 	/**
 	 * Relacionamento 1 para N entre curso e questionário. Mapeada em
 	 * {@link Questionario} pela variável {@code curso} e retorno do tipo
-	 * {@code EAGER} que indica que não será carregado automáticamente este dado
-	 * quando retornarmos a {@link Curso} .
+	 * {@code EAGER} que indica que não será carregado automáticamente este
+	 * dado quando retornarmos a {@link Curso} .
 	 * 
 	 */
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "curso")
@@ -62,40 +58,33 @@ public class Curso implements Serializable{
 	public Curso(String nomeCurso) {
 		this.nomeCurso = nomeCurso;
 	}
-	
+
 	public Curso() {
-		
+
 	}
 
 	public int getIdCurso() {
 		return idCurso;
 	}
 
-
 	public void setIdCurso(int idCurso) {
 		this.idCurso = idCurso;
 	}
-
 
 	public String getNomeCurso() {
 		return nomeCurso;
 	}
 
-
 	public void setNomeCurso(String nomeCurso) {
 		this.nomeCurso = nomeCurso;
 	}
-
 
 	public List<Questionario> getQuestionarios() {
 		return questionarios;
 	}
 
-
 	public void setQuestionarios(List<Questionario> questionarios) {
 		this.questionarios = questionarios;
 	}
 
-	
-	
 }
