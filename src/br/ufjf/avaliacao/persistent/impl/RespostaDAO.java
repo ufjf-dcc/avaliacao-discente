@@ -144,7 +144,7 @@ public class RespostaDAO extends GenericoDAO implements IRespostaDAO{
 	
 	public List<Resposta> getRespostasPerguntaAvaliado(Pergunta p, Usuario avaliado) {
 		try {
-			Query query = getSession().createQuery("SELECT rs FROM Resposta AS rs LEFT JOIN FETCH rs.avaliacao AS ava WHERE AND ava.avaliado =:avaliado AND rs.pergunta =:pergunta");
+			Query query = getSession().createQuery("SELECT rs FROM Resposta AS rs LEFT JOIN FETCH rs.avaliacao AS ava WHERE ava.avaliado =:avaliado AND rs.pergunta =:pergunta");
 			query.setParameter("pergunta", p);
 			query.setParameter("avaliado", avaliado);
 			

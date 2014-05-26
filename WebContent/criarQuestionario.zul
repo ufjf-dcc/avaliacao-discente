@@ -97,7 +97,7 @@
 							<separator />
 							<button disabled="true" id="add"
 								label="Adicionar" onClick="@command('addRespostaEspecifica')" />
-							<button disabled="true" label="Finalizar"
+							<button disabled="false" label="Finalizar"
 								onClick="@command('addPergunta',button=self)" />
 						</div>
 					</row>

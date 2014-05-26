@@ -7,6 +7,7 @@
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 		<script type="text/javascript">
 $(function () {
+
 //nome,quantidade semestres, semestre 1,semestre 2,... , quantidade de respostas, quantidade de valores das respostas, resposta 1, valor 1, valor 2,...,resposta 2, valor 2, valor 2...
 	var url   = window.location.search.replace("?", "");
 	var itens = url.split("&");
@@ -58,50 +59,31 @@ $(function () {
 	{
 		resultados[j] = {name: respostas[j], data: info[j]};
 	}
-
         $('#container').highcharts({
             chart: {
-                type: 'areaspline'
+                type: 'bar'
             },
             title: {
                 text: nome
             },
-            legend: {
-                layout: 'vertical',
-                align: 'left',
-                verticalAlign: 'top',
-                x: 150,
-                y: 100,
-                floating: true,
-                borderWidth: 1,
-                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
-            },
             xAxis: {
-                categories: objetos,
-                plotBands: [{ // visualize the weekend
-                    from: 4.5,
-                    to: 6.5,
-                    color: 'rgba(68, 170, 213, .2)'
-                }]
+                categories: objetos
             },
             yAxis: {
+                min: 0,
                 title: {
-                    text: 'Fruit units'
+                    text: 'Valores'
                 }
             },
-            tooltip: {
-                shared: true,
-                valueSuffix: ' units'
-            },
-            credits: {
-                enabled: false
+            legend: {
+                reversed: true
             },
             plotOptions: {
-                areaspline: {
-                    fillOpacity: 0.5
+                series: {
+                    stacking: 'normal'
                 }
             },
-            series: resultados
+                series: resultados
         });
     });
     
@@ -112,7 +94,7 @@ $(function () {
 <script src="../../js/highcharts.js"></script>
 <script src="../../js/modules/exporting.js"></script>
 
-<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+<div id="container" style="min-width: 310px; max-width: 800px; height: 400px; margin: 0 auto"></div>
 
 	</body>
 </html>

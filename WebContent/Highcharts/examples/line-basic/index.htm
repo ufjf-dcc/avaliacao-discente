@@ -7,6 +7,7 @@
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 		<script type="text/javascript">
 $(function () {
+
 //nome,quantidade semestres, semestre 1,semestre 2,... , quantidade de respostas, quantidade de valores das respostas, resposta 1, valor 1, valor 2,...,resposta 2, valor 2, valor 2...
 	var url   = window.location.search.replace("?", "");
 	var itens = url.split("&");
@@ -58,48 +59,36 @@ $(function () {
 	{
 		resultados[j] = {name: respostas[j], data: info[j]};
 	}
-
         $('#container').highcharts({
-            chart: {
-                type: 'areaspline'
-            },
             title: {
-                text: nome
+                text: nome,
+                x: -20 //center
             },
-            legend: {
-                layout: 'vertical',
-                align: 'left',
-                verticalAlign: 'top',
-                x: 150,
-                y: 100,
-                floating: true,
-                borderWidth: 1,
-                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+            subtitle: {
+                text: ' ',
+                x: -20
             },
             xAxis: {
-                categories: objetos,
-                plotBands: [{ // visualize the weekend
-                    from: 4.5,
-                    to: 6.5,
-                    color: 'rgba(68, 170, 213, .2)'
-                }]
+                categories: objetos
             },
             yAxis: {
                 title: {
-                    text: 'Fruit units'
-                }
+                    text: 'Quantidade'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
             },
             tooltip: {
-                shared: true,
-                valueSuffix: ' units'
+                valueSuffix: ' unidade(s)'
             },
-            credits: {
-                enabled: false
-            },
-            plotOptions: {
-                areaspline: {
-                    fillOpacity: 0.5
-                }
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
             },
             series: resultados
         });

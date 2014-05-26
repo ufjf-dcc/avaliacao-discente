@@ -8,13 +8,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.plaf.basic.BasicBorders.RadioButtonBorder;
+
+import org.hibernate.mapping.Column;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zul.CategoryModel;
 import org.zkoss.zul.Combobox;
+import org.zkoss.zul.Grid;
 import org.zkoss.zul.PieModel;
+import org.zkoss.zul.Radio;
+import org.zkoss.zul.Radiogroup;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.SimpleCategoryModel;
 import org.zkoss.zul.SimplePieModel;
@@ -36,6 +42,7 @@ import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.RespostaDAO;
 import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
+import bsh.org.objectweb.asm.Label;
 
 public class ResultadosController extends GenericController implements
 		Serializable {
@@ -52,6 +59,7 @@ public class ResultadosController extends GenericController implements
 	private List<Avaliacao> avaCoorSelect = null;
 	private List<Usuario> coordenadores = new ArrayList<Usuario>();
 	private Usuario coordenador = new Usuario();
+	private List<Radio> focos = new ArrayList<Radio>();
 	private List<Grafico> graficos = new ArrayList<Grafico>();
 	private Grafico grafico = null;
 	private PrazoQuestionario prazo = new PrazoQuestionario();
@@ -62,12 +70,16 @@ public class ResultadosController extends GenericController implements
 	private List<Questionario> questionarios = new ArrayList<Questionario>();
 	private Questionario questionario = null;
 	private List<Questionario> questCoor = null;
+	private org.zkoss.zul.Label label1;
+	private Radio radioProfessor,radioCoordenador,radioAluno,radioTurma,radioSemestre1,radioSemestre2,radioQuestionario;
 	private RespostaDAO respostaDAO = new RespostaDAO();
 	private List<String> semestres = respostaDAO.getAllSemestres();
 	private String semestre = null;
 	private List<Turma> turmas = new ArrayList<Turma>();
 	private Turma turma = null;
 
+	
+	
 	@Command
 	@NotifyChange("turmas")
 	// carregando e filtrando as tumas a serem escolhidas
@@ -86,6 +98,7 @@ public class ResultadosController extends GenericController implements
 				todas.setLetraTurma(" ");
 				todas.setSemestre(" ");
 				turmas.add(todas);
+				turma=todas;
 				if (professor.getNome() != "Todos" && semestre != "Todos") // professor
 																			// e
 																			// semestre
@@ -118,11 +131,29 @@ public class ResultadosController extends GenericController implements
 		questionarios = new ArrayList<Questionario>();
 		questionario = null;
 		perguntas = new ArrayList<Pergunta>();
+		if(semestre=="Todos"){
+			radioSemestre1.setDisabled(false);
+			focos.add(radioSemestre1);
+			if(focos.size()==1)
+				focos.get(0).setChecked(true);
+		}
+		else{
+			radioSemestre1.setDisabled(true);
+			radioSemestre1.setChecked(false);
+			focos.remove(radioSemestre1);
+			if(focos.size()>0)
+				focos.get(0).setChecked(true);
+		}
+		
 	}
 
 	@Command
 	@NotifyChange("professores")
 	public void carregarProfessores() {
+		semestres = new ArrayList<String>();
+		questionarios = new ArrayList<Questionario>();
+		perguntas = new ArrayList<Pergunta>();
+		
 	}
 
 	@NotifyChange("coordenadores")
@@ -167,6 +198,21 @@ public class ResultadosController extends GenericController implements
 					}
 				}
 			}
+			//radiobutton controler
+			if(coordenador.getNome()=="Todos"){
+				radioCoordenador.setDisabled(false);
+				focos.add(radioCoordenador);
+				if(focos.size()==1)
+					focos.get(0).setChecked(true);
+			}
+			else{
+				radioCoordenador.setDisabled(true);
+				radioCoordenador.setChecked(false);
+				focos.remove(radioCoordenador);
+				if(focos.size()>0)
+					focos.get(0).setChecked(true);
+			}
+			
 		}
 		if (Integer.parseInt(opcao) == 1) {
 			if (professor != null) {
@@ -175,6 +221,20 @@ public class ResultadosController extends GenericController implements
 
 				else
 					semestres.addAll(turmaDAO.getAllSemestres()); // MELHORAR
+			}
+			//radiobutton controler
+			if(professor.getNome()=="Todos"){
+				radioProfessor.setDisabled(false);
+				focos.add(radioProfessor);
+				if(focos.size()==1)
+					focos.get(0).setChecked(true);
+			}
+			else{
+				radioProfessor.setDisabled(true);
+				radioProfessor.setChecked(false);
+				focos.remove(radioProfessor);
+				if(focos.size()>0)
+					focos.get(0).setChecked(true);
 			}
 
 		}
@@ -192,7 +252,25 @@ public class ResultadosController extends GenericController implements
 			} else {
 				semestres.addAll(turmaDAO.getSemestresUsuario(aluno));
 			}
+	
+			//radiobutton controler
+			if(aluno.getNome()=="Todos"){
+				radioAluno.setDisabled(false);
+				focos.add(radioAluno);
+				if(focos.size()==1)
+					focos.get(0).setChecked(true);
+			}
+			else{
+				radioAluno.setDisabled(true);
+				radioAluno.setChecked(false);
+				focos.remove(radioAluno);
+				if(focos.size()>0)
+					focos.get(0).setChecked(true);
+			}
 		}
+		
+	
+		
 	}
 
 	@Command
@@ -204,16 +282,35 @@ public class ResultadosController extends GenericController implements
 		todos.setTituloQuestionario("Todos");
 		questionarios.add(todos);
 		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
+		questionario=todos;
 
 		if (Integer.parseInt(opcao) == 0)// coordenador
 			for (int i = 0; i < avaCoor.size(); i++)
+				if(!questionarios.contains(avaCoor.get(i).getPrazoQuestionario()
+						.getQuestionario()))
 				questionarios.add(avaCoor.get(i).getPrazoQuestionario()
 						.getQuestionario());
 
-		if (Integer.parseInt(opcao) == 1)// professor
+		if (Integer.parseInt(opcao) == 1){// professor
 			questionarios.addAll(questionarioDAO.retornaQuestionariosTipo(
 					usuario.getCurso(), 1));// retorna todos os questionarios de
 											// professor
+			//radiobutton controler
+			if(turma.getDisciplina().getNomeDisciplina()=="Todas"){
+				radioTurma.setDisabled(false);
+				focos.add(radioTurma);
+				if(focos.size()==1)
+					focos.get(0).setChecked(true);
+			}
+			else{
+				radioTurma.setDisabled(true);
+				radioTurma.setChecked(false);
+				focos.remove(radioTurma);
+				if(focos.size()>0)
+					focos.get(0).setChecked(true);
+			}
+			
+		}
 
 		if (Integer.parseInt(opcao) == 2)// autoavalia��o
 			questionarios.addAll(questionarioDAO.retornaQuestionariosTipo(
@@ -224,7 +321,22 @@ public class ResultadosController extends GenericController implements
 			questionarios.addAll(questionarioDAO.retornaQuestionariosTipo(
 					usuario.getCurso(), 3));// retorna todos os questionarios de
 											// infraestrutura
-
+		//radiobutton controler
+		if(semestre=="Todos"){
+			radioSemestre1.setDisabled(false);
+			focos.add(radioSemestre1);
+			if(focos.size()==1)
+				focos.get(0).setChecked(true);
+		}
+		else{
+			radioSemestre1.setDisabled(true);
+			radioSemestre1.setChecked(false);
+			focos.remove(radioSemestre1);
+			if(focos.size()>0)
+				focos.get(0).setChecked(true);
+		}
+		
+		
 	}
 
 	@Command
@@ -232,16 +344,18 @@ public class ResultadosController extends GenericController implements
 	// carregando e filtrando os semstres a serem escolhidos
 	public void carregarPerguntas() {
 		perguntas = new ArrayList<Pergunta>();
-
-		if (questionario.getTituloQuestionario() != "Todos")// questionario
-															// especifico
-			perguntas.addAll(questionario.getPerguntas());
-		else {// todos os questionarios
-			QuestionarioDAO questionarioDAO = new QuestionarioDAO();
-			questionarios = questionarioDAO.retornaQuestionariosTipo(
-					usuario.getCurso(), Integer.parseInt(opcao));
-			for (int i = 0; i < questionarios.size(); i++)
-				perguntas.addAll(questionarios.get(i).getPerguntas());
+		if(perguntas.size()>0)
+			perguntaSelecionada=perguntas.get(0);
+		if(questionario!= null){
+			if (questionario.getTituloQuestionario() != "Todos")// questionario
+																// especifico
+				perguntas.addAll(questionario.getPerguntas());
+			else {// todos os questionarios
+				QuestionarioDAO questionarioDAO = new QuestionarioDAO();
+				questionarios = questionarioDAO.retornaQuestionariosTipo(usuario.getCurso(), Integer.parseInt(opcao));
+				for (int i = 0; i < questionarios.size(); i++)
+					perguntas.addAll(questionarios.get(i).getPerguntas());
+			}
 		}
 		
 	}
@@ -252,6 +366,7 @@ public class ResultadosController extends GenericController implements
 	public void carregarGraficos() {
 		graficos = new ArrayList<Grafico>();
 
+		
 		Grafico aux = new Grafico("3d-pie","pie","/Highcharts/examples/3d-pie/index.htm");
 		graficos.add(aux);
 		aux = new Grafico("3d-pie-donut","pie","/Highcharts/examples/3d-pie-donut/index.htm");
@@ -260,10 +375,30 @@ public class ResultadosController extends GenericController implements
 		graficos.add(aux);
 		aux = new Grafico("pie-semi-circle","pie","/Highcharts/examples/pie-semi-circle/index.htm");
 		graficos.add(aux);
-		aux = new Grafico("areaspline","area","/Highcharts/examples/areaspline/index.htm");
-		graficos.add(aux);
-		aux = new Grafico("area-stacked-percent","area","/Highcharts/examples/area-stacked-percent/index.htm");
-		graficos.add(aux);
+		
+//		for(int i=0;i<focos.size();i++){
+//			if(focos.get(i).isChecked()){
+				aux = new Grafico("areaspline","area","/Highcharts/examples/areaspline/index.htm");
+				graficos.add(aux);
+				aux = new Grafico("area-stacked-percent","area","/Highcharts/examples/area-stacked-percent/index.htm");
+				graficos.add(aux);
+				aux = new Grafico("bar-basic","barra","/Highcharts/examples/bar-basic/index.htm");
+				graficos.add(aux);
+				aux = new Grafico("bar-stacked","barra","/Highcharts/examples/bar-stacked/index.htm");
+				graficos.add(aux);
+				aux = new Grafico("column-basic","coluna","/Highcharts/examples/column-basic/index.htm");
+				graficos.add(aux);
+				aux = new Grafico("column-stacked","coluna","/Highcharts/examples/column-stacked/index.htm");
+				graficos.add(aux);
+				aux = new Grafico("column-stacked-percent","coluna","/Highcharts/examples/column-stacked-percent/index.htm");
+				graficos.add(aux);
+				aux = new Grafico("line-basic","linha","/Highcharts/examples/line-basic/index.htm");
+				graficos.add(aux);
+				aux = new Grafico("line-labels","linha","/Highcharts/examples/line-labels/index.htm");
+				graficos.add(aux);
+//				break;
+//			}
+//		}
 	}
 
 	@Command
@@ -303,6 +438,7 @@ public class ResultadosController extends GenericController implements
 		w.setMinimizable(false);
 		w.doOverlapped();
 	}
+
 
 	@Command
 	@NotifyChange("perguntas")
@@ -377,129 +513,172 @@ public class ResultadosController extends GenericController implements
 			}
 			grafico.setParametros(url);
 		}
-		if(grafico.getTipo()=="area"){
+		if(grafico.getTipo()=="area" || grafico.getTipo()=="linha" || grafico.getTipo()=="barra" || grafico.getTipo()=="coluna"){
 			
+			
+			int quantItens=0;
+			//tratamento de erro para existencia de foco--------------
+			boolean existeFoco=false;
+			if(!(radioSemestre1.isChecked() || radioCoordenador.isChecked())
+					&& (semestre=="Todos" || professor.getNome()=="Todos"))
+				existeFoco=true;
+			if(existeFoco){
+				if(semestre=="Todos")
+					radioSemestre1.setChecked(true);
+				else if(coordenador.getNome()=="Todos")
+					radioCoordenador.setChecked(true);
+			}
+				
+				
+			//--------------------------------------------------------
+		
+			if(radioSemestre1.isChecked()){
+				semestres.remove("Todos");
+				quantItens = semestres.size();
+			}
+			else if(radioCoordenador.isChecked()){
+				for(int i=0;i<coordenadores.size();i++)
+					if(coordenadores.get(i).getNome()=="Todos")
+						coordenadores.remove(i);
+				
+				quantItens = coordenadores.size();
+			}
+			else{
+				quantItens=1;
+			}
+
 			//nome,quantidade semestres, semestre 1,semestre 2,... , quantidade de respostas, quantidade de valores das respostas, resposta 1, valor 1, valor 2,...,resposta 2, valor 2, valor 2...
 			String url;// tratar erro pra &
-			url = "?" + perguntaSelecionada.getTituloPergunta() + "&" + semestres.size();
+			url = "?" + perguntaSelecionada.getTituloPergunta() + "&" + quantItens;
 			
-			for(int i=0;i<semestres.size();i++){ //adicionando semestres
-				url = url + "&" + semestres.get(i);
+			for(int i=0;i<quantItens;i++){ //adicionando os objetos
+				if(radioSemestre1.isChecked())
+					url = url + "&" + semestres.get(i);
+				else if(radioCoordenador.isChecked())
+					url = url + "&" + coordenadores.get(i).getNome();
+				else
+					url = url + "&" + semestre;
+			
 			}
-			
+								
 			//setando os valores do vetor auxiliar
 			List<RespostaEspecifica> resEsp = perguntaSelecionada.getRespostasEspecificasBanco();
-			String[] valores = new String[(semestres.size()+1)*resEsp.size()];
+			
+			url = url + "&" + resEsp.size() + "&" + quantItens;
+			
+			String[] valores = new String[(quantItens+1)*resEsp.size()];
 			String[] equivalente = new String[resEsp.size()];
-			for(int i=0;i<semestres.size();){
-				int contRespEsp = 0;
-				equivalente[contRespEsp] = resEsp.get(contRespEsp).getRespostaEspecifica();
-				valores[i] = resEsp.get(contRespEsp).getRespostaEspecifica();
-				i++;
-				for(int j=0;j<resEsp.size();j++){
-					valores[i] = "0"; 
-					i++;
-				}
-				contRespEsp++;
-			}
+			
+			for(int i=0;i<resEsp.size();i++)
+				equivalente[i] = resEsp.get(i).getRespostaEspecifica();
 			
 			int[] contador = new int[resEsp.size()];
 			
-			for(int i=0;i<semestres.size();i++){
-				
-				if (coordenador.getNome() != "Todos") 
-						respostas = respostaDAO.getRespostasPerguntaSemestreAvaliado(perguntaSelecionada, semestres.get(i), coordenador);
-				else 
+			for(int i=0;i<resEsp.size();i++)
+				valores[(i*(quantItens+1))] = equivalente[i];
+			
+			
+			//semestres - cada um-------------------------------------------
+			for(int i=0;i<quantItens;i++){
+				if(radioSemestre1.isChecked()){
+					if (coordenador.getNome() != "Todos") {
+							respostas = respostaDAO.getRespostasPerguntaSemestreAvaliado(perguntaSelecionada, semestres.get(i), coordenador);
+					} else {
 						respostas = respostaDAO.getRespostasPerguntaSemestre(perguntaSelecionada, semestres.get(i));
+					}
+				}
+				else if(radioCoordenador.isChecked()){
+					if (semestre != "Todos") {
+							respostas = respostaDAO.getRespostasPerguntaSemestreAvaliado(perguntaSelecionada, semestre, coordenadores.get(i));
+						
+					} else {
+							respostas = respostaDAO.getRespostasPerguntaAvaliado(perguntaSelecionada, coordenadores.get(i));
+					}
+				}
+				else {
+					if (coordenador.getNome() != "Todos") {
+						if (semestre != "Todos") {
+							respostas = respostaDAO.getRespostasPerguntaSemestreAvaliado(
+									perguntaSelecionada, semestre, coordenador);
+						} else {
+							respostas = respostaDAO.getRespostasPerguntaAvaliado(
+									perguntaSelecionada, coordenador);
+						}
+					} else {
+						if (semestre != "Todos") {
+							respostas = respostaDAO.getRespostasPerguntaSemestre(
+									perguntaSelecionada, semestre);
+						} else {
+							respostas = respostaDAO
+									.getRespostasPergunta(perguntaSelecionada);
+						}
+
+					}											
+				}
 				
+				//--------------------------------------------------------------
+								
 				//setando vetor auxiliar contador
 				
 				for(int j=0;j<resEsp.size();j++)
 					contador[j] = 0;
-				
+									
+
 				for(int j=0;j<respostas.size();j++){
+					String resp = (String) respostas.get(j).getResposta();
 					for(int k=0;k<resEsp.size();k++){
-						if(equivalente[k] == respostas.get(j).getResposta()){
+						if(equivalente[k].equals(resp))
 							contador[k]++;
-						}
 					}
 				}
+													
 				//preenchendo o vetor auxiliar valores
-				for(int j=0;j<(semestres.size()+1);j++){
-					valores[j+(i*(semestres.size()+1))] = equivalente[i];
-					System.out.println("["+j+(i*(semestres.size()+1))+"] = "+equivalente[i]);
-					
-//					for(int k=0;k<resEsp.size();k++){
-//						valores[j+(i*(semestres.size()+1))] = Integer.toString(contador[k]); 
-//						System.out.println("["+j+(i*(semestres.size()+1))+"] = "+ Integer.toString(contador[k]));
-//						k++;
-//						
-//					}
-				}
+				for(int j=0;j<resEsp.size();j++)
+					valores[j*(quantItens+1) + 1 + i] =  Integer.toString(contador[j]);
 			}
-			
-			
-			
-			for(int i=0;i<(semestres.size()*(resEsp.size()+1));i++){
+
+			for(int i=0;i<(quantItens+1)*resEsp.size();i++)
 				url = url + "&" + valores[i];
-			}
+			
 			grafico.setParametros(url);
-			
-			for(int i=0;i<(semestres.size()*(resEsp.size()+1));i++)
-				System.out.println(valores[i]);
-			
-			for(int i=0;i<(resEsp.size());i++){
-				System.out.println("-["+i+"]"+equivalente[i]);
-				System.out.println("-["+i+"]"+contador[i]);
-			}
 			
 		}
 		
 		session.setAttribute("grafico", grafico);
-		System.out.println(grafico.getURL());
-	}
+		System.out.println(grafico.getURL());	
+		}
 
 	public void getGraficoProfessor() {
 		List<Resposta> respostas;
 
 		RespostaDAO respostaDAO = new RespostaDAO();
+		
 		if (professor.getNome() != "Todos") {
 			if (semestre != "Todos") {
-				if (turma.getLetraTurma() != " ") {
-					respostas = respostaDAO
-							.getRespostasPerguntaTurmaSemestreAvaliado(
-									perguntaSelecionada, semestre, turma,
-									professor);
+				if (turma.getDisciplina().getNomeDisciplina() != "Todas") {
+					respostas = respostaDAO.getRespostasPerguntaTurmaSemestreAvaliado(perguntaSelecionada, semestre, turma,professor);
 				} else {
-					respostas = respostaDAO
-							.getRespostasPerguntaSemestreAvaliado(
-									perguntaSelecionada, semestre, professor);
+					respostas = respostaDAO.getRespostasPerguntaSemestreAvaliado(perguntaSelecionada, semestre, professor);
 				}
 			} else {
-				if (turma.getLetraTurma() != " ") {
-					respostas = respostaDAO.getRespostasPerguntaTurmaAvaliado(
-							perguntaSelecionada, turma, professor);
+				if (turma.getDisciplina().getNomeDisciplina() != "Todas") {
+					respostas = respostaDAO.getRespostasPerguntaTurmaAvaliado(perguntaSelecionada, turma, professor);
 				} else {
-					respostas = respostaDAO.getRespostasPerguntaAvaliado(
-							perguntaSelecionada, professor);
+					respostas = respostaDAO.getRespostasPerguntaAvaliado(perguntaSelecionada, professor);
 				}
 			}
 		} else {
 			if (semestre != "Todos") {
-				if (turma.getLetraTurma() != " ") {
-					respostas = respostaDAO.getRespostasPerguntaTurmaSemestre(
-							perguntaSelecionada, semestre, turma);
+				if (turma.getDisciplina().getNomeDisciplina() != "Todas") {
+					respostas = respostaDAO.getRespostasPerguntaTurmaSemestre(perguntaSelecionada, semestre, turma);
 				} else {
-					respostas = respostaDAO.getRespostasPerguntaSemestre(
-							perguntaSelecionada, semestre);
+					respostas = respostaDAO.getRespostasPerguntaSemestre(perguntaSelecionada, semestre);
 				}
 			} else {
-				if (turma.getLetraTurma() != " ") {
-					respostas = respostaDAO.getRespostasPerguntaTurma(
-							perguntaSelecionada, turma);
+				if (turma.getDisciplina().getNomeDisciplina() != "Todas") {
+					respostas = respostaDAO.getRespostasPerguntaTurma(perguntaSelecionada, turma);
 				} else {
-					respostas = respostaDAO
-							.getRespostasPergunta(perguntaSelecionada);
+					respostas = respostaDAO.getRespostasPergunta(perguntaSelecionada);
 				}
 			}
 		}
@@ -534,24 +713,72 @@ public class ResultadosController extends GenericController implements
 					}
 					grafico.setParametros(url);
 				}
-				if(grafico.getTipo()=="area"){
-					if(semestres.contains("Todos"))
-						semestres.remove(0);
+				
+				
+				if(grafico.getTipo()=="area" || grafico.getTipo()=="linha" || grafico.getTipo()=="barra" || grafico.getTipo()=="coluna"){
+					
+					
+					int quantItens=0;
+					//tratamento de erro para existencia de foco--------------
+					boolean existeFoco=false;
+					if(!(radioSemestre1.isChecked() || radioProfessor.isChecked() || radioTurma.isChecked())
+							&& (semestre=="Todos" || turma.getDisciplina().getNomeDisciplina()=="Todas" || professor.getNome()=="Todos"))
+						existeFoco=true;
+					if(existeFoco){
+						if(semestre=="Todos")
+							radioSemestre1.setChecked(true);
+						else if(turma.getDisciplina().getNomeDisciplina()=="Todas")
+							radioTurma.setChecked(true);
+						else if(professor.getNome()=="Todos")
+							radioProfessor.setChecked(true);
+					}
+						
+						
+					//--------------------------------------------------------
+				
+					if(radioSemestre1.isChecked()){
+						semestres.remove("Todos");
+						quantItens = semestres.size();
+					}
+					else if(radioProfessor.isChecked()){
+						for(int i=0;i<professores.size();i++)
+							if(professores.get(i).getNome()=="Todos")
+									professores.remove(i);
+						
+						quantItens = professores.size();
+					}
+					else if(radioTurma.isChecked()){
+						for(int i=0;i<turmas.size();i++)
+							if(turmas.get(i).getDisciplina().getNomeDisciplina()=="Todas")
+									turmas.remove(i);
+						quantItens = turmas.size();
+					}
+					else{
+						quantItens=1;
+					}
+
 					//nome,quantidade semestres, semestre 1,semestre 2,... , quantidade de respostas, quantidade de valores das respostas, resposta 1, valor 1, valor 2,...,resposta 2, valor 2, valor 2...
 					String url;// tratar erro pra &
-					url = "?" + perguntaSelecionada.getTituloPergunta() + "&" + semestres.size();
+					url = "?" + perguntaSelecionada.getTituloPergunta() + "&" + quantItens;
 					
-					for(int i=0;i<semestres.size();i++){ //adicionando semestres
-						url = url + "&" + semestres.get(i);
+					for(int i=0;i<quantItens;i++){ //adicionando os objetos
+						if(radioSemestre1.isChecked())
+							url = url + "&" + semestres.get(i);
+						else if(radioProfessor.isChecked())
+							url = url + "&" + professores.get(i).getNome();
+						else if(radioTurma.isChecked())
+							url = url + "&" + turmas.get(i).getDisciplinaLetraTurmaSemestre();
+						else
+							url = url + "&" + semestre;
+					
 					}
-					
-					
+										
 					//setando os valores do vetor auxiliar
 					List<RespostaEspecifica> resEsp = perguntaSelecionada.getRespostasEspecificasBanco();
 					
-					url = url + "&" + resEsp.size() + "&" + semestres.size();
+					url = url + "&" + resEsp.size() + "&" + quantItens;
 					
-					String[] valores = new String[(semestres.size()+1)*resEsp.size()];
+					String[] valores = new String[(quantItens+1)*resEsp.size()];
 					String[] equivalente = new String[resEsp.size()];
 					
 					for(int i=0;i<resEsp.size();i++)
@@ -560,42 +787,123 @@ public class ResultadosController extends GenericController implements
 					int[] contador = new int[resEsp.size()];
 					
 					for(int i=0;i<resEsp.size();i++)
-						valores[(i*(semestres.size()+1))] = equivalente[i];
+						valores[(i*(quantItens+1))] = equivalente[i];
 					
 					
 					//semestres - cada um-------------------------------------------
-					for(int i=0;i<semestres.size();i++){
-						if (professor.getNome() != "Todos") {
-								if (turma.getLetraTurma() != " ") {
+					for(int i=0;i<quantItens;i++){
+						if(radioSemestre1.isChecked()){
+							if (professor.getNome() != "Todos") {
+									if (turma.getLetraTurma() != " ") {
+										respostas = respostaDAO
+												.getRespostasPerguntaTurmaSemestreAvaliado(
+														perguntaSelecionada, semestres.get(i), turma,
+														professor);
+									} else {
+										respostas = respostaDAO
+												.getRespostasPerguntaSemestreAvaliado(
+														perguntaSelecionada, semestres.get(i), professor);
+									}
+								
+							} else {
+									if (turma.getLetraTurma() != " ") {
+										respostas = respostaDAO.getRespostasPerguntaTurmaSemestre(
+												perguntaSelecionada, semestres.get(i), turma);
+									} else {
+										respostas = respostaDAO.getRespostasPerguntaSemestre(
+												perguntaSelecionada, semestres.get(i));
+									}
+							
+							}
+						}
+						else if(radioProfessor.isChecked()){
+							if (semestre != "Todos") {
+								if (turma.getDisciplina().getNomeDisciplina() != "Todas") {
 									respostas = respostaDAO
 											.getRespostasPerguntaTurmaSemestreAvaliado(
-													perguntaSelecionada, semestres.get(i), turma,
-													professor);
+													perguntaSelecionada, semestre, turma,
+													professores.get(i));
 								} else {
 									respostas = respostaDAO
 											.getRespostasPerguntaSemestreAvaliado(
-													perguntaSelecionada, semestres.get(i), professor);
+													perguntaSelecionada, semestre, professores.get(i));
 								}
-							
-						} else {
-								if (turma.getLetraTurma() != " ") {
-									respostas = respostaDAO.getRespostasPerguntaTurmaSemestre(
-											perguntaSelecionada, semestres.get(i), turma);
+							} else {
+								if (turma.getDisciplina().getNomeDisciplina() != "Todas") {
+									respostas = respostaDAO.getRespostasPerguntaTurmaAvaliado(
+											perguntaSelecionada, turma, professores.get(i));
 								} else {
-									respostas = respostaDAO.getRespostasPerguntaSemestre(
-											perguntaSelecionada, semestres.get(i));
+									respostas = respostaDAO.getRespostasPerguntaAvaliado(
+											perguntaSelecionada, professores.get(i));
 								}
+							}
+
+						}
 						
+						else if(radioTurma.isChecked()){
+							if (professor.getNome() != "Todos") {
+								if (semestre != "Todos") {
+										respostas = respostaDAO
+												.getRespostasPerguntaTurmaSemestreAvaliado(
+														perguntaSelecionada, semestre, turmas.get(i),
+														professor);
+									
+								} else {
+										respostas = respostaDAO.getRespostasPerguntaTurmaAvaliado(
+												perguntaSelecionada, turmas.get(i), professor);
+									
+								}
+							} else {
+								if (semestre != "Todos") {
+										respostas = respostaDAO.getRespostasPerguntaTurmaSemestre(
+												perguntaSelecionada, semestre, turmas.get(i));
+								
+								} else {
+										respostas = respostaDAO.getRespostasPerguntaTurma(
+												perguntaSelecionada, turmas.get(i));
+									
+								}
+							}
+						}
+						else {
+							if (professor.getNome() != "Todos") {
+								if (semestre != "Todos") {
+									if (turma.getDisciplina().getNomeDisciplina() != "Todas") {
+										respostas = respostaDAO.getRespostasPerguntaTurmaSemestreAvaliado(perguntaSelecionada, semestre, turma,professor);
+									} else {
+										respostas = respostaDAO.getRespostasPerguntaSemestreAvaliado(perguntaSelecionada, semestre, professor);
+									}
+								} else {
+									if (turma.getDisciplina().getNomeDisciplina() != "Todas") {
+										respostas = respostaDAO.getRespostasPerguntaTurmaAvaliado(perguntaSelecionada, turma, professor);
+									} else {
+										respostas = respostaDAO.getRespostasPerguntaAvaliado(perguntaSelecionada, professor);
+									}
+								}
+							} else {
+								if (semestre != "Todos") {
+									if (turma.getDisciplina().getNomeDisciplina() != "Todas") {
+										respostas = respostaDAO.getRespostasPerguntaTurmaSemestre(perguntaSelecionada, semestre, turma);
+									} else {
+										respostas = respostaDAO.getRespostasPerguntaSemestre(perguntaSelecionada, semestre);
+									}
+								} else {
+									if (turma.getDisciplina().getNomeDisciplina() != "Todas") {
+										respostas = respostaDAO.getRespostasPerguntaTurma(perguntaSelecionada, turma);
+									} else {
+										respostas = respostaDAO.getRespostasPergunta(perguntaSelecionada);
+									}
+								}
+							}
 						}
 						
 						//--------------------------------------------------------------
-						
-						
+										
 						//setando vetor auxiliar contador
 						
 						for(int j=0;j<resEsp.size();j++)
 							contador[j] = 0;
-											
+	
 						for(int j=0;j<respostas.size();j++){
 							String resp = (String) respostas.get(j).getResposta();
 							for(int k=0;k<resEsp.size();k++){
@@ -605,27 +913,14 @@ public class ResultadosController extends GenericController implements
 						}
 															
 						//preenchendo o vetor auxiliar valores
-						
 						for(int j=0;j<resEsp.size();j++)
-							valores[j*(semestres.size()+1) + 1 + i] =  Integer.toString(contador[j]);
-								
+							valores[j*(quantItens+1) + 1 + i] =  Integer.toString(contador[j]);
 					}
 
-				
-					
-					
-					for(int i=0;i<(semestres.size()+1)*resEsp.size();i++)
+					for(int i=0;i<(quantItens+1)*resEsp.size();i++)
 						url = url + "&" + valores[i];
 					
 					grafico.setParametros(url);
-					
-					for(int i=0;i<(semestres.size()+1)*resEsp.size();i++)
-						System.out.println(i+" - "+valores[i]);
-					
-					for(int i=0;i<(resEsp.size());i++){
-						System.out.println("-["+i+"]"+equivalente[i]);
-						System.out.println("-["+i+"]"+contador[i]);
-					}
 					
 				}
 				
@@ -635,8 +930,9 @@ public class ResultadosController extends GenericController implements
 	
 	public void getGraficoAutoavaliacao() {
 		List<Resposta> respostas;
-
+		
 		RespostaDAO respostaDAO = new RespostaDAO();
+
 		if (aluno.getNome() != "Todos") {
 			if (semestre != "Todos") {
 				respostas = respostaDAO.getRespostasPerguntaSemestreAvaliado(
@@ -656,31 +952,179 @@ public class ResultadosController extends GenericController implements
 
 		}
 
-		List<RespostaEspecifica> alternativas = perguntaSelecionada
-				.getRespostasEspecificasBanco();
-		Map<String, Integer> contagem = new LinkedHashMap<>();
-		for (RespostaEspecifica re : alternativas) { // seta as alternativas
-			contagem.put(re.getRespostaEspecifica(), 0);
-		}
-		for (Resposta r : respostas) { // incementa a quantidade
-			for (RespostaEspecifica re : alternativas) {
-				if (r.getResposta().equals(re.getRespostaEspecifica())) {
-					contagem.put(re.getRespostaEspecifica(),
-							(contagem.get(re.getRespostaEspecifica()) + 1));
+
+				//cada grafico é tratado de uma maneira diferente
+		if(grafico.getTipo()=="pie"){// se o tipo de grafico a ser exibido é do tipo pie
+
+			List<RespostaEspecifica> alternativas = perguntaSelecionada
+					.getRespostasEspecificasBanco();
+			Map<String, Integer> contagem = new LinkedHashMap<>();
+		
+			for (RespostaEspecifica re : alternativas) { // seta as alternativas
+				contagem.put(re.getRespostaEspecifica(), 0);
+			}
+	
+			for (Resposta r : respostas) { // incementa a quantidade
+				for (RespostaEspecifica re : alternativas) {
+					if (r.getResposta().equals(re.getRespostaEspecifica())) {
+						contagem.put(re.getRespostaEspecifica(),
+								(contagem.get(re.getRespostaEspecifica()) + 1));
+					}
 				}
 			}
+			Iterator<String> keyIterator = contagem.keySet().iterator();
+			String url;// tratar erro pra &
+			//nome,quantidade de colunas, quantidade de linhas, tipo_coluna1,tipo_coluna2,...,item 11,item 12, item1..., item21, item 22, item ...
+			url = "?" + perguntaSelecionada.getTituloPergunta() + "&"
+					+ contagem.size() + "&" + "2" + "&" + "string" + "&" + "float";
+			while (keyIterator.hasNext()) {
+				String key = keyIterator.next();
+				url = url + "&" + key + "&" + contagem.get(key);
+			}
+			grafico.setParametros(url);
 		}
-		Iterator<String> keyIterator = contagem.keySet().iterator();
-		String url;// tratar erro pra &
-		url = "?" + perguntaSelecionada.getTituloPergunta() + "&"
-				+ contagem.size() + "&" + "2" + "&" + "string" + "&" + "float";
-		while (keyIterator.hasNext()) {
-			String key = keyIterator.next();
-			url = url + "&" + key + "&" + contagem.get(key);
+		if(grafico.getTipo()=="area" || grafico.getTipo()=="linha" || grafico.getTipo()=="barra" || grafico.getTipo()=="coluna"){
+			
+			
+			int quantItens=0;
+			//tratamento de erro para existencia de foco--------------
+			boolean existeFoco=false;
+			if(!(radioSemestre1.isChecked() || radioAluno.isChecked())
+					&& (semestre=="Todos" || aluno.getNome()=="Todos"))
+				existeFoco=true;
+			if(existeFoco){
+				if(semestre=="Todos")
+					radioSemestre1.setChecked(true);
+				else if(coordenador.getNome()=="Todos")
+					radioAluno.setChecked(true);
+			}
+				
+				
+			//--------------------------------------------------------
+		
+			if(radioSemestre1.isChecked()){
+				semestres.remove("Todos");
+				quantItens = semestres.size();
+			}
+			else if(radioAluno.isChecked()){
+				for(int i=0;i<alunos.size();i++)
+					if(alunos.get(i).getNome()=="Todos")
+						alunos.remove(i);
+				
+				quantItens = alunos.size();
+			}
+			else{
+				quantItens=1;
+			}
+
+			//nome,quantidade semestres, semestre 1,semestre 2,... , quantidade de respostas, quantidade de valores das respostas, resposta 1, valor 1, valor 2,...,resposta 2, valor 2, valor 2...
+			String url;// tratar erro pra &
+			url = "?" + perguntaSelecionada.getTituloPergunta() + "&" + quantItens;
+			
+			for(int i=0;i<quantItens;i++){ //adicionando os objetos
+				if(radioSemestre1.isChecked())
+					url = url + "&" + semestres.get(i);
+				else if(radioAluno.isChecked())
+					url = url + "&" + alunos.get(i).getNome();
+				else
+					url = url + "&" + semestre;
+			
+			}
+								
+			//setando os valores do vetor auxiliar
+			List<RespostaEspecifica> resEsp = perguntaSelecionada.getRespostasEspecificasBanco();
+			
+			url = url + "&" + resEsp.size() + "&" + quantItens;
+			
+			String[] valores = new String[(quantItens+1)*resEsp.size()];
+			String[] equivalente = new String[resEsp.size()];
+			
+			for(int i=0;i<resEsp.size();i++)
+				equivalente[i] = resEsp.get(i).getRespostaEspecifica();
+			
+			int[] contador = new int[resEsp.size()];
+			
+			for(int i=0;i<resEsp.size();i++)
+				valores[(i*(quantItens+1))] = equivalente[i];
+			
+			
+			//semestres - cada um-------------------------------------------
+			for(int i=0;i<quantItens;i++){
+				if(radioSemestre1.isChecked()){
+					if (aluno.getNome() != "Todos") {
+							respostas = respostaDAO.getRespostasPerguntaSemestreAvaliado(
+									perguntaSelecionada, semestres.get(i), aluno);
+						
+					} else {
+							respostas = respostaDAO.getRespostasPerguntaSemestre(
+									perguntaSelecionada, semestres.get(i));
+						
+					}
+				}
+				else if(radioAluno.isChecked()){
+
+						if (semestre != "Todos") {
+							respostas = respostaDAO.getRespostasPerguntaSemestreAvaliado(
+									perguntaSelecionada, semestre, alunos.get(i));
+						} else {
+							respostas = respostaDAO.getRespostasPerguntaAvaliado(
+									perguntaSelecionada, alunos.get(i));
+						}
+					
+				}
+				else {
+					
+					if (aluno.getNome() != "Todos") {
+						if (semestre != "Todos") {
+							respostas = respostaDAO.getRespostasPerguntaSemestreAvaliado(
+									perguntaSelecionada, semestre, aluno);
+						} else {
+							respostas = respostaDAO.getRespostasPerguntaAvaliado(
+									perguntaSelecionada, aluno);
+						}
+					} else {
+						if (semestre != "Todos") {
+							respostas = respostaDAO.getRespostasPerguntaSemestre(
+									perguntaSelecionada, semestre);
+						} else {
+							respostas = respostaDAO
+									.getRespostasPergunta(perguntaSelecionada);
+						}
+
+					}
+					
+				}
+				
+				//--------------------------------------------------------------
+								
+				//setando vetor auxiliar contador
+				
+				for(int j=0;j<resEsp.size();j++)
+					contador[j] = 0;
+									
+
+				for(int j=0;j<respostas.size();j++){
+					String resp = (String) respostas.get(j).getResposta();
+					for(int k=0;k<resEsp.size();k++){
+						if(equivalente[k].equals(resp))
+							contador[k]++;
+					}
+				}
+													
+				//preenchendo o vetor auxiliar valores
+				for(int j=0;j<resEsp.size();j++)
+					valores[j*(quantItens+1) + 1 + i] =  Integer.toString(contador[j]);
+			}
+
+			for(int i=0;i<(quantItens+1)*resEsp.size();i++)
+				url = url + "&" + valores[i];
+			
+			grafico.setParametros(url);
+			
 		}
-		grafico.setParametros(url);
+		
 		session.setAttribute("grafico", grafico);
-		System.out.println(grafico.getURL());
+		System.out.println(grafico.getURL());	
 	}
 
 	public void getGraficoInfraestrutura() {
@@ -695,12 +1139,17 @@ public class ResultadosController extends GenericController implements
 			respostas = respostaDAO.getRespostasPergunta(perguntaSelecionada);
 		}
 
+		//cada grafico é tratado de uma maneira diferente
+	if(grafico.getTipo()=="pie"){// se o tipo de grafico a ser exibido é do tipo pie
+
 		List<RespostaEspecifica> alternativas = perguntaSelecionada
 				.getRespostasEspecificasBanco();
 		Map<String, Integer> contagem = new LinkedHashMap<>();
+	
 		for (RespostaEspecifica re : alternativas) { // seta as alternativas
 			contagem.put(re.getRespostaEspecifica(), 0);
 		}
+
 		for (Resposta r : respostas) { // incementa a quantidade
 			for (RespostaEspecifica re : alternativas) {
 				if (r.getResposta().equals(re.getRespostaEspecifica())) {
@@ -711,6 +1160,7 @@ public class ResultadosController extends GenericController implements
 		}
 		Iterator<String> keyIterator = contagem.keySet().iterator();
 		String url;// tratar erro pra &
+		//nome,quantidade de colunas, quantidade de linhas, tipo_coluna1,tipo_coluna2,...,item 11,item 12, item1..., item21, item 22, item ...
 		url = "?" + perguntaSelecionada.getTituloPergunta() + "&"
 				+ contagem.size() + "&" + "2" + "&" + "string" + "&" + "float";
 		while (keyIterator.hasNext()) {
@@ -718,10 +1168,111 @@ public class ResultadosController extends GenericController implements
 			url = url + "&" + key + "&" + contagem.get(key);
 		}
 		grafico.setParametros(url);
-		session.setAttribute("grafico", grafico);
-		System.out.println(grafico.getURL());
 	}
+	if(grafico.getTipo()=="area" || grafico.getTipo()=="linha" || grafico.getTipo()=="barra" || grafico.getTipo()=="coluna"){
+		
+		
+		int quantItens=0;
+		//tratamento de erro para existencia de foco--------------
+		boolean existeFoco=false;
+		if(!(radioSemestre1.isChecked()) && (semestre=="Todos"))
+			existeFoco=true;
+		if(existeFoco){
+			if(semestre=="Todos")
+				radioSemestre1.setChecked(true);
+		}
+			
+			
+		//--------------------------------------------------------
+	
+		if(radioSemestre1.isChecked()){
+			semestres.remove("Todos");
+			quantItens = semestres.size();
+		}
+		else{
+			quantItens=1;
+		}
 
+		//nome,quantidade semestres, semestre 1,semestre 2,... , quantidade de respostas, quantidade de valores das respostas, resposta 1, valor 1, valor 2,...,resposta 2, valor 2, valor 2...
+		String url;// tratar erro pra &
+		url = "?" + perguntaSelecionada.getTituloPergunta() + "&" + quantItens;
+		
+		for(int i=0;i<quantItens;i++){ //adicionando os objetos
+			if(radioSemestre1.isChecked())
+				url = url + "&" + semestres.get(i);
+			else
+				url = url + "&" + semestre;
+		
+		}
+							
+		//setando os valores do vetor auxiliar
+		List<RespostaEspecifica> resEsp = perguntaSelecionada.getRespostasEspecificasBanco();
+		
+		url = url + "&" + resEsp.size() + "&" + quantItens;
+		
+		String[] valores = new String[(quantItens+1)*resEsp.size()];
+		String[] equivalente = new String[resEsp.size()];
+		
+		for(int i=0;i<resEsp.size();i++)
+			equivalente[i] = resEsp.get(i).getRespostaEspecifica();
+		
+		int[] contador = new int[resEsp.size()];
+		
+		for(int i=0;i<resEsp.size();i++)
+			valores[(i*(quantItens+1))] = equivalente[i];
+		
+		
+		//semestres - cada um-------------------------------------------
+		for(int i=0;i<quantItens;i++){
+			if(radioSemestre1.isChecked()){
+					respostas = respostaDAO.getRespostasPerguntaSemestre(
+							perguntaSelecionada, semestres.get(i));
+
+			}
+
+			else {
+				if (semestre != "Todos") {
+					respostas = respostaDAO.getRespostasPerguntaSemestre(
+							perguntaSelecionada, semestre);
+				} else {
+					respostas = respostaDAO.getRespostasPergunta(perguntaSelecionada);
+				}
+				
+			}
+			
+			//--------------------------------------------------------------
+							
+			//setando vetor auxiliar contador
+			
+			for(int j=0;j<resEsp.size();j++)
+				contador[j] = 0;
+								
+
+			for(int j=0;j<respostas.size();j++){
+				String resp = (String) respostas.get(j).getResposta();
+				for(int k=0;k<resEsp.size();k++){
+					if(equivalente[k].equals(resp))
+						contador[k]++;
+				}
+			}
+												
+			//preenchendo o vetor auxiliar valores
+			for(int j=0;j<resEsp.size();j++)
+				valores[j*(quantItens+1) + 1 + i] =  Integer.toString(contador[j]);
+		}
+
+		for(int i=0;i<(quantItens+1)*resEsp.size();i++)
+			url = url + "&" + valores[i];
+		
+		grafico.setParametros(url);
+		
+	}
+	
+	session.setAttribute("grafico", grafico);
+	System.out.println(grafico.getURL());	
+	}
+	
+	
 	@Command
 	public void avaliacaoEscolhida(@BindingParam("row") Row row, // vai tornar
 																	// visivel
@@ -732,8 +1283,30 @@ public class ResultadosController extends GenericController implements
 																	// de o que
 																	// quer
 																	// visualizar
-			@BindingParam("combo") Combobox combo) {
+			@BindingParam("combo") Combobox combo,
+			
+			@BindingParam("radioProf") Radio prof,
+			@BindingParam("radioCoor") Radio coor,
+			@BindingParam("radioAlu") Radio alun,
+			@BindingParam("radioSem1") Radio sem1,
+			@BindingParam("radioTur") Radio tur,
+			@BindingParam("lab1") org.zkoss.zul.Label lab
+			
+			
+			) {
 
+		radioProfessor=prof;
+		radioCoordenador=coor;
+		radioAluno=alun;
+		radioSemestre1=sem1;
+		radioTurma=tur;
+		label1=lab;
+		radioProfessor.setDisabled(false);
+		radioCoordenador.setDisabled(false);
+		radioAluno.setDisabled(false);
+
+
+	
 		opcao = combo.getSelectedItem().getValue().toString();
 		combobox = row;
 		switch (opcao) {
@@ -758,6 +1331,12 @@ public class ResultadosController extends GenericController implements
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().setVisible(true);// pergunta
+			radioProfessor.setVisible(false);
+			radioCoordenador.setVisible(true);
+			radioAluno.setVisible(false);
+			radioSemestre1.setVisible(true);
+			radioTurma.setVisible(false);
+			label1.setVisible(true);
 
 			break;
 		case "1":// professor
@@ -780,7 +1359,13 @@ public class ResultadosController extends GenericController implements
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().setVisible(true);// pergunta
-
+			radioProfessor.setVisible(true);
+			radioCoordenador.setVisible(false);
+			radioAluno.setVisible(false);
+			radioSemestre1.setVisible(true);
+			radioTurma.setVisible(true);
+			label1.setVisible(true);
+			
 			break;
 		case "2":// autoavalia��o
 			row.getNextSibling().setVisible(false);// professor
@@ -802,7 +1387,12 @@ public class ResultadosController extends GenericController implements
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().setVisible(true);// pergunta
-
+			radioProfessor.setVisible(false);
+			radioCoordenador.setVisible(false);
+			radioAluno.setVisible(true);
+			radioSemestre1.setVisible(true);
+			radioTurma.setVisible(false);
+			label1.setVisible(true);
 			break;
 		case "3":// infraestrutura
 			row.getNextSibling().setVisible(false);// professor
@@ -821,6 +1411,12 @@ public class ResultadosController extends GenericController implements
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().setVisible(true);// pergunta
+			radioProfessor.setVisible(false);
+			radioCoordenador.setVisible(false);
+			radioAluno.setVisible(false);
+			radioSemestre1.setVisible(true);
+			radioTurma.setVisible(false);
+			label1.setVisible(true);
 			break;
 		default:
 			;
@@ -844,6 +1440,7 @@ public class ResultadosController extends GenericController implements
 		alunos.add(todos);
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
 		alunos.addAll(usuarioDAO.retornaAlunoCurso(usuario.getCurso()));
+		aluno=todos;
 		return alunos;
 	}
 
@@ -870,14 +1467,20 @@ public class ResultadosController extends GenericController implements
 						.getAvaliacoesPrazoQuestionario(prazosAux.get(j));
 				avaCoor.addAll(avaAux);
 				for (int k = 0; k < avaAux.size(); k++) {
-					if (!coordenadores.contains(avaliacaoDAO.getAvaliado(avaAux
-							.get(k))))
-						coordenadores.add(avaliacaoDAO.getAvaliado(avaAux
-								.get(k)));
+					boolean diferente=true;
+					if (!coordenadores.contains(avaliacaoDAO.getAvaliado(avaAux.get(k))))
+						for(int m=0;m<coordenadores.size();m++){
+							System.out.println("if "+coordenadores.get(m).getNome()+" == "+avaliacaoDAO.getAvaliado(avaAux.get(k)).getNome());
+							if(coordenadores.get(m).getNome().equals(avaliacaoDAO.getAvaliado(avaAux.get(k)).getNome())){
+								diferente=false;
+							}
+						}
+					if(diferente)
+						coordenadores.add(avaliacaoDAO.getAvaliado(avaAux.get(k)));
 				}
 			}
 		}
-
+		coordenador=todos;
 		return coordenadores;
 
 	}
@@ -933,6 +1536,7 @@ public class ResultadosController extends GenericController implements
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
 		professores
 				.addAll(usuarioDAO.retornaProfessorCurso(usuario.getCurso()));
+		professor=todos;
 		return professores;
 	}
 

@@ -5,7 +5,8 @@
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.ResultadosController')">
 		<include src="@load(vm.menu)" />
 		<div align="center">
-			<grid width="450px">
+		<radiogroup id="radio1"  />
+			<grid id="grid1" width="485px" >
 				<columns>
 					<column width="150px" />
 					<column width="300px" />
@@ -13,12 +14,15 @@
 				<rows>
 					<row id="rowAva">
 						<label value="Tipo de Avaliação"/>
-						<combobox width="98%" onSelect="@command('avaliacaoEscolhida', row=rowAva, combo=self)">
+						<combobox width="98%" onSelect="@command('avaliacaoEscolhida', row=rowAva, combo=self,
+						radioProf=radioProfessor,radioCoor=radioCoordenador,radioAlu=radioAluno,
+						radioSem1=radioSemestre1,radioTur=radioTurma,lab1=label1)">
 							<comboitem value="2" label="Auto-avaliação"/>
 							<comboitem value="0" label="Coordenador"/>
 							<comboitem value="3" label="Infraestrutura"/>
 							<comboitem value="1" label="Professor"/>
-						</combobox>
+						</combobox>	
+						
 					</row>
 					<row visible="false">
 						<label value="Professor" />
@@ -30,7 +34,7 @@
 							</template>
 						</combobox>
 					</row>
-					<row visible="false">
+					<row value="professor" visible="false">
 						<label value="Coordenador" />
 						<combobox width="98%"
 							model="@load(vm.coordenadores)" selectedItem="@bind(vm.coordenador)"
@@ -116,13 +120,23 @@
 							</template>
 						</combobox>
 					</row>
-					<row>
-						<button onClick="@command('')"
-						label="mudar foco..." />
-					</row>
+					
 				</rows>
 			</grid>
 			<div>
+				<label id="label1" value="Foco da Avaliação:" visible="false"/>
+			</div>
+			<div>
+				<radio label="Professor" value="professor" id="radioProfessor" disabled="true" radiogroup="radio1" visible="false"/>
+				<radio label="Coordenador" value="coordenador" disabled="true" id="radioCoordenador" radiogroup="radio1" visible="false"/>
+				<radio label="Aluno" value="aluno" disabled="true" id="radioAluno" radiogroup="radio1" visible="false"/>
+				<radio label="Semestre" value="semestre1" disabled="true" id="radioSemestre1"  radiogroup="radio1" visible="false"/>
+				<radio label="Semestre" value="semestre2" disabled="true" id="radioSemestre2" radiogroup="radio1" visible="false"/>
+				<radio label="Turma" value="turma" disabled="true" id="radioTurma" radiogroup="radio1" visible="false"/>
+
+			</div>
+			<div>
+			
 				<button onClick="@command('gerarGrafico')"
 					label="Gerar Gráfico" />
 			</div>

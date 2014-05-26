@@ -1,7 +1,9 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
+
 <window apply="org.zkoss.bind.BindComposer"
 	viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.GraficoController')"
-	border="normal" title=" ">
+	border="normal" title=" " sizable="true" top="30px" left="500px" >
+
 	<vlayout>
 		<hlayout>
 			<label value="Professor " />
@@ -15,6 +17,6 @@
 			<label value="- Tipo: "/>
 			<label value="@load(vm.perguntaSelecionada.nomeTipoPergunta)"/>
 		</hlayout>
-		<iframe id="iframe" src="@load(vm.url)" width="450px" height="420px"/>
+		<iframe id="iframe" src="@load(vm.url)" width="100%" height="800px"/>
 	</vlayout>
 </window>
