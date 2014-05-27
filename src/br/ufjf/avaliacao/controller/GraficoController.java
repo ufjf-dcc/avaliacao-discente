@@ -85,7 +85,6 @@ public class GraficoController extends GenericController {
 	}
 
 	public String getUrl() {
-		System.out.println((String) session.getAttribute("url"));
 		return (String) ((Grafico) session.getAttribute("grafico")).getURL();
 	}
 

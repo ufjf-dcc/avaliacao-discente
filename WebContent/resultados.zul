@@ -1,12 +1,54 @@
 <?page title="Vizualizar Resultados" contentType="text/html;charset=UTF-8"?>
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
 <zk>
+
+ 	<style>
+/* Even rows in a listbox */
+tr.z-listitem,tr.z-row td.z-row-inner,tr.z-row td.z-group-inner,tr.z-row td.z-group-foot-inner,tr.z-row
+	{
+	background: #FFFFFF none repeat scroll 0 0;
+}
+
+/* Odd rows in a listbox */
+tr.odd td.gc,tr.odd,tr.z-listbox-odd,tr.z-grid-odd td.z-row-inner,tr.z-grid-odd
+	{
+	background: #FFFFFF none repeat scroll 0 0;
+}
+
+/* Unselected rows with the mouse hovering over them */
+tr.overd,td.overd,tr.z-listitem-over {
+	background: #D3DBFC none repeat scroll 0 0;
+}
+
+/* Selected rows in a listbox */
+tr.seld,td.seld,tr.z-listitem-seld {
+	background: #B8BFDC none repeat scroll 0 0;
+}
+
+/* Selected rows with the mouse hovering over them */
+tr.overseld,td.overseld,tr.z-listitem-over-seld {
+	background: #D3DBFC none repeat scroll 0 0;
+}
+</style>
+
+
+
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.ResultadosController')">
 		<include src="@load(vm.menu)" />
-		<div align="center">
+		
+		
+		<grid>
+		<columns  >
+			<column width="38%"/>
+			<column width="62%"/>
+		</columns>
+		<rows>
+			<row>
+		
+		<div align="top,center">
 		<radiogroup id="radio1"  />
-			<grid id="grid1" width="485px" >
+			<grid id="grid1" width="450px" >
 				<columns>
 					<column width="150px" />
 					<column width="300px" />
@@ -137,9 +179,15 @@
 			</div>
 			<div>
 			
-				<button onClick="@command('gerarGrafico')"
+				<button onClick="@command('gerarGrafico',frame=frame)"
 					label="Gerar Gráfico" />
 			</div>
 		</div>
+		
+		
+			<iframe id="frame" src="@load(vm.url)" width="100%" height="500px"/>
+			</row>
+		</rows>
+		</grid>
 	</div>
 </zk>

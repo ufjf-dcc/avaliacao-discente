@@ -15,6 +15,7 @@ import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Div;
 
 import br.ufjf.avaliacao.business.UsuarioBusiness;
+import br.ufjf.avaliacao.model.Grafico;
 import br.ufjf.avaliacao.model.Usuario;
 
 public class LoginController {
@@ -28,6 +29,8 @@ public class LoginController {
 	public void testaLogado() throws HibernateException, Exception {
 		usuarioBusiness = new UsuarioBusiness();
 		usuario = (Usuario) session.getAttribute("usuario");
+		Grafico grafico = new Grafico("grafico"," "," ");//pre processamento para funcionar os frames dos graficos
+		session.setAttribute("grafico", grafico);
 		if (usuarioBusiness.checaLogin(usuario)) {
 			Executions.sendRedirect("/home.zul");
 		} else {

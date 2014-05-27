@@ -18,6 +18,7 @@ import org.zkoss.zk.ui.Executions;
 import org.zkoss.zul.CategoryModel;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Grid;
+import org.zkoss.zul.Iframe;
 import org.zkoss.zul.PieModel;
 import org.zkoss.zul.Radio;
 import org.zkoss.zul.Radiogroup;
@@ -60,8 +61,9 @@ public class ResultadosController extends GenericController implements
 	private List<Usuario> coordenadores = new ArrayList<Usuario>();
 	private Usuario coordenador = new Usuario();
 	private List<Radio> focos = new ArrayList<Radio>();
+	private Iframe frame = new Iframe();
 	private List<Grafico> graficos = new ArrayList<Grafico>();
-	private Grafico grafico = null;
+	private Grafico grafico = new Grafico("","/img/confirm.png");
 	private PrazoQuestionario prazo = new PrazoQuestionario();
 	private List<Pergunta> perguntas = new ArrayList<>();
 	private Pergunta perguntaSelecionada;
@@ -77,7 +79,9 @@ public class ResultadosController extends GenericController implements
 	private String semestre = null;
 	private List<Turma> turmas = new ArrayList<Turma>();
 	private Turma turma = null;
+	private String url;
 
+	
 	
 	
 	@Command
@@ -273,6 +277,8 @@ public class ResultadosController extends GenericController implements
 		
 	}
 
+	
+
 	@Command
 	@NotifyChange("questionarios")
 	// carregando e filtrando os questionarios a serem escolhidos
@@ -402,41 +408,33 @@ public class ResultadosController extends GenericController implements
 	}
 
 	@Command
-	public void gerarGrafico() {
-		Window w = null;
+	public void gerarGrafico(@BindingParam("frame") Iframe frame) {
+	
 		if (Integer.parseInt(opcao) == 0) {// coorednador
 			getGraficoCoordenador();
-			session.setAttribute("coordenador", coordenador);
-			session.setAttribute("semestre", semestre);
-			session.setAttribute("pergunta", perguntaSelecionada);
-			w = (Window) Executions.createComponents("/graficoCoordenador.zul",
-					null, null);
+			frame.setSrc(getUrl());
+			frame.invalidate();
+			
 		}
 		if (Integer.parseInt(opcao) == 1) {// professor
 			getGraficoProfessor();
-			session.setAttribute("turma", turma);
-			session.setAttribute("pergunta", perguntaSelecionada);
-			w = (Window) Executions
-					.createComponents("/graficoProfessor.zul", null, null);
+			frame.setSrc(getUrl());
+			frame.invalidate();
+		
 		}
 		if (Integer.parseInt(opcao) == 2) {// autoavali��o
 			getGraficoAutoavaliacao();
-			session.setAttribute("aluno", aluno);
-			session.setAttribute("semestre", semestre);
-			session.setAttribute("pergunta", perguntaSelecionada);
-			w = (Window) Executions.createComponents(
-					"/graficoAutoavaliacao.zul", null, null);
+			frame.setSrc(getUrl());
+			frame.invalidate();
+			
 		}
 		if (Integer.parseInt(opcao) == 3) {// infraestrutura
 			getGraficoInfraestrutura();
-			session.setAttribute("semestre", semestre);
-			session.setAttribute("pergunta", perguntaSelecionada);
-			w = (Window) Executions.createComponents(
-					"/graficoInfraestrutura.zul", null, null);
+			frame.setSrc(getUrl());
+			frame.invalidate();
+			
 		}
-		w.setClosable(true);
-		w.setMinimizable(false);
-		w.doOverlapped();
+		
 	}
 
 
@@ -460,6 +458,13 @@ public class ResultadosController extends GenericController implements
 		}
 	}
 
+
+	@Command
+	public void pegarFrame() {
+		System.out.println("aqui");
+	}
+	
+	
 	public void getGraficoCoordenador() {
 		List<Resposta> respostas;
 
@@ -548,7 +553,7 @@ public class ResultadosController extends GenericController implements
 			}
 
 			//nome,quantidade semestres, semestre 1,semestre 2,... , quantidade de respostas, quantidade de valores das respostas, resposta 1, valor 1, valor 2,...,resposta 2, valor 2, valor 2...
-			String url;// tratar erro pra &
+			url = "";// tratar erro pra &
 			url = "?" + perguntaSelecionada.getTituloPergunta() + "&" + quantItens;
 			
 			for(int i=0;i<quantItens;i++){ //adicionando os objetos
@@ -703,7 +708,7 @@ public class ResultadosController extends GenericController implements
 						}
 					}
 					Iterator<String> keyIterator = contagem.keySet().iterator();
-					String url;// tratar erro pra &
+					url = "";// tratar erro pra &
 					//nome,quantidade de colunas, quantidade de linhas, tipo_coluna1,tipo_coluna2,...,item 11,item 12, item1..., item21, item 22, item ...
 					url = "?" + perguntaSelecionada.getTituloPergunta() + "&"
 							+ contagem.size() + "&" + "2" + "&" + "string" + "&" + "float";
@@ -758,7 +763,7 @@ public class ResultadosController extends GenericController implements
 					}
 
 					//nome,quantidade semestres, semestre 1,semestre 2,... , quantidade de respostas, quantidade de valores das respostas, resposta 1, valor 1, valor 2,...,resposta 2, valor 2, valor 2...
-					String url;// tratar erro pra &
+					url = "";// tratar erro pra &
 					url = "?" + perguntaSelecionada.getTituloPergunta() + "&" + quantItens;
 					
 					for(int i=0;i<quantItens;i++){ //adicionando os objetos
@@ -973,7 +978,7 @@ public class ResultadosController extends GenericController implements
 				}
 			}
 			Iterator<String> keyIterator = contagem.keySet().iterator();
-			String url;// tratar erro pra &
+			url = "";// tratar erro pra &
 			//nome,quantidade de colunas, quantidade de linhas, tipo_coluna1,tipo_coluna2,...,item 11,item 12, item1..., item21, item 22, item ...
 			url = "?" + perguntaSelecionada.getTituloPergunta() + "&"
 					+ contagem.size() + "&" + "2" + "&" + "string" + "&" + "float";
@@ -1018,7 +1023,7 @@ public class ResultadosController extends GenericController implements
 			}
 
 			//nome,quantidade semestres, semestre 1,semestre 2,... , quantidade de respostas, quantidade de valores das respostas, resposta 1, valor 1, valor 2,...,resposta 2, valor 2, valor 2...
-			String url;// tratar erro pra &
+			url = "";// tratar erro pra &
 			url = "?" + perguntaSelecionada.getTituloPergunta() + "&" + quantItens;
 			
 			for(int i=0;i<quantItens;i++){ //adicionando os objetos
@@ -1159,7 +1164,7 @@ public class ResultadosController extends GenericController implements
 			}
 		}
 		Iterator<String> keyIterator = contagem.keySet().iterator();
-		String url;// tratar erro pra &
+		url = "";// tratar erro pra &
 		//nome,quantidade de colunas, quantidade de linhas, tipo_coluna1,tipo_coluna2,...,item 11,item 12, item1..., item21, item 22, item ...
 		url = "?" + perguntaSelecionada.getTituloPergunta() + "&"
 				+ contagem.size() + "&" + "2" + "&" + "string" + "&" + "float";
@@ -1194,7 +1199,7 @@ public class ResultadosController extends GenericController implements
 		}
 
 		//nome,quantidade semestres, semestre 1,semestre 2,... , quantidade de respostas, quantidade de valores das respostas, resposta 1, valor 1, valor 2,...,resposta 2, valor 2, valor 2...
-		String url;// tratar erro pra &
+		url = "";// tratar erro pra &
 		url = "?" + perguntaSelecionada.getTituloPergunta() + "&" + quantItens;
 		
 		for(int i=0;i<quantItens;i++){ //adicionando os objetos
@@ -1470,7 +1475,6 @@ public class ResultadosController extends GenericController implements
 					boolean diferente=true;
 					if (!coordenadores.contains(avaliacaoDAO.getAvaliado(avaAux.get(k))))
 						for(int m=0;m<coordenadores.size();m++){
-							System.out.println("if "+coordenadores.get(m).getNome()+" == "+avaliacaoDAO.getAvaliado(avaAux.get(k)).getNome());
 							if(coordenadores.get(m).getNome().equals(avaliacaoDAO.getAvaliado(avaAux.get(k)).getNome())){
 								diferente=false;
 							}
@@ -1497,6 +1501,14 @@ public class ResultadosController extends GenericController implements
 		this.coordenador = coordenador;
 	}
 
+	public Iframe getFrame() {
+		return frame;
+	}
+
+	public void setFrame(Iframe frame) {
+		this.frame = frame;
+	}
+	
 	public List<Grafico> getGraficos() {
 		return graficos;
 	}
@@ -1604,5 +1616,11 @@ public class ResultadosController extends GenericController implements
 	public void setTurma(Turma turma) {
 		this.turma = turma;
 	}
+	
+	public String getUrl() {
+		return (String)(grafico.getURL());
+	}
+
+
 
 }

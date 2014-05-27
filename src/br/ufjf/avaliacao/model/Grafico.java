@@ -15,6 +15,11 @@ public class Grafico {
 		this.caminho = caminho;
 	}
 	
+	public Grafico(String caminho,String parametro){
+		this.parametros = parametro;
+		this.caminho = caminho;
+	}
+	
 	public String getCaminho() {
 		return caminho;
 	}
