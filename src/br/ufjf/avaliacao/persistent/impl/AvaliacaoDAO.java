@@ -51,6 +51,29 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 		}
 		return false;
 	}
+	
+	public boolean prazoFoiUsado(PrazoQuestionario prazo) { // verifica se esse prazo foi usado em alguma avaliaÃ§Ã£o
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.prazoQuestionario AS p WHERE p = :prazo");
+			query.setParameter("prazo", prazo);
+
+			@SuppressWarnings("unchecked")
+			List<Avaliacao> a = query.list();
+
+			getSession().close();
+
+			if (!a.isEmpty()) {// se sim retorna true
+				return true;
+			} else
+				// se nao retorna false
+				return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 
 	// verifica se o coordenador ja foi avaliado nesse prazo
 	public boolean jaAvaliouCoordenadorDataAtual(Usuario aluno) {
@@ -330,7 +353,7 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 																				// resultadoControler
 																				// para
 																				// pegar
-																				// avaliaçoes
+																				// avaliaï¿½oes
 																				// filtradas
 		TurmaDAO turmaDAO = new TurmaDAO();
 		List<Turma> turmas = turmaDAO.getTurmasCursoSemestre(semestre, curso);
@@ -346,7 +369,7 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 
 	public List<Avaliacao> retornaAvaliacoesUsuarioTurmaSemestre(
 			Usuario usuario, Turma turma, String semestre) { // carraga
-																// avaliaçoes de
+																// avaliaï¿½oes de
 																// uma turma e
 																// um professor
 																// em um
@@ -383,7 +406,7 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 	public List<Avaliacao> retornaAvaliacoesPrazoAvaliado(
 			PrazoQuestionario prazo, Usuario avaliado) { // dado um prazo, ele
 															// retorna a as
-															// avaliaçoes
+															// avaliaï¿½oes
 															// daquele prazo
 		try {
 			Query query = getSession()
@@ -431,7 +454,7 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 
 	public List<Avaliacao> getAvaliacoesPrazoQuestionario(
 			PrazoQuestionario prazo) { // dado um prazo, ele retorna a as
-										// avaliaçoes daquele prazo
+										// avaliaï¿½oes daquele prazo
 		try {
 			Query query = getSession()
 					.createQuery(

@@ -67,6 +67,17 @@ public class PrazoQuestionario implements Serializable {
 	 * este dado quando retornarmos o {@link PrazoQuestionario} .
 	 * 
 	 */
+	
+	@Column(name = "semestre", length = 45, nullable = true)
+	private String semestre;
+	
+
+	/**
+	 * Campo com o semestre da turma. Relaciona com a coluna {@code semestre} do
+	 * banco através da anotação
+	 * {@code @Column(name = "semestre", length = 45, nullable = false)} .
+	 */
+	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "prazoQuestionario")
 	private List<Avaliacao> avaliacoes = new ArrayList<Avaliacao>();
 
@@ -145,6 +156,14 @@ public class PrazoQuestionario implements Serializable {
 
 	public void setAvaliacoes(List<Avaliacao> avaliacoes) {
 		this.avaliacoes = avaliacoes;
+	}
+	
+	public String getSemestre() {
+		return semestre;
+	}
+
+	public void setSemestre(String semestre) {
+		this.semestre = semestre;
 	}
 
 }

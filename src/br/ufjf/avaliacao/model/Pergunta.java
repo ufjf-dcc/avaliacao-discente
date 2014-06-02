@@ -48,7 +48,7 @@ public class Pergunta implements Serializable {
 	 * do banco através da anotação
 	 * {@code @Column(name = "pergunta", length = 45, nullable = false)}.
 	 */
-	@Column(name = "tituloPergunta", length = 120, nullable = false)
+	@Column(name = "tituloPergunta", length = 8000, nullable = false)
 	private String tituloPergunta;
 
 	@Column(name = "tipoPergunta", nullable = false)

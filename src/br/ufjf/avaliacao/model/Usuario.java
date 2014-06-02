@@ -49,7 +49,7 @@ public class Usuario implements Serializable {
 	 * banco através da anotação
 	 * {@code @Column(name = "senha", length = 45, nullable = false)} .
 	 */
-	@Column(name = "senha", length = 45, nullable = false)
+	@Column(name = "senha", length = 100, nullable = false)
 	private String senha;
 
 	/**
@@ -57,7 +57,7 @@ public class Usuario implements Serializable {
 	 * banco através da anotação
 	 * {@code @Column(name = "nome", length = 45, nullable = false)}.
 	 */
-	@Column(name = "nome", length = 45, nullable = false)
+	@Column(name = "nome", length = 500, nullable = false)
 	private String nome;
 
 	/**
@@ -65,7 +65,7 @@ public class Usuario implements Serializable {
 	 * banco através da anotação
 	 * {@code @Column(name = "email", length = 45, nullable = false)}.
 	 */
-	@Column(name = "email", length = 45, nullable = false)
+	@Column(name = "email", length = 500, nullable = false)
 	private String email;
 
 	/**

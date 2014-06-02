@@ -18,12 +18,14 @@
 				<columns>
 					<column align="center" label="Data Inicial" />
 					<column align="center" label="Data Final" />
+					<column align="center" label="Semestre" />
 					<column align="center" label="Opções" />
 				</columns>
 				<template name="model">
 					<row>
 						<label value="@load(each.dataInicialFormatada)" />
 						<label value="@load(each.dataFinalFormatada)" />
+						<label value="@load(each.semestre)" />
 						<div>
 							<button image="/img/delete.png"
 								onClick="@command('excluiPrazo',prazo=each)" />

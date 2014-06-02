@@ -41,7 +41,7 @@ public class Resposta implements Serializable {
 	 * {@code resposta} do banco através da anotação
 	 * {@code @Column(name = "resposta", length = 45, nullable = false)} .
 	 */
-	@Column(name = "resposta", length = 250, nullable = false)
+	@Column(name = "resposta", length = 8000, nullable = false)
 	private String resposta;
 
 	/**

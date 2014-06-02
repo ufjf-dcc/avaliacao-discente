@@ -42,7 +42,7 @@ public class Curso implements Serializable {
 	 * banco através da anotação
 	 * {@code @Column(name = "nomeCurso", length = 45, nullable = false)}.
 	 */
-	@Column(name = "nomeCurso", length = 45, nullable = false)
+	@Column(name = "nomeCurso", length = 500, nullable = false)
 	private String nomeCurso;
 
 	/**

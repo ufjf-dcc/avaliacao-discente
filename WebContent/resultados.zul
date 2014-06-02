@@ -129,7 +129,7 @@ tr.overseld,td.overseld,tr.z-listitem-over-seld {
 						</combobox>
 					</row>
 										<row visible="false">
-						<label value="Questionario" />
+						<label value="Questionário" />
 						<combobox width="98%" model="@load(vm.questionarios)"
 							selectedItem="@bind(vm.questionario)"
 							onSelect="@command('carregarPerguntas')">

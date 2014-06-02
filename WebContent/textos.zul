@@ -31,29 +31,22 @@ tr.overseld,td.overseld,tr.z-listitem-over-seld {
 }
 </style>
 
-
-
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.GraficoController')">
 		
-	<div>
-		<grid model="@load(vm.respostas)">
-						<columns>
-							<column label="Autor" align="center" />
-							<column label="Resposta" align="center" />
-						</columns>
-						<template name="model">
-							<row>
-								<label
-									value="@load(vm.url)" />
-								<label
-									value="@load(each.resposta)" />
-								<div>
-								</div>
-							</row>
-						</template>
-					</grid>
-				</div>	
+		<div>
+			<grid model="@load(vm.respostas)">
+				<columns>
+					<column label="Resposta" align="center" />
+				</columns>
+					<template name="model">
+						<row>
+							<label
+								value="@load(each.resposta)" />
+						</row>
+					</template>
+			</grid>
+		</div>	
 		
 	</div>
 </zk>

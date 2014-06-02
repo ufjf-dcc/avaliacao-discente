@@ -44,7 +44,7 @@ public class Disciplina implements Serializable {
 	 * {@code nomeDisciplina} do banco através da anotação
 	 * {@code @Column(name = "nomeDisciplina", length = 45, nullable = false)}.
 	 */
-	@Column(name = "nomeDisciplina", length = 45, nullable = false)
+	@Column(name = "nomeDisciplina", length = 500, nullable = false)
 	private String nomeDisciplina;
 
 	/**

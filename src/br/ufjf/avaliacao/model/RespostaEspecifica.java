@@ -47,7 +47,7 @@ public class RespostaEspecifica implements Serializable {
 	 * 
 	 */
 	
-	@Column(name = "respostaEspecifica", length = 60, nullable = false)
+	@Column(name = "respostaEspecifica", length = 8000, nullable = false)
 	private String respostaEspecifica;
 	
 	

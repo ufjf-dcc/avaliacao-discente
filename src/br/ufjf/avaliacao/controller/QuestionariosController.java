@@ -30,6 +30,7 @@ import br.ufjf.avaliacao.persistent.impl.PerguntaDAO;
 import br.ufjf.avaliacao.persistent.impl.PrazoQuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.RespostaEspecificaDAO;
+import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 
 public class QuestionariosController extends GenericController {
 
@@ -57,6 +58,9 @@ public class QuestionariosController extends GenericController {
 	private List<PrazoQuestionario> prazos = new ArrayList<PrazoQuestionario>();
 	private List<PrazoQuestionario> prazosSessao = new ArrayList<PrazoQuestionario>();
 	private PrazoQuestionarioDAO prazoDAO = new PrazoQuestionarioDAO();
+	private TurmaDAO turmaDAO = new TurmaDAO();
+	private List<String> semestres = turmaDAO.getAllSemestres();
+	private String semestreEscolhido;
 	private Integer spinnerInicio;
 	private Integer spinnerFinal;
 	private List<RespostaEspecifica> respostas = new ArrayList<RespostaEspecifica>();
@@ -249,9 +253,10 @@ public class QuestionariosController extends GenericController {
 	@Command
 	public void addPrazo(@BindingParam("window") Window w) {
 		if (new QuestionariosBusiness().prazoValido(prazo)) {
-			if (validadaData(prazo)) {
+			if (validadaData(prazo) && semestreEscolhido!="") {
 				prazo.setQuestionario((Questionario) session
 						.getAttribute("questionario"));
+				prazo.setSemestre(semestreEscolhido);
 				prazoDAO.salvar(prazo);
 				prazos.add(prazo);
 				w.detach();
@@ -278,7 +283,7 @@ public class QuestionariosController extends GenericController {
 						.after(prazo.getDataInicial()))
 					invalido = false;
 				if (invalido) {
-					Messagebox.show("Não pode criar nessa data");
+					Messagebox.show("Nï¿½o pode criar nessa data");
 					return false;
 				}
 			}
@@ -292,7 +297,7 @@ public class QuestionariosController extends GenericController {
 																				// se
 																				// for
 																				// possivel
-		if (avaliacaoDAO.alguemJaAvaliou(questionario))
+		if (avaliacaoDAO.prazoFoiUsado(prazo))
 			Messagebox.show("Prazo nao pode ser excluido, ja esta em uso");
 
 		else {
@@ -605,6 +610,22 @@ public class QuestionariosController extends GenericController {
 
 	public void setTiposPergunta(List<Integer> tiposPergunta) {
 		this.tiposPergunta = tiposPergunta;
+	}
+
+	public List<String> getSemestres() {
+		return semestres;
+	}
+
+	public void setSemestres(List<String> semestres) {
+		this.semestres = semestres;
+	}
+
+	public String getSemestreEscolhido() {
+		return semestreEscolhido;
+	}
+
+	public void setSemestreEscolhido(String semestre) {
+		this.semestreEscolhido = semestre;
 	}
 
 	public Integer getSpinnerInicio() {

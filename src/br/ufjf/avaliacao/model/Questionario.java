@@ -45,7 +45,7 @@ public class Questionario implements Serializable {
 	@GenericGenerator(name = "increment", strategy = "increment")
 	private int idQuestionario;
 
-	@Column(name = "tituloQuestionario", length = 45, nullable = false)
+	@Column(name = "tituloQuestionario", length = 500, nullable = false)
 	private String tituloQuestionario;
 
 	@Column(name = "tipoQuestionario", length = 45, nullable = false)
