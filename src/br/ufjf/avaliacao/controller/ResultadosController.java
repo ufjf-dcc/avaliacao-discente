@@ -19,6 +19,7 @@ import org.zkoss.zul.CategoryModel;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Grid;
 import org.zkoss.zul.Iframe;
+import org.zkoss.zul.Image;
 import org.zkoss.zul.PieModel;
 import org.zkoss.zul.Radio;
 import org.zkoss.zul.Radiogroup;
@@ -63,7 +64,7 @@ public class ResultadosController extends GenericController implements
 	private List<Radio> focos = new ArrayList<Radio>();
 	private Iframe frame = new Iframe();
 	private List<Grafico> graficos = new ArrayList<Grafico>();
-	private Grafico grafico = new Grafico("","/img/confirm.png");
+	private Grafico grafico = new Grafico("","/img/branco.jpg");
 	private PrazoQuestionario prazo = new PrazoQuestionario();
 	private List<Pergunta> perguntas = new ArrayList<>();
 	private Pergunta perguntaSelecionada;
@@ -370,9 +371,20 @@ public class ResultadosController extends GenericController implements
 	@NotifyChange("graficos")
 	// carregando e filtrando os semstres a serem escolhidos
 	public void carregarGraficos() {
-		graficos = new ArrayList<Grafico>();
-
 		
+		graficos = new ArrayList<Grafico>();
+		boolean texto=false;
+		
+		if(perguntaSelecionada!=null){
+			if(perguntaSelecionada.getRespostasEspecificasBanco().size()==0){
+				Grafico aux = new Grafico("","/textos.zul");
+				aux.setNome("Texto");
+				graficos.add(aux);
+				texto=true;
+			}
+		}
+		
+		if(!texto){
 		Grafico aux = new Grafico("3d-pie","pie","/Highcharts/examples/3d-pie/index.htm");
 		graficos.add(aux);
 		aux = new Grafico("3d-pie-donut","pie","/Highcharts/examples/3d-pie-donut/index.htm");
@@ -405,6 +417,8 @@ public class ResultadosController extends GenericController implements
 //				break;
 //			}
 //		}
+	}
+		
 	}
 
 	@Command
@@ -459,11 +473,6 @@ public class ResultadosController extends GenericController implements
 	}
 
 
-	@Command
-	public void pegarFrame() {
-		System.out.println("aqui");
-	}
-	
 	
 	public void getGraficoCoordenador() {
 		List<Resposta> respostas;
@@ -650,7 +659,9 @@ public class ResultadosController extends GenericController implements
 		}
 		
 		session.setAttribute("grafico", grafico);
-		System.out.println(grafico.getURL());	
+		session.setAttribute("respostas", respostas);
+		if(perguntaSelecionada.getRespostasEspecificasBanco().size()==0)
+			url="/texto.zul";
 		}
 
 	public void getGraficoProfessor() {
@@ -930,7 +941,10 @@ public class ResultadosController extends GenericController implements
 				}
 				
 				session.setAttribute("grafico", grafico);
-				System.out.println(grafico.getURL());
+				session.setAttribute("respostas", respostas);
+				if(perguntaSelecionada.getRespostasEspecificasBanco().size()==0)
+					url="/texto.zul";
+				
 	}
 	
 	public void getGraficoAutoavaliacao() {
@@ -1129,7 +1143,9 @@ public class ResultadosController extends GenericController implements
 		}
 		
 		session.setAttribute("grafico", grafico);
-		System.out.println(grafico.getURL());	
+		session.setAttribute("respostas", respostas);
+		if(perguntaSelecionada.getRespostasEspecificasBanco().size()==0)
+			url="/texto.zul";
 	}
 
 	public void getGraficoInfraestrutura() {
@@ -1274,7 +1290,9 @@ public class ResultadosController extends GenericController implements
 	}
 	
 	session.setAttribute("grafico", grafico);
-	System.out.println(grafico.getURL());	
+	session.setAttribute("respostas", respostas);	
+	if(perguntaSelecionada.getRespostasEspecificasBanco().size()==0)
+		url="/texto.zul";
 	}
 	
 	
@@ -1295,7 +1313,8 @@ public class ResultadosController extends GenericController implements
 			@BindingParam("radioAlu") Radio alun,
 			@BindingParam("radioSem1") Radio sem1,
 			@BindingParam("radioTur") Radio tur,
-			@BindingParam("lab1") org.zkoss.zul.Label lab
+			@BindingParam("lab1") org.zkoss.zul.Label lab,
+			@BindingParam("image") Image image
 			
 			
 			) {
@@ -1342,7 +1361,7 @@ public class ResultadosController extends GenericController implements
 			radioSemestre1.setVisible(true);
 			radioTurma.setVisible(false);
 			label1.setVisible(true);
-
+			image.setHeight("290px");
 			break;
 		case "1":// professor
 			row.getNextSibling().setVisible(true);// professor
@@ -1370,7 +1389,7 @@ public class ResultadosController extends GenericController implements
 			radioSemestre1.setVisible(true);
 			radioTurma.setVisible(true);
 			label1.setVisible(true);
-			
+			image.setHeight("250px");
 			break;
 		case "2":// autoavalia��o
 			row.getNextSibling().setVisible(false);// professor
@@ -1398,6 +1417,7 @@ public class ResultadosController extends GenericController implements
 			radioSemestre1.setVisible(true);
 			radioTurma.setVisible(false);
 			label1.setVisible(true);
+			image.setHeight("290px");
 			break;
 		case "3":// infraestrutura
 			row.getNextSibling().setVisible(false);// professor
@@ -1422,6 +1442,7 @@ public class ResultadosController extends GenericController implements
 			radioSemestre1.setVisible(true);
 			radioTurma.setVisible(false);
 			label1.setVisible(true);
+			image.setHeight("290px");
 			break;
 		default:
 			;

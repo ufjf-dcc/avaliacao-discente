@@ -58,7 +58,7 @@ tr.overseld,td.overseld,tr.z-listitem-over-seld {
 						<label value="Tipo de Avaliação"/>
 						<combobox width="98%" onSelect="@command('avaliacaoEscolhida', row=rowAva, combo=self,
 						radioProf=radioProfessor,radioCoor=radioCoordenador,radioAlu=radioAluno,
-						radioSem1=radioSemestre1,radioTur=radioTurma,lab1=label1)">
+						radioSem1=radioSemestre1,radioTur=radioTurma,lab1=label1,image=image)">
 							<comboitem value="2" label="Auto-avaliação"/>
 							<comboitem value="0" label="Coordenador"/>
 							<comboitem value="3" label="Infraestrutura"/>
@@ -182,6 +182,7 @@ tr.overseld,td.overseld,tr.z-listitem-over-seld {
 				<button onClick="@command('gerarGrafico',frame=frame)"
 					label="Gerar Gráfico" />
 			</div>
+		 <image id="image" src="/img/branco.jpg" height="450px" />
 		</div>
 		
 		

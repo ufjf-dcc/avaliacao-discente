@@ -111,19 +111,21 @@ public class PrazoQuestionarioDAO extends GenericoDAO implements
 							"SELECT p FROM PrazoQuestionario AS p LEFT JOIN FETCH p.questionario AS q WHERE q = :questionario AND :dataAtual BETWEEN p.dataInicial AND p.dataFinal");
 			query.setParameter("dataAtual", new Date());
 			query.setParameter("questionario", questionario);
+			
 			PrazoQuestionario prazo = (PrazoQuestionario) query.uniqueResult();
 
 			getSession().close();
 
-			if (prazo != null) {
-				return prazo;
-			}
+			return prazo;
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
+	
+	
 	public PrazoQuestionario getPrazoAvaliacao(Avaliacao avaliacao) {
 		try {
 			Query query = getSession()

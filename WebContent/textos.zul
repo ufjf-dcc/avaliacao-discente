@@ -1,0 +1,59 @@
+<?page title="Vizualizar Resultados" contentType="text/html;charset=UTF-8"?>
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<zk>
+
+ 	<style>
+/* Even rows in a listbox */
+tr.z-listitem,tr.z-row td.z-row-inner,tr.z-row td.z-group-inner,tr.z-row td.z-group-foot-inner,tr.z-row
+	{
+	background: #FFFFFF none repeat scroll 0 0;
+}
+
+/* Odd rows in a listbox */
+tr.odd td.gc,tr.odd,tr.z-listbox-odd,tr.z-grid-odd td.z-row-inner,tr.z-grid-odd
+	{
+	background: #FFFFFF none repeat scroll 0 0;
+}
+
+/* Unselected rows with the mouse hovering over them */
+tr.overd,td.overd,tr.z-listitem-over {
+	background: #D3DBFC none repeat scroll 0 0;
+}
+
+/* Selected rows in a listbox */
+tr.seld,td.seld,tr.z-listitem-seld {
+	background: #B8BFDC none repeat scroll 0 0;
+}
+
+/* Selected rows with the mouse hovering over them */
+tr.overseld,td.overseld,tr.z-listitem-over-seld {
+	background: #D3DBFC none repeat scroll 0 0;
+}
+</style>
+
+
+
+	<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.GraficoController')">
+		
+	<div>
+		<grid model="@load(vm.respostas)">
+						<columns>
+							<column label="Autor" align="center" />
+							<column label="Resposta" align="center" />
+						</columns>
+						<template name="model">
+							<row>
+								<label
+									value="@load(vm.url)" />
+								<label
+									value="@load(each.resposta)" />
+								<div>
+								</div>
+							</row>
+						</template>
+					</grid>
+				</div>	
+		
+	</div>
+</zk>

@@ -78,8 +78,8 @@
 				</template>
 			</grid>
 			<div align="center">
-				<button label="Cadastrar nova turma"
-					onClick="@command('abreCadastro')" />
+<!-- 				<button label="Cadastrar nova turma" -->
+<!-- 					onClick="@command('abreCadastro')" /> -->
 					<button upload="true" label="Cadastrar nova turma via CSV"
 					onUpload="@command('uploadTurmas', evt=event)" />
 					<button upload="true" label="Cadastrar alunos na turma via CSV"

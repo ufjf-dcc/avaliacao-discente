@@ -87,7 +87,8 @@ public class HomeAlunoController extends GenericController {
 		// avaliação de
 		// coordenador pra fazer
 		if (!avaliacaoDAO.jaAvaliouCoordenadorDataAtual(usuario)
-				&& questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario) != null) {
+				&& questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario) != null
+				&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario))!=null) {
 			// setando qual é o questionario que deve ser avaliado
 			session.setAttribute("questionarioAtual",
 					questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario));// seta
@@ -113,8 +114,9 @@ public class HomeAlunoController extends GenericController {
 			// avaliação pra
 			// fazer
 			if (!avaliacaoDAO.jaSeAvaliorDataAtual(usuario)
-					&& questionarioDAO
-							.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario) != null) {
+					&& questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario) != null
+					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario))!=null) {
+					
 				// setando qual é o questionario que deve ser avaliado
 				session.setAttribute("questionarioAtual", questionarioDAO
 						.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario));// seta
@@ -136,8 +138,8 @@ public class HomeAlunoController extends GenericController {
 				window.doModal();
 			} else {
 				if (!avaliacaoDAO.jaAvaliouInfraestruturaDataAtual(usuario)
-						&& questionarioDAO
-								.retornaQuestinarioParaUsuarioInfra(usuario) != null) {
+						&& questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario) != null
+						&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario))!=null) {
 					// setando qual é o questionario que deve ser avaliado
 					session.setAttribute("questionarioAtual", questionarioDAO
 							.retornaQuestinarioParaUsuarioInfra(usuario));
@@ -177,6 +179,7 @@ public class HomeAlunoController extends GenericController {
 		Turma turmaUsada = null;
 		prazo = prazoDAO.getPrazoQuestionarioDisponivel((Questionario) session
 				.getAttribute("questionarioAtual"));
+		
 
 		// setando o usuario que vai ser avaliado e a
 		// turma-----------------------------------------------------
@@ -230,7 +233,6 @@ public class HomeAlunoController extends GenericController {
 			new AvaliacaoDAO().salvar(avaliacao);
 
 			for (Resposta r : respostas) {
-				System.out.println("erro aqui");
 				r.setAvaliacao(avaliacao);
 			}
 			new RespostaDAO().salvarLista(respostas);
