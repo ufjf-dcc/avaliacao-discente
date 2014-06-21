@@ -1,0 +1,16 @@
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+
+<zk>
+	<style>.menubar{ border:1px; } .menu { margin-bottom:5px; }</style>
+	<div class="menu" align="center">
+		<menubar id="menubar" class="menubar" width="100%">
+			<menuitem label="Inicial" href="/home.zul" />
+			<menuitem label="Gerenciar Questionários"
+				href="/questionarios.zul" />
+			<menuitem label="Vizualizar Resultados"
+				href="/resultados.zul" />
+			<menuitem label="Opções" />
+			<menuitem label="Sair" onClick="@command('exit')" />
+		</menubar>
+	</div>
+</zk>

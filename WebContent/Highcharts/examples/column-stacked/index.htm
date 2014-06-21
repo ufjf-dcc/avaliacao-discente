@@ -1,0 +1,129 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Highcharts Example</title>
+
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+		<script type="text/javascript">
+$(function () {
+
+//nome,quantidade semestres, semestre 1,semestre 2,... , quantidade de respostas, quantidade de valores das respostas, resposta 1, valor 1, valor 2,...,resposta 2, valor 2, valor 2...
+	var url   = window.location.search.replace("?", "");
+	var itens = url.split("&");
+	var uri_dec = decodeURIComponent(itens[0]);
+	
+	var contador = 0;
+	
+	//NOME
+	var nome = decodeURIComponent(itens[contador]);
+	contador = contador + 1;
+	
+	//CRIANDO VETOR OBJETOS
+	var quant_objetos = itens[contador];
+	contador = contador + 1;
+	var objetos = new Array(quant_objetos);
+	//PREENCHENDO VETOR OBJETOS
+	for(var f = 0; f < quant_objetos; f++)
+	{
+		objetos[f] = itens[contador];
+		contador = contador + 1; 
+	}
+	//CRIANDO VETOR RESPOSTAS E VETOR VELORES DAS RESPOSTAS
+	var quant_respostas = itens[contador];
+	contador = contador + 1;
+	var respostas = new Array(quant_respostas);
+	var quant_val_respostas = itens[contador];
+	contador = contador + 1;
+	
+	var info = new Array(quant_respostas);
+	for (var i = 0; i < quant_respostas; i++)
+	{
+		info[i] = new Array(quant_val_respostas);
+	}
+	
+	//PREENCHENDO VETORES RESPOSTAS E INFO
+	for (var i = 0; i < quant_respostas; i++)
+	{
+		respostas[i] =  decodeURIComponent(itens[contador]);
+		contador = contador + 1;
+		for (var j = 0; j < quant_val_respostas; j++)
+		{
+			info[i][j] = parseFloat(itens[contador]);
+			contador = contador + 1;
+		}
+	}
+	
+	var resultados = new Array(quant_val_respostas);
+	for (var j = 0; j < quant_respostas; j++)
+	{
+		resultados[j] = {name: respostas[j], data: info[j]};
+	}
+        $('#container').highcharts({
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: nome
+            },
+            xAxis: {
+                categories: objetos
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Valores'
+                },
+                stackLabels: {
+                    enabled: true,
+                    style: {
+                        fontWeight: 'bold',
+                        color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                    }
+                }
+            },
+            legend: {
+                align: 'right',
+                x: -70,
+                verticalAlign: 'top',
+                y: 20,
+                floating: true,
+                backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || 'white',
+                borderColor: '#CCC',
+                borderWidth: 1,
+                shadow: false
+            },
+            tooltip: {
+                formatter: function() {
+                    return '<b>'+ this.x +'</b><br/>'+
+                        this.series.name +': '+ this.y +'<br/>'+
+                        'Total: '+ this.point.stackTotal;
+                }
+            },
+            plotOptions: {
+                column: {
+                    stacking: 'normal',
+                    dataLabels: {
+                        enabled: true,
+                        color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+                        style: {
+                            textShadow: '0 0 3px black, 0 0 3px black'
+                        }
+                    }
+                }
+            },
+            series: resultados
+        });
+    });
+    
+
+		</script>
+	</head>
+	<body>
+<script src="../../js/highcharts.js"></script>
+<script src="../../js/modules/exporting.js"></script>
+
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+	</body>
+</html>

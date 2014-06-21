@@ -1,0 +1,194 @@
+<?page title="Vizualizar Resultados" contentType="text/html;charset=UTF-8"?>
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<zk>
+
+ 	<style>
+/* Even rows in a listbox */
+tr.z-listitem,tr.z-row td.z-row-inner,tr.z-row td.z-group-inner,tr.z-row td.z-group-foot-inner,tr.z-row
+	{
+	background: #FFFFFF none repeat scroll 0 0;
+}
+
+/* Odd rows in a listbox */
+tr.odd td.gc,tr.odd,tr.z-listbox-odd,tr.z-grid-odd td.z-row-inner,tr.z-grid-odd
+	{
+	background: #FFFFFF none repeat scroll 0 0;
+}
+
+/* Unselected rows with the mouse hovering over them */
+tr.overd,td.overd,tr.z-listitem-over {
+	background: #D3DBFC none repeat scroll 0 0;
+}
+
+/* Selected rows in a listbox */
+tr.seld,td.seld,tr.z-listitem-seld {
+	background: #B8BFDC none repeat scroll 0 0;
+}
+
+/* Selected rows with the mouse hovering over them */
+tr.overseld,td.overseld,tr.z-listitem-over-seld {
+	background: #D3DBFC none repeat scroll 0 0;
+}
+</style>
+
+
+
+	<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.ResultadosController')">
+		<include src="@load(vm.menu)" />
+		
+		
+		<grid>
+		<columns  >
+			<column width="38%"/>
+			<column width="62%"/>
+		</columns>
+		<rows>
+			<row>
+		
+		<div align="top,center">
+		<radiogroup id="radio1"  />
+			<grid id="grid1" width="450px" >
+				<columns>
+					<column width="150px" />
+					<column width="300px" />
+				</columns>
+				<rows>
+					<row id="rowAva">
+						<label value="Tipo de Avaliação"/>
+						<combobox width="98%" onSelect="@command('avaliacaoEscolhida', row=rowAva, combo=self,
+						radioProf=radioProfessor,radioCoor=radioCoordenador,radioAlu=radioAluno,
+						radioSem1=radioSemestre1,radioTur=radioTurma,lab1=label1,image=image)">
+							<comboitem value="2" label="Auto-avaliação"/>
+							<comboitem value="0" label="Coordenador"/>
+							<comboitem value="3" label="Infraestrutura"/>
+							<comboitem value="1" label="Professor"/>
+						</combobox>	
+						
+					</row>
+					<row visible="false">
+						<label value="Professor" />
+						<combobox width="98%"
+							model="@load(vm.professores)" selectedItem="@bind(vm.professor)"
+							onSelect="@command('carregarSemestres')">
+							<template name="model">
+								<comboitem label="@load(each.nome)" />
+							</template>
+						</combobox>
+					</row>
+					<row value="professor" visible="false">
+						<label value="Coordenador" />
+						<combobox width="98%"
+							model="@load(vm.coordenadores)" selectedItem="@bind(vm.coordenador)"
+							onSelect="@command('carregarSemestres')">
+							<template name="model">
+								<comboitem label="@load(each.nome)" />
+							</template>
+						</combobox>
+					</row>
+					<row visible="false">
+						<label value="Aluno" />
+						<combobox width="98%"
+							model="@load(vm.alunos)" selectedItem="@bind(vm.aluno)"
+							onSelect="@command('carregarSemestres')">
+							<template name="model">
+								<comboitem label="@load(each.nome)" />
+							</template>
+						</combobox>
+					</row>
+
+					<row visible="false">
+						<label value="Semestre" />
+						<combobox width="98%"
+							model="@load(vm.semestres)" selectedItem="@bind(vm.semestre)"
+							onSelect="@command('carregarQuestionarios')">
+							<template name="model">
+								<comboitem label="@load(each)" />
+							</template>
+						</combobox>
+					</row>
+					<row visible="false">
+						<label value="Semestre" />
+						<combobox width="98%"
+							model="@load(vm.semestres)" selectedItem="@bind(vm.semestre)"
+							onSelect="@command('carregarTurmas')">
+							<template name="model">
+								<comboitem label="@load(each)" />
+							</template>
+						</combobox>
+					</row>
+					<row visible="false">
+						<label value="Turma" />
+						<combobox width="98%" model="@load(vm.turmas)"
+							selectedItem="@bind(vm.turma)"
+							onSelect="@command('carregarQuestionarios')">
+							<template name="model">
+								<comboitem
+									label="@load(each.disciplinaLetraTurmaSemestre)" />
+							</template>
+						</combobox>
+					</row>
+										<row visible="false">
+						<label value="Questionário" />
+						<combobox width="98%" model="@load(vm.questionarios)"
+							selectedItem="@bind(vm.questionario)"
+							onSelect="@command('carregarPerguntas')">
+							<template name="model">
+								<comboitem
+									label="@load(each.tituloQuestionario)" />
+							</template>
+						</combobox>
+					</row>
+					<row visible="false">
+						<label value="Perguntas" />
+						<combobox width="98%"
+							model="@load(vm.perguntas)"
+							selectedItem="@bind(vm.perguntaSelecionada)" onSelect="@command('carregarGraficos')">
+							<template name="model">
+								<comboitem
+									label="@load(each.tituloPergunta)" />
+							</template>
+						</combobox>
+					</row>
+					<row>
+						<label value="Graficos" />
+						<combobox width="98%"
+							model="@load(vm.graficos)"
+							selectedItem="@bind(vm.grafico)" onSelect="@command('carregarGraficos')">
+							<template name="model">
+								<comboitem
+									label="@load(each.nome)" />
+									
+							</template>
+						</combobox>
+					</row>
+					
+				</rows>
+			</grid>
+			<div>
+				<label id="label1" value="Foco da Avaliação:" visible="false"/>
+			</div>
+			<div>
+				<radio label="Professor" value="professor" id="radioProfessor" disabled="true" radiogroup="radio1" visible="false"/>
+				<radio label="Coordenador" value="coordenador" disabled="true" id="radioCoordenador" radiogroup="radio1" visible="false"/>
+				<radio label="Aluno" value="aluno" disabled="true" id="radioAluno" radiogroup="radio1" visible="false"/>
+				<radio label="Semestre" value="semestre1" disabled="true" id="radioSemestre1"  radiogroup="radio1" visible="false"/>
+				<radio label="Semestre" value="semestre2" disabled="true" id="radioSemestre2" radiogroup="radio1" visible="false"/>
+				<radio label="Turma" value="turma" disabled="true" id="radioTurma" radiogroup="radio1" visible="false"/>
+
+			</div>
+			<div>
+			
+				<button onClick="@command('gerarGrafico',frame=frame)"
+					label="Gerar Gráfico" />
+			</div>
+		 <image id="image" src="/img/branco.jpg" height="450px" />
+		</div>
+		
+		
+			<iframe id="frame" src="@load(vm.url)" width="100%" height="500px"/>
+			</row>
+		</rows>
+		</grid>
+	</div>
+</zk>

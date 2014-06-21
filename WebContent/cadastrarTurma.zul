@@ -1,0 +1,56 @@
+<?page title="new page title" contentType="text/html;charset=UTF-8"?>
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<window style="text-align:center;" id="win" title="Cadastro de Turma" border="normal"
+	closable="true" onClose="Executions.sendRedirect(null)">
+	<div style="width:400px;" apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.TurmasController')"
+		form="@id('fm') @load(vm.turma) @save(vm.turma, before='cadastra')"
+		id="form">
+		<grid>
+			<columns>
+				<column align="center" />
+				<column align="center" />
+			</columns>
+			<rows>
+				<row>
+					<label value="Semestre: " />
+					<combobox selectedItem="@bind(fm.semestre)"
+						readonly="true">
+						<comboitem label="2013.1" value="2013.1" />
+						<comboitem label="2013.2" value="2013.2" />
+						<comboitem label="2013.3" value="2013.3" />
+						<comboitem label="2013.4" value="2013.4" />
+					</combobox>
+				</row>
+				<row>
+					<label value="Disciplina: " />
+					<combobox model="@load(vm.disciplinas)"
+						selectedItem="@bind(fm.disciplina)" autodrop="true">
+						<template name="model">
+							<comboitem
+								label="@load(each.codNomeDisciplina)" />
+						</template>
+					</combobox>
+				</row>
+				<row>
+					<label value="Turma: " />
+					<textbox value="@bind(fm.letraTurma)" />
+				</row>
+				<row>
+					<label value="Professor: " />
+					<combobox model="@load(vm.professores)"
+						selectedItem="@bind(fm.professor)" autodrop="true">
+						<template name="model">
+							<comboitem label="@load(each.nome)" />
+						</template>
+					</combobox>
+				</row>
+			</rows>
+		</grid>
+		<separator />
+		<div align="center">
+			<button label="Cadastrar" onClick="@command('cadastra')" />
+		</div>
+		<separator />
+	</div>
+</window>

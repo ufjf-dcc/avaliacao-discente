@@ -4,31 +4,20 @@
  "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
 	<session-factory>
-		<!-- propriedade em que deve ser atribuído a classe de conexão com o MySQL. 
-			Deve-se adicionar a classe nas libs do projeto -->
-		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
-		<!-- propriedade em que deve ser atribuído o endereço de conexão do banco -->
-		<property name="hibernate.connection.url">jdbc:mysql://localhost/avaliacao</property>
-		<!-- propriedade em que deve ser atribuído a username do banco -->
-		<property name="hibernate.connection.username">root</property>
-		<!-- propriedade em que deve ser atribuído a senha do banco -->
-		<property name="hibernate.connection.password">root</property>
-		<!-- propriedade Escolhe o dialeto do Banco de Dados. Nesse caso MySQL -->
-		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
-		<!-- propriedade que mostra os comandos sql utilizados no Console da IDE -->
+		
 		<property name="show_sql">true</property>
+		<!-- <property name="hibernate.format_sql">true</property>  -->
 
 		<!-- Classes que irão mapear as Entidades do Banco -->
-		<mapping class="br.ufjf.model.Avaliacao" />
-		<mapping class="br.ufjf.model.Curso" />
-		<mapping class="br.ufjf.model.Disciplina" />
-		<mapping class="br.ufjf.model.Pergunta" />
-		<mapping class="br.ufjf.model.Professor" />
-		<mapping class="br.ufjf.model.Questionario" />
-		<mapping class="br.ufjf.model.Resposta" />
-		<mapping class="br.ufjf.model.TipoPergunta" />
-		<mapping class="br.ufjf.model.TipoQuestionario" />
-		<mapping class="br.ufjf.model.Turma" />
-		<mapping class="br.ufjf.model.Usuario" />
+		<mapping class="br.ufjf.avaliacao.model.Avaliacao" />
+		<mapping class="br.ufjf.avaliacao.model.Curso" />
+		<mapping class="br.ufjf.avaliacao.model.Disciplina" />
+		<mapping class="br.ufjf.avaliacao.model.Pergunta" />
+		<mapping class="br.ufjf.avaliacao.model.PrazoQuestionario" />
+		<mapping class="br.ufjf.avaliacao.model.Questionario" />
+		<mapping class="br.ufjf.avaliacao.model.Resposta" />
+		<mapping class="br.ufjf.avaliacao.model.RespostaEspecifica" />
+		<mapping class="br.ufjf.avaliacao.model.Turma" />
+		<mapping class="br.ufjf.avaliacao.model.Usuario" />
 	</session-factory>
 </hibernate-configuration>

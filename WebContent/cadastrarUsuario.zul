@@ -1,0 +1,56 @@
+<?page title="Cadastro de Usuário" contentType="text/html;charset=UTF-8"?>
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<window style="text-align:center;" id="win" title="Cadastro de Usuário" border="normal"
+	closable="true" onClose="Executions.sendRedirect(null)">
+	<div style="width:350px;" apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.UsuariosController')"
+		form="@id('fm') @load(vm.usuario) @save(vm.usuario, before='cadastra')"
+		id="form">
+		<grid>
+			<columns>
+				<column align="center" />
+				<column align="center" />
+			</columns>
+			<rows>
+				<row>
+					<label value="Tipo de Usuário: " />
+					<combobox selectedItem="@bind(fm.tipoUsuario)"
+						readonly="true"
+						onSelect="@command('desabilita', combobox=self)">
+						<comboitem label="Aluno" value="2"></comboitem>
+						<comboitem label="Coordenador" value="0"></comboitem>
+						<comboitem label="Professor" value="1"></comboitem>
+					</combobox>
+				</row>
+				<row>
+					<label value="Nome: " />
+					<textbox value="@bind(fm.nome)" />
+				</row>
+				<row>
+					<label value="Email: " />
+					<textbox value="@bind(fm.email)" />
+				</row>
+				<row>
+					<label value="Senha: " />
+					<textbox value="@bind(fm.senha)" />
+				</row>
+				<row>
+					<label value="Curso: " />
+					<combobox
+						onCreate="@command('setCmbCurso', cmbCurso=self)" id="cmbCurso"
+						model="@load(vm.cursos)" selectedItem="@bind(fm.curso)"
+						autodrop="true" readonly="true">
+						<template name="model">
+							<comboitem label="@load(each.nomeCurso)" />
+						</template>
+					</combobox>
+				</row>
+			</rows>
+		</grid>
+		<separator />
+		<div align="center">
+			<button label="Cadastrar" onClick="@command('cadastra')" />
+		</div>
+		<separator />
+	</div>
+</window>

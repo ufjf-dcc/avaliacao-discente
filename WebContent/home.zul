@@ -1,9 +1,18 @@
 <?page title="Home" contentType="text/html;charset=UTF-8"?>
-
+<?link rel="shortcut icon" type="image/x-icon" href="/img/ufjf.ico"?>
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
 <zk>
-	<div apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('br.ufjf.controller.HomeController')">
-		<window title="Home" border="normal">
-		<separator />Bem Vindo Aluno!<separator />
-		</window>
+	<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.HomeController')">
+
+		<include src="@load(vm.menu)" />
+
+		<div align="center">
+			Bem Vindo(a),
+			<label value="@bind(vm.usuario.nome)"
+				style="font-weight:bold" />
+			!
+		</div>
+
 	</div>
 </zk>

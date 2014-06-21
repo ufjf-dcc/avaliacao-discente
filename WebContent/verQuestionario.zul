@@ -1,0 +1,61 @@
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<zk>
+	<window title="Vizualização de Questionario" border="normal"
+		closable="true" width="80%">
+		<div apply="org.zkoss.bind.BindComposer" style="margin:5px;"
+			viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
+			form="@id('fm') @load(vm.questSessao) @save(vm.questSessao, before='salvarQuest')"
+			id="form">
+			<grid model="@load(vm.prazosSessao)">
+				<auxhead>
+					<auxheader label="Título: ">
+						<label value="@load(fm.tituloQuestionario)" />
+					</auxheader>
+					<auxheader label="Tipo: ">
+						<label value="@load(fm.nomeTipoQuestionario)" />
+					</auxheader>
+				</auxhead>
+				<columns>
+					<column align="center" label="Data Inicial" />
+					<column align="center" label="Data Final" />
+					<column align="center" label="Semestre" />
+					<column align="center" label="Opções" />
+				</columns>
+				<template name="model">
+					<row>
+						<label value="@load(each.dataInicialFormatada)" />
+						<label value="@load(each.dataFinalFormatada)" />
+						<label value="@load(each.semestre)" />
+						<div>
+							<button image="/img/delete.png"
+								onClick="@command('excluiPrazo',prazo=each)" />
+						</div>
+					</row>
+				</template>
+			</grid>
+			<grid model="@load(vm.perguntasSessao)">
+				<auxhead>
+					<auxheader style="text-align:center" colspan="3"
+						label="Perguntas">
+					</auxheader>
+				</auxhead>
+				<columns>
+					<column align="center" label="Título da Pergunta" />
+					<column align="center" label="Tipo de Resposta" />
+				</columns>
+				<template name="model">
+					<row>
+						<label value="@load(each.tituloPergunta)" />
+						<label value="@load(each.nomeTipoPergunta)" />
+					</row>
+				</template>
+			</grid>
+			<div align="center" style="margin-top:5px;">
+				<button image="/img/edit.png"
+					onClick="@command('editarQuest')" />
+				<button image="/img/delete.png"
+					onClick="@command('exclui')" />
+			</div>
+		</div>
+	</window>
+</zk>

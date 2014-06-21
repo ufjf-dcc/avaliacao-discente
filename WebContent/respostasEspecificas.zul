@@ -1,0 +1,13 @@
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<window width="400px" title="Respostas" border="normal"
+	apply="org.zkoss.bind.BindComposer" closable="true"
+	viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.RespostasEspecificasController')">
+	<grid model="@load(vm.respostas)">
+		<columns></columns>
+		<template name="model">
+			<row>
+				<textbox value="@bind(each.respostaEspecifica)" />
+			</row>
+		</template>
+	</grid>
+</window>

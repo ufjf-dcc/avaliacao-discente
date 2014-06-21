@@ -1,0 +1,58 @@
+<?page title="Gerenciar Disciplinas" contentType="text/html;charset=UTF-8"?>
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<zk>
+<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.DisciplinasController')">
+
+<include src="@load(vm.menu)" />
+	
+		
+		
+			<grid model="@load(vm.disciplinas) @template(each.editingStatus ? 'editable' : 'noneditable')">
+				<columns>
+					<column style="width:150px;" label="Código"
+						align="center" sort="auto(codDisciplina)" />
+					<column label="Disciplina" align="center"
+						sort="auto(nomeDisciplina)" />
+					<column style="width:100px;" label="Opções"
+						align="center" />
+				</columns>
+				<template name="editable">
+					<row>
+						<textbox
+							value="@load(each.codDisciplina) @save(each.codDisciplina, before='confirm')" />
+						<textbox
+							value="@load(each.nomeDisciplina) @save(each.nomeDisciplina, before='confirm')" />
+						<div>
+							<button image="/img/confirm.png"
+								onClick="@command('confirm', disciplina=each)" />
+							<button image="/img/cancel.png"
+								onClick="@command('changeEditableStatus', disciplina=each)" />
+						</div>
+					</row>
+				</template>
+				<template name="noneditable">
+					<row>
+						<label value="@load(each.codDisciplina)" />
+						<label value="@load(each.nomeDisciplina)" />
+						<div>
+							<button image="/img/edit.png"
+								onClick="@command('changeEditableStatus', disciplina=each)" />
+							<button image="/img/delete.png"
+								onClick="@command('exclui', disciplina=each)" />
+						</div>
+					</row>
+				</template>
+			</grid>
+			
+			<div align="center">
+				<button label="Cadastrar nova disciplina"
+					onClick="@command('abreCadastro')" />
+				<button upload="true"
+					label="Cadastrar disciplinas via arquivo CSV"
+					onUpload="@command('upload', evt=event)" />
+			</div>
+	
+	</div>
+	
+</zk>

@@ -1,0 +1,117 @@
+<?page title="Avaliações Disponíveis" contentType="text/html;charset=UTF-8"?>
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<zk>
+	<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AvaliacoesDisponiveisController')">
+		<include src="@load(vm.menu)" />
+		<tabbox>
+			<tabs width="100%">
+				<tab label="Avaliação de Coordenadores" />
+				<tab label="Avaliação de Professores" />
+				<tab label="Auto-Avaliação" />
+				<tab label="Avaliação de Infraestrutura" />
+			</tabs>
+			<tabpanels>
+				<tabpanel>
+					<grid model="@load(vm.prazoCoord)">
+						<columns>
+							<column label="Título" align="center" />
+							<column label="Coord. Avaliado"
+								align="center" />
+							<column label="Data Inicial" align="center" />
+							<column label="Data Final" align="center" />
+							<column label="Opções" align="center" />
+						</columns>
+						<template name="model">
+							<row>
+								<label
+									value="@load(vm.questionarioCoord.tituloQuestionario)" />
+								<label
+									onCreate="@command('avaliado', label=self)" />
+								<label
+									value="@load(each.dataInicialFormatada)" />
+								<label
+									value="@load(each.dataFinalFormatada)" />
+								<div>
+									<button
+										onCreate="@command('avaliacaoDisponivel', button=self, questionario=vm.questionarioCoord)"
+										onClick="@command('avaliar', questionario=vm.questionarioCoord)" />
+								</div>
+							</row>
+						</template>
+					</grid>
+				</tabpanel>
+				<tabpanel>
+					<grid>
+						<columns>
+							<column label="Título" align="center" />
+							<column label="Data Inicial" align="center" />
+							<column label="Data Final" align="center" />
+							<column label="Opções" align="center" />
+						</columns>
+						<template name="model">
+							<row>
+								<label
+									value="@load(each.questionario.tituloQuestionario)" />
+								<label value="" />
+								<label value="" />
+								<div>
+									<button label="Avaliar"
+										onClick="@command('avaliar')" />
+								</div>
+							</row>
+						</template>
+					</grid>
+				</tabpanel>
+				<tabpanel>
+					<grid model="@load(vm.prazoAuto)">
+						<columns>
+							<column label="Título" align="center" />
+							<column label="Data Inicial" align="center" />
+							<column label="Data Final" align="center" />
+							<column label="Opções" align="center" />
+						</columns>
+						<template name="model">
+							<row>
+								<label
+									value="@load(vm.questionarioAuto.tituloQuestionario)" />
+								<label
+									value="@load(each.dataInicialFormatada)" />
+								<label
+									value="@load(each.dataFinalFormatada)" />
+								<div>
+									<button label="Avaliar"
+										onClick="@command('avaliar', questionario=vm.questionarioAuto)" />
+								</div>
+							</row>
+						</template>
+					</grid>
+				</tabpanel>
+				<tabpanel>
+					<grid model="@load(vm.prazoInfra)">
+						<columns>
+							<column label="Título" align="center" />
+							<column label="Data Inicial" align="center" />
+							<column label="Data Final" align="center" />
+							<column label="Opções" align="center" />
+						</columns>
+						<template name="model">
+							<row>
+								<label
+									value="@load(vm.questionarioInfra.tituloQuestionario)" />
+								<label
+									value="@load(each.dataInicialFormatada)" />
+								<label
+									value="@load(each.dataFinalFormatada)" />
+								<div>
+									<button label="Avaliar"
+										onClick="@command('avaliar', questionario=vm.questionarioInfra)" />
+								</div>
+							</row>
+						</template>
+					</grid>
+				</tabpanel>
+			</tabpanels>
+		</tabbox>
+	</div>
+</zk>

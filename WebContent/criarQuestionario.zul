@@ -1,0 +1,115 @@
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<window style="text-align:center;" id="win" title="Criar Questionário"
+	border="normal" closable="true">
+	<div style="width:800px;margin:5px;"
+		apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
+		form="@id('fm') @load(vm.questionario) @save(vm.questionario, before='criarQuestionario')"
+		id="form" onCreate="@command('zerarQuestionario')">
+
+		<!-- Exibição das perguntas que vao sendo cadastradas
+			e cadastro dos dados do questionario -->
+		<grid model="@load(vm.perguntas)">
+			<auxhead style="text-align:center">
+				<auxheader label="Título:">
+					<textbox value="@bind(fm.tituloQuestionario)" />
+				</auxheader>
+				<auxheader label="Tipo:">
+					<combobox model="@load(vm.tiposQuestionario)"
+						selectedItem="@bind(fm.tipoQuestionario)" readonly="true">
+						<template name="model">
+							<comboitem
+								label="@load(each eq 0 ? 'Avalição de Coordenador' : each eq 1 ? 'Avaliação de Professor' : each eq 2 ? 'Autoavaliação' : 'Avaliação de Infrestrutura')" />
+						</template>
+					</combobox>
+				</auxheader>
+			</auxhead>
+			<auxhead>
+				<auxheader align="center" label="Perguntas" colspan="3" />
+			</auxhead>
+			<columns style="text-align:center;">
+				<column label="Pergunta" />
+				<column label="Opções" />
+			</columns>
+			<template name="model">
+				<row>
+					<textbox width="85%"
+						value="@bind(each.tituloPergunta)" />
+					<div style="text-align:center">
+						<button image="/img/delete.png"
+							onClick="@command('excluiPergunta',pergunta=each)" />
+						<button label="Duplicar"
+							onClick="@command('duplicarPergunta',pergunta=each)" />
+						<button label="top"
+							onClick="@command('top',pergunta=each)" />
+						<button image="/img/up.png"
+							onClick="@command('up',pergunta=each)"
+							disabled="@load(not (forEachStatus.index eq forEachStatus.begin) ? 'false' : 'true')" />
+						<button image="/img/down.png"
+							onClick="@command('down',pergunta=each)"
+							disabled="@load(not (forEachStatus.index + 1 eq forEachStatus.end) ? 'false' : 'true')" />
+						<button label="bottom"
+							onClick="@command('bottom',pergunta=each)" />
+					</div>
+				</row>
+			</template>
+		</grid>
+
+		<!-- Criação da pergunta e de suas respostas -->
+
+		<div>
+			<grid>
+				<columns>
+					<column align="center" label="Pergunta" />
+					<column align="center" label="Tipo de Pergunta" />
+					<column align="center" label="Resposta" />
+				</columns>
+				<rows>
+					<row>
+						<div>
+							<textbox width="80%"
+								value="@bind(vm.pergunta.tituloPergunta)" />
+							<button label="Ver Respostas"
+								onClick="@command('respostas')" />
+						</div>
+						<combobox model="@load(vm.tiposPergunta)"
+							selectedItem="@bind(vm.pergunta.tipoPergunta)"
+							onChange="@command('tipoPergunta', textbox=texto, div=spinner, button=add)"
+							readonly="true">
+							<template name="model">
+								<comboitem
+									label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Caixa de Seleção' : each eq 2 ? 'Múltipla Escolha' : 'Escala Numérica')" />
+							</template>
+						</combobox>
+						<div
+							form="@id('fr') @load(vm.resposta) @save(vm.resposta, before='addRespostaEspecifica')">
+							<textbox id="texto"
+								value="@bind(fr.respostaEspecifica)" />
+							<div height="20px" id="spinner"
+								visible="false">
+								<label value="De: " />
+								<spinner value="@bind(vm.spinnerInicio)"
+									width="60px" readonly="true" constraint="min 0" />
+								<label value=" à " />
+								<spinner value="@bind(vm.spinnerFinal)"
+									width="60px" readonly="true" constraint="min 0" />
+							</div>
+							<separator />
+							<button disabled="true" id="add"
+								label="Adicionar" onClick="@command('addRespostaEspecifica')" />
+							<button disabled="false" label="Finalizar"
+								onClick="@command('addPergunta',button=self)" />
+						</div>
+					</row>
+				</rows>
+			</grid>
+		</div>
+
+		<!-- Botão para criar e salvar o questionario -->
+		<button style="margin-top:5px;" label="Criar Questionário"
+			onClick="@command('criarQuestionario')" />
+		<popup id="respostas">
+			<include src="/respostasEspecificas.zul" />
+		</popup>
+	</div>
+</window>

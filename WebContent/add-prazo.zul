@@ -1,0 +1,45 @@
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<zk>
+	<window id="win" style="text-align:center;" width="350px"
+		title="Adicionar Prazo de Questionário" border="normal"
+		closable="true">
+		<div apply="org.zkoss.bind.BindComposer" style="margin:5px;"
+			viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
+			form="@id('fm') @load(vm.prazo) @save(vm.prazo, before='addPrazo')"
+			id="form">
+			<grid>
+				<columns>
+					<column />
+					<column />
+				</columns>
+				<rows>
+					<row>
+						<label value="Data Inicial: " />
+						<datebox width="100%"
+							value="@bind(fm.dataInicial)" format="dd/MM/yyyy"
+							constraint="no past" />
+					</row>
+					<row>
+						<label value="Data Final: " />
+						<datebox width="100%"
+							value="@bind(fm.dataFinal)" format="dd/MM/yyyy"
+							constraint="no past" />
+					</row>
+					<row>
+						<label value="Semestre: " />
+						<combobox
+							model="@load(vm.semestres)" selectedItem="@bind(vm.semestreEscolhido)">
+							<template name="model">
+								<comboitem label="@load(each)"/>
+							</template>
+						</combobox>
+					</row>
+				</rows>
+			</grid>
+			<div align="center" style="margin-top:5px;">
+				<button label="Adicionar Prazo de Questionário"
+					onClick="@command('addPrazo', window=win)" />
+			</div>
+		</div>
+	</window>
+</zk>
