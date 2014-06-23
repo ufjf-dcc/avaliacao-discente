@@ -1,5 +1,5 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
-<window id="win" style="text-align:center;" title="Avaliar" border="normal"
+<window style="text-align:center;" title="Avaliar" border="normal"
 	closable="true" width="80%">
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.HomeAlunoController')"
@@ -36,7 +36,7 @@
 		</grid>
 		<div align="center">
 			<button label="Terminar e Enviar Avaliação"
-				onClick="@command('terminarAvaliacao', window=win)" />
+				onClick="@command('terminarAvaliacao')" />
 		</div>
 	</div>
 </window>

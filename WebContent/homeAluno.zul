@@ -32,6 +32,8 @@
 				</row>
 			</template>
 		</grid>
+	<button label="Adicionar Prazo"
+				onClick="@command('proximoQuestionario')" />
 
 	</div>
 </zk>

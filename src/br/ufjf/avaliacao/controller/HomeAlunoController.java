@@ -13,9 +13,13 @@ import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Div;
+import org.zkoss.zul.Iframe;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
+import org.zkoss.zul.Tab;
+import org.zkoss.zul.Tabbox;
+import org.zkoss.zul.Tabs;
 import org.zkoss.zul.Window;
 
 import br.ufjf.avaliacao.model.Avaliacao;
@@ -55,13 +59,176 @@ public class HomeAlunoController extends GenericController {
 	private Resposta resposta = new Resposta();
 	private List<Resposta> respostas = new ArrayList<Resposta>();
 	private Usuario coordAvaliado = usuarioDAO.retornaCoordAvaliado(usuario);
+	
+	private List<Questionario> questionarios = new ArrayList<Questionario>();
+	private List<Usuario> ordemProfessores = new ArrayList<Usuario>();
+	private int quantidadeQuestionarios;
+	private List<Questionario> questionariosExibidos = new ArrayList<Questionario>();
+
+	
+	private String selecionado = new String();
+	
+	private Questionario[] vetorQuestionarios;
+	private int indiceQuestionario=0;
+	
+	public Questionario[] getQuestionarios() {//em formato vetor para o zul
+		return vetorQuestionarios;
+	}
+	public int getQuantidadeQuestionarios() {//em formato vetor para o zul
+		return quantidadeQuestionarios;
+	}
+	public int getIndiceQuestionario() {//em formato vetor para o zul
+		return (int)session.getAttribute("indiceQuestionario");
+	}
+	
 
 	@Init
 	public void init() throws HibernateException, Exception {
 		testaPermissaoAluno();
+		
+		if(questionarios.size()==0)
+		{
+			questionarios = questionariosDisponiveis();
+			vetorQuestionarios = new Questionario[questionarios.size()];
+			for(int i=0;i<questionarios.size();i++)
+				vetorQuestionarios[i]=questionarios.get(i);
+			quantidadeQuestionarios=questionarios.size();		
+		}
+		if(session.getAttribute("janelas")==null)
+			session.setAttribute("janelas", new ArrayList<Window>());
 
+		if(session.getAttribute("indiceJanela")==null)
+			session.setAttribute("indiceJanela", 0);
+		
+		if(session.getAttribute("indiceQuestionario")==null)
+			session.setAttribute("indiceQuestionario", 0);
 	}
 
+	
+	
+	public void funcao(){
+		
+		List<Questionario> todosQuestionarios = questionariosDisponiveis();
+		
+		
+//		List<Window> todosQuestionarios = todosAsWindow;	
+//		int indiceDasWindows;
+		
+//		validar windows quando confirmar
+//			- cada window ou esta completamente preenchida ou nao está preenchida
+//			- vai ter q poder limpar as respostas
+//			- um botao pra passar pra proxima window com o procimo questionario tudo controlado
+		
+	}
+	
+	
+	
+	// essa função diz quem precisa ser avaliado agora
+	private List<Questionario> questionariosDisponiveis() {
+			
+			List<Questionario> questionariosAAvaliar = new ArrayList<Questionario>();
+			
+			if (!avaliacaoDAO.jaAvaliouCoordenadorDataAtual(usuario) //verificando se ha questionrio coordenador pra ser avaliado
+					&& questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario) != null
+					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario))!=null)
+					
+					questionariosAAvaliar.add(questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario));
+		
+			
+			if (!avaliacaoDAO.jaSeAvaliorDataAtual(usuario) //verificando se ha questionrio autoavaliação pra ser avaliado
+					&& questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario) != null
+					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario))!=null)
+						
+				questionariosAAvaliar.add(questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario));
+	
+			if (!avaliacaoDAO.jaAvaliouInfraestruturaDataAtual(usuario)
+					&& questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario) != null
+					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario))!=null) 
+			
+				questionariosAAvaliar.add(questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario));
+			
+				for(int j=0;j<turmasDoUsuario.size();j++)
+				{
+					if(!avaliacaoDAO.jaAvaliou(usuario, turmasDoUsuario.get(j)))
+					{
+						
+						List<Usuario> professoresTurma = usuarioDAO.retornaProfessoresTurma(turmasDoUsuario.get(j));
+
+						for(int i=0;i<professoresTurma.size();i++)
+						{
+							if(!avaliacaoDAO.alunoJaAvaliouEsteProfessor(usuario, professoresTurma.get(i),turmasDoUsuario.get(j)))
+							{
+								ordemProfessores.add(professoresTurma.get(i));
+								questionariosAAvaliar.add(questionarioProf);
+							}
+						}
+
+					}
+				}
+				return questionariosAAvaliar;
+	}
+
+		
+	@Command
+	public void proximoQuestionario()
+	{
+		if(questionarios.size()==0)
+			questionarios=questionariosDisponiveis();
+		
+		Messagebox.show(""+ (int) session.getAttribute("indiceQuestionario")+"    "+questionarios.size());
+
+		if(((int)session.getAttribute("indiceQuestionario"))<questionarios.size())
+		{
+			if(((int)session.getAttribute("indiceJanela"))==((List<Window>) session.getAttribute("janelas")).size())// se o numero de janelas e  o indice forem iguais cria uma nova janela
+			{
+				session.setAttribute("questionarioAtual", questionarios.get((int)session.getAttribute("indiceQuestionario")));
+				session.setAttribute("indiceQuestionario", 1 +(int) session.getAttribute("indiceQuestionario"));
+				Window novaJanela= new Window();
+
+				novaJanela = (Window) Executions.createComponents("/avaliacoes.zul",null, null);
+				if(((List<Window>) session.getAttribute("janelas")).add(novaJanela));
+				((List<Window>) session.getAttribute("janelas")).get(((List<Window>) session.getAttribute("janelas")).size()-1).doModal();
+				session.setAttribute("indiceJanela", 1 + (int)session.getAttribute("indiceJanela"));
+				if(((List<Window>) session.getAttribute("janelas")).size()>=2)
+					((List<Window>) session.getAttribute("janelas")).get(((List<Window>) session.getAttribute("janelas")).size()-2).setVisible(false);
+			}
+
+			else
+			{
+				session.setAttribute("indiceQuestionario", 1 + (int)session.getAttribute("indiceQuestionario"));
+				session.setAttribute("indiceJanela",1 + (int)session.getAttribute("indiceJanela"));
+				session.setAttribute("questionarioAtual", questionarios.get((int)session.getAttribute("indiceQuestionario")));
+				((List<Window>) session.getAttribute("janelas")).get((int)session.getAttribute("indiceJanela")).setVisible(true);
+				if(((List<Window>) session.getAttribute("janelas")).size()>(-1 + (int)session.getAttribute("indiceJanela")))
+					((List<Window>) session.getAttribute("janelas")).get(-1 + (int)session.getAttribute("indiceJanela")).setVisible(false);
+			}
+		}
+		else
+			Messagebox.show("Já chegou ao limite de questionarios");
+		
+	}
+
+
+	@Command
+	public void questionarioAnterior()
+	{
+		if((int) session.getAttribute("indiceJanela")>0)
+		{
+			session.setAttribute("indiceQuestionario", -1 + (int)session.getAttribute("indiceQuestionario"));
+			session.setAttribute("indiceJanela",-1 + (int)session.getAttribute("indiceJanela"));
+			session.setAttribute("questionarioAtual", questionarios.get((int)session.getAttribute("indiceQuestionario")));
+			((List<Window>) session.getAttribute("janelas")).get((int)session.getAttribute("indiceJanela")).setVisible(true);
+			if(((List<Window>) session.getAttribute("janelas")).size()>(1+(int)session.getAttribute("indiceJanela")))
+				((List<Window>) session.getAttribute("janelas")).get(1 + (int)session.getAttribute("indiceJanela")).setVisible(false);
+		}
+	
+		else
+			Messagebox.show("Já chegou ao limite de questionarios");
+	
+	}
+
+	
+		
 	@Command
 	public void avaliar(
 			@BindingParam("questionario") Questionario questionario,
@@ -108,7 +275,7 @@ public class HomeAlunoController extends GenericController {
 			window.setTitle("Avaliação de Coordenador - "
 					+ usuarioDAO.retornaCoordAvaliado(usuario).getNome());
 			window.doModal();
-
+					session.setAttribute("avaliarCoordenador", "/avaliar.zul");
 		} else {
 			// se ainda não fez a auto avaliação e se tem uma auto
 			// avaliação pra
@@ -173,7 +340,7 @@ public class HomeAlunoController extends GenericController {
 	// salva a avaliação e verifica se vai precisar retornar na função que
 	// verifica quem deve ser avalido agora (avaliarAuz)
 	@Command
-	public void terminarAvaliacao(@BindingParam("window") Window win) {
+	public void terminarAvaliacao() {
 
 		Usuario avaliado = null;
 		Turma turmaUsada = null;
@@ -253,7 +420,6 @@ public class HomeAlunoController extends GenericController {
 								avaliarAux();
 							}
 						});
-				win.detach();
 
 			}
 			// se acabar de avaliar a ultima coisa(que seria o ultimo professor
@@ -267,7 +433,6 @@ public class HomeAlunoController extends GenericController {
 								Executions.sendRedirect(null);
 							}
 						});
-				win.detach();
 			}
 		}
 
@@ -326,8 +491,7 @@ public class HomeAlunoController extends GenericController {
 
 		resposta.setResposta(escolha);
 		resposta.setPergunta(perg);
-		resposta.setSemestre(((Turma) session.getAttribute("turma"))
-				.getSemestre());
+		resposta.setSemestre(((Turma) session.getAttribute("turma")).getSemestre());
 
 		for (int i = 0; i < respostas.size(); i++)
 			if (respostas.get(i).getPergunta() == resposta.getPergunta()) {
@@ -365,12 +529,52 @@ public class HomeAlunoController extends GenericController {
 				+ coordAvaliado.getCurso().getNomeCurso());
 	}
 
+	public PrazoQuestionario getPrazo() {
+		return prazo;
+	}
+
+	public void setPrazo(PrazoQuestionario prazo) {
+		this.prazo = prazo;
+	}
+
+	public Questionario getQuestionarioAuto() {
+		return questionarioAuto;
+	}
+
 	public Questionario getQuestionarioAtual() {
 		return ((Questionario) session.getAttribute("questionarioAtual"));
 	}
 
 	public void setQuestionarioAtual(Questionario questionarioAtual) {
 		session.setAttribute("questionarioAtual", questionarioAtual);
+	}
+
+	public void setQuestionarioAuto(Questionario questionarioAuto) {
+		this.questionarioAuto = questionarioAuto;
+	}
+
+	public Questionario getQuestionarioCoord() {
+		return questionarioCoord;
+	}
+
+	public void setQuestionarioCoord(Questionario questionarioCoord) {
+		this.questionarioCoord = questionarioCoord;
+	}
+
+	public Questionario getQuestionarioInfra() {
+		return questionarioInfra;
+	}
+
+	public void setQuestionarioInfra(Questionario questionarioInfra) {
+		this.questionarioInfra = questionarioInfra;
+	}
+
+	public Questionario getQuestionarioProf() {
+		return questionarioProf;
+	}
+
+	public void setQuestionarioProf(Questionario questionarioProf) {
+		this.questionarioProf = questionarioProf;
 	}
 
 	public Resposta getResposta() {
@@ -389,30 +593,6 @@ public class HomeAlunoController extends GenericController {
 		this.respostas = respostas;
 	}
 
-	public Questionario getQuestionarioCoord() {
-		return questionarioCoord;
-	}
-
-	public void setQuestionarioCoord(Questionario questionarioCoord) {
-		this.questionarioCoord = questionarioCoord;
-	}
-
-	public Questionario getQuestionarioAuto() {
-		return questionarioAuto;
-	}
-
-	public void setQuestionarioAuto(Questionario questionarioAuto) {
-		this.questionarioAuto = questionarioAuto;
-	}
-
-	public Questionario getQuestionarioInfra() {
-		return questionarioInfra;
-	}
-
-	public void setQuestionarioInfra(Questionario questionarioInfra) {
-		this.questionarioInfra = questionarioInfra;
-	}
-
 	public List<Turma> getTurmasDoUsuario() {
 		return turmasDoUsuario;
 	}
@@ -421,19 +601,6 @@ public class HomeAlunoController extends GenericController {
 		this.turmasDoUsuario = turmasDoUsuario;
 	}
 
-	public Questionario getQuestionarioProf() {
-		return questionarioProf;
-	}
+	
 
-	public void setQuestionarioProf(Questionario questionarioProf) {
-		this.questionarioProf = questionarioProf;
-	}
-
-	public PrazoQuestionario getPrazo() {
-		return prazo;
-	}
-
-	public void setPrazo(PrazoQuestionario prazo) {
-		this.prazo = prazo;
-	}
 }

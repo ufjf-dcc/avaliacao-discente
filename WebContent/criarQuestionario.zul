@@ -50,6 +50,8 @@
 							disabled="@load(not (forEachStatus.index + 1 eq forEachStatus.end) ? 'false' : 'true')" />
 						<button label="bottom"
 							onClick="@command('bottom',pergunta=each)" />
+						<button label="list perguntas"
+							onClick="@command('listarPerguntas',pergunta=each)" />
 					</div>
 				</row>
 			</template>
