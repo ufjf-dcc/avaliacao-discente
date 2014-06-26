@@ -104,7 +104,12 @@ public class HomeAlunoController extends GenericController {
 			session.setAttribute("indiceQuestionario", 0);
 	}
 
-	
+	@Command
+	public void getCoor()
+	{
+		System.out.println("coor:"+usuario.getCurso().getCoordenador().getNome());
+		System.out.println("vice:"+usuario.getCurso().getViceCoordenador().getNome());
+	}
 	
 	public void funcao(){
 		
@@ -135,7 +140,7 @@ public class HomeAlunoController extends GenericController {
 					questionariosAAvaliar.add(questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario));
 		
 			
-			if (!avaliacaoDAO.jaSeAvaliorDataAtual(usuario) //verificando se ha questionrio autoavaliação pra ser avaliado
+			if (!avaliacaoDAO.jaSeAvaliouDataAtual(usuario) //verificando se ha questionrio autoavaliação pra ser avaliado
 					&& questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario) != null
 					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario))!=null)
 						
@@ -175,8 +180,6 @@ public class HomeAlunoController extends GenericController {
 		if(questionarios.size()==0)
 			questionarios=questionariosDisponiveis();
 		
-		Messagebox.show(""+ (int) session.getAttribute("indiceQuestionario")+"    "+questionarios.size());
-
 		if(((int)session.getAttribute("indiceQuestionario"))<questionarios.size())
 		{
 			if(((int)session.getAttribute("indiceJanela"))==((List<Window>) session.getAttribute("janelas")).size())// se o numero de janelas e  o indice forem iguais cria uma nova janela
@@ -280,7 +283,7 @@ public class HomeAlunoController extends GenericController {
 			// se ainda não fez a auto avaliação e se tem uma auto
 			// avaliação pra
 			// fazer
-			if (!avaliacaoDAO.jaSeAvaliorDataAtual(usuario)
+			if (!avaliacaoDAO.jaSeAvaliouDataAtual(usuario)
 					&& questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario) != null
 					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario))!=null) {
 					

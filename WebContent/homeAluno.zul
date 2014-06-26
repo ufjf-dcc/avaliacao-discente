@@ -32,8 +32,10 @@
 				</row>
 			</template>
 		</grid>
-	<button label="Adicionar Prazo"
+	<button label="Avaliações"
 				onClick="@command('proximoQuestionario')" />
+		<button label="coor"
+				onClick="@command('getCoor')" />
 
 	</div>
 </zk>

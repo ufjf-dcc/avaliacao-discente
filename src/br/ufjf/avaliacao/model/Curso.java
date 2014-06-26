@@ -9,7 +9,10 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -54,13 +57,37 @@ public class Curso implements Serializable {
 	 */
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "curso")
 	private List<Questionario> questionarios = new ArrayList<Questionario>();
+	
+	/**
+	 * Relacionamento N para 1 entre usuário e curso. Mapeando {@link Curso} na
+	 * variável {@code curso} e retorno do tipo {@code LAZY} que indica que
+	 * não será carregado automáticamente este dado quando retornarmos o
+	 * {@link Usuario}.
+	 * 
+	 */
+	@OneToOne(fetch = FetchType.LAZY, mappedBy="curso")
+	@JoinColumn(name = "Usuario_idUsuario", nullable = true)
+	private Usuario coordenador;
+	
+	
+	@OneToOne(fetch = FetchType.LAZY, mappedBy="curso")
+	@JoinColumn(name = "Usuario_idUsuario1", nullable = true)
+	private Usuario viceCoordenador;
+
+	public Curso() {
+	
+	}
 
 	public Curso(String nomeCurso) {
 		this.nomeCurso = nomeCurso;
 	}
 
-	public Curso() {
+	public Usuario getCoordenador() {
+		return coordenador;
+	}
 
+	public void setCoordenador(Usuario coordenador) {
+		this.coordenador = coordenador;
 	}
 
 	public int getIdCurso() {
@@ -85,6 +112,14 @@ public class Curso implements Serializable {
 
 	public void setQuestionarios(List<Questionario> questionarios) {
 		this.questionarios = questionarios;
+	}
+
+	public Usuario getViceCoordenador() {
+		return viceCoordenador;
+	}
+
+	public void setViceCoordenador(Usuario viceCoordenador) {
+		this.viceCoordenador = viceCoordenador;
 	}
 
 }

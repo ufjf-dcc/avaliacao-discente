@@ -257,7 +257,7 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 			avaliacoes.addAll(avaliacaoDAO
 					.getAvaliacoesPrazoQuestionario(prazos.get(i))); // olha a
 																		// quais
-																		// avaliaçoes
+																		// avaliaï¿½oes
 																		// esse
 																		// quesntionario
 																		// pertence
