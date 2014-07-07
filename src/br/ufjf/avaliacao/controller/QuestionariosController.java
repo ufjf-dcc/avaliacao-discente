@@ -13,8 +13,11 @@ import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zul.Button;
+import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Div;
+import org.zkoss.zul.Iframe;
 import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.Tab;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
@@ -44,7 +47,6 @@ public class QuestionariosController extends GenericController {
 	private List<Questionario> questionariosInfra = questionarioDAO
 			.retornaQuestinariosCursoTipo(usuario.getCurso(), 3);
 	private boolean ativo;
-	private List<Pergunta> perguntas = new ArrayList<Pergunta>();
 	private List<Pergunta> perguntasSessao = new ArrayList<Pergunta>();
 	private Pergunta pergunta = new Pergunta();
 	private PerguntaDAO perguntaDAO = new PerguntaDAO();
@@ -61,29 +63,217 @@ public class QuestionariosController extends GenericController {
 	private TurmaDAO turmaDAO = new TurmaDAO();
 	private List<String> semestres = turmaDAO.getAllSemestres();
 	private String semestreEscolhido;
-	private Integer spinnerInicio;
-	private Integer spinnerFinal;
+
 	private List<RespostaEspecifica> respostas = new ArrayList<RespostaEspecifica>();
 	private RespostaEspecifica resposta = new RespostaEspecifica();
 	private RespostaEspecificaDAO respostaEspecificaDAO = new RespostaEspecificaDAO();
 
+	private List<Pergunta> perguntas = new ArrayList<Pergunta>();
+
+
+	
 	@Init
 	public void init() throws HibernateException, Exception {
 		testaPermissaoCoord();
-		if (((Questionario) session.getAttribute("questionario")) != null) {
+		if (((Questionario) session.getAttribute("questionario")) != null) 
+		{
 			questSessao = (Questionario) session.getAttribute("questionario");
 			prazosSessao = questSessao.getPrazos();
 			perguntasSessao = questSessao.getPerguntas();
 		}
+		
+	}
+
+	
+	
+	@Command
+	public void criarQuest() { // seta novos parametros para um novo questionario e abre a janela de questionario
+
+		session.setAttribute("indice_tab", 0);
+		session.setAttribute("lista_de_objetos",new ArrayList<ArrayList<String>>());
+		((List<List<String>>) session.getAttribute("lista_de_objetos")).add(new ArrayList<String>());
+		session.setAttribute("spinnerInicio", new ArrayList<Integer>());
+		session.setAttribute("spinnerFinal", new ArrayList<Integer>());
+		session.setAttribute("titulos", new ArrayList<String>());
+		session.setAttribute("tabs", new ArrayList<Tab>());
+		session.setAttribute("ultimo_indice_lista", 0);
+		session.setAttribute("tipo_pergunta", new ArrayList<String>());
+		session.setAttribute("tipoPergunta", 0);
+
+		
+		Window window = (Window) Executions.createComponents(
+				"/teste.zul", null, null);
+		window.doModal();
+		
 	}
 
 	@Command
-	public void criarQuest() {
-		Window window = (Window) Executions.createComponents(
-				"/criarQuestionario.zul", null, null);
-		window.doModal();
+	public void criarPergunta() // seta novos parametros para um nova pergunta do questionario setado acima
+	{
+		((List<Pergunta>) session.getAttribute("perguntas")).add(new Pergunta());
+		((List<List<String>>) session.getAttribute("lista_de_objetos")).add(new ArrayList<String>());
+	}
+	
+	@Command 
+	public void addOpcao(@BindingParam("frame") Iframe frame,@BindingParam("index") String index)
+	{	
+		int indice = Integer.parseInt(index);
+		session.setAttribute("ultimo_indice_lista", indice);
+		frame.invalidate();
+		((List<List<String>>) session.getAttribute("lista_de_objetos")).get(indice).add(nova_resposta);
+	}
+	
+	@Command
+	public void salvarMudancaOpcao(@BindingParam("opcao") String opcao, // para cada mudanca de algum valor de alguma linha no opcoes.zul aqui essa alteração tambem será computada
+			@BindingParam("nova_opcao") String nova_opcao, @BindingParam("url") String url) {
+		List<String> aux = new ArrayList<String>();
+		aux = ((List<List<String>>) session.getAttribute("lista_de_objetos")).get(0);
+		for(int i=0;i<aux.size();i++)
+		{
+			if(aux.get(i)==opcao)
+			{
+				aux.set(i, nova_opcao);
+				break;
+			}
+		}
+	}
+	
+	@Command
+	public void teste(@BindingParam("index") String index)
+	{
+		
+		System.out.println("spinnerInicio - "+((List<Integer>) session.getAttribute("spinnerInicio")).size());
+		for(int i=0;i<((List<Integer>) session.getAttribute("spinnerInicio")).size();i++)
+			System.out.println(i+" = "+((List<Integer>) session.getAttribute("spinnerInicio")).get(i));
+		System.out.println("spinnerFinal - "+((List<Integer>) session.getAttribute("spinnerFinal")).size());
+		for(int i=0;i<((List<Integer>) session.getAttribute("spinnerFinal")).size();i++)
+			System.out.println(i+" = "+((List<Integer>) session.getAttribute("spinnerFinal")).get(i));
+		System.out.println("titulos - "+((List<Integer>) session.getAttribute("titulos")).size());
+		for(int i=0;i<((List<String>) session.getAttribute("titulos")).size();i++)
+			System.out.println(i+" = "+((List<Integer>) session.getAttribute("titulos")).get(i));
+		
+
+	}
+	@Command
+	public void mudancaTituloPergunta(@BindingParam("titulo") String titulo,@BindingParam("index") String index)// para cada mudança no titulo da pergunta, ela será salva em seu respectivo lugar
+	{
+		int indice = Integer.parseInt(index);
+		((List<String>) session.getAttribute("titulos")).set(indice,titulo);
+	}
+	
+	public String getTituloPergunta()
+	{
+		((List<String>) session.getAttribute("titulos")).add("");//add um novo espaço para fazer as operações
+		return "";
+	}
+	
+	@Command
+	public void tabInicial(@BindingParam("tab") Tab tab) { // seta a tab inicial, que a partir dela é possivel chegar a todas as outras
+		((List<Tab>) session.getAttribute("tabs")).add(tab);
+		session.setAttribute("inicial_tab", tab);
+	}
+	
+	@Command
+	public void novoTitulo(@BindingParam("titulo") String titulo) {
+		((List<String>) session.getAttribute("titulos")).set((int) session.getAttribute("indice_pergunta"), titulo);
+		((List<Tab>) session.getAttribute("tabs")).get((int) session.getAttribute("indice_pergunta")).setLabel(titulo);
+	}
+	
+	public String getURL() { // rerna a url do frama, mais tarde sera usado como se fosse o metodo get para adquirir o indice da pergunta
+		return "/opcoes.zul?"+((int)session.getAttribute("indice_tab")-1);
+	}
+	
+	@Command
+	public int getNovoIndex() { // informa qual é o proximo valor de indice(usado para cada frame saber a qual pergunta pertence)
+		session.setAttribute("indice_tab", 1 + (int) session.getAttribute("indice_tab"));
+		return ((int) session.getAttribute("indice_tab") - 1);
+	}
+	
+
+	@Command
+	public int getIndex() {
+		return ((int) session.getAttribute("indice_tab")-1);
+	}
+	
+	public List<Tab> getTabs() // retorna todas as tab a partir da primeira
+	{
+		List<Tab> aux = new ArrayList<Tab>();
+		session.setAttribute("tab", ((Tab) session.getAttribute("inicial_tab")));
+		while(((Tab) session.getAttribute("tab")) != null)
+		{
+			aux.add((Tab) session.getAttribute("tab"));
+			session.setAttribute("tab", ((Tab) session.getAttribute("tab")).getNextSibling());
+		}
+		return aux;
+	}
+	
+	@Command
+	public void valorSpinnerInicio(@BindingParam("valor") int valor,@BindingParam("index") String index)// seta novos valores de spinner a cada vez que ele for modificado, o valor é guardado em seu devido lugar
+	{	
+		int indice = Integer.parseInt(index);
+		((List<Integer>) session.getAttribute("spinnerInicio")).set(indice,valor);
+	}
+	
+	@Command
+	public void valorSpinnerFinal(@BindingParam("valor") int valor,@BindingParam("index") String index)// seta novos valores de spinner a cada vez que ele for modificado, o valor é guardado em seu devido lugar
+	{	
+		int indice = Integer.parseInt(index);
+		((List<Integer>) session.getAttribute("spinnerFinal")).set(indice,valor);
+	}
+	
+
+	@Command
+	public void tipoPergunta(@BindingParam("textbox") Textbox text,
+			@BindingParam("div") Div div, @BindingParam("button") Button b,
+			@BindingParam("frame") Iframe frame, @BindingParam("index") String index,
+			@BindingParam("combo") Combobox combo) {
+		
+		int indice = Integer.parseInt(index);
+		
+		String tipo;
+		if (combo.getSelectedIndex() == 0)
+			tipo = "Texto";
+		else if (combo.getSelectedIndex() == 1)
+			tipo = "Caixa de Seleção";
+		else if (combo.getSelectedIndex() == 2)
+			tipo = "Múltipla Escolha";
+		else
+			tipo = "Escala Numérica";
+		
+		combo.setText(tipo);
+		
+		if (combo.getSelectedIndex() == 0) {
+			text.setDisabled(true);
+			text.setVisible(true);
+			div.setVisible(false);
+			b.setDisabled(true);
+			frame.setVisible(false);
+		} else {
+			if (combo.getSelectedIndex() == 3) {
+				text.setVisible(false);
+				div.setVisible(true);
+				b.setDisabled(true);
+				frame.setVisible(false);
+			} else {
+				text.setVisible(true);
+				text.setDisabled(false);
+				div.setVisible(false);
+				b.setDisabled(false);
+				frame.setVisible(true);
+			}
+		}
 	}
 
+
+
+	public int getTipoPergunta() {
+		return ((int) session.getAttribute("tipoPergunta")) ;
+	}
+	
+	public void setTipoPergunta(int valor) {
+		session.setAttribute("tipoPergunta", valor);
+	}
+	
 	@Command
 	@NotifyChange("perguntas")
 	public void duplicarPergunta(@BindingParam("pergunta") Pergunta p) {
@@ -191,7 +381,7 @@ public class QuestionariosController extends GenericController {
 		perguntas.add(pergunta);
 		if (pergunta.getTipoPergunta() == 3) {
 			respostas = new ArrayList<RespostaEspecifica>();
-			for (int i = spinnerInicio; i <= spinnerFinal; i++) {
+			for (int i = ((List<Integer>) session.getAttribute("spinnerInicio")).get((int) session.getAttribute("indice_pergunta")); i <= ((List<Integer>) session.getAttribute("spinnerFinal")).get((int) session.getAttribute("indice_pergunta")); i++) {
 				resposta = new RespostaEspecifica();
 				resposta.setRespostaEspecifica(Integer.toString(i));
 				resposta.setPergunta(pergunta);
@@ -226,7 +416,7 @@ public class QuestionariosController extends GenericController {
 					}
 				}
 			} else {
-				if (spinnerFinal > spinnerInicio) {
+				if (((List<Integer>) session.getAttribute("spinnerInicio")).get((int) session.getAttribute("indice_pergunta")) > ((List<Integer>) session.getAttribute("spinnerFinal")).get((int) session.getAttribute("indice_pergunta"))) {
 					finalizar(b);
 				} else {
 					Messagebox.show("Escala inicial menor ou igual à final");
@@ -417,30 +607,6 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	public void tipoPergunta(@BindingParam("textbox") Textbox text,
-			@BindingParam("div") Div div, @BindingParam("button") Button b) {
-		Button c = (Button) b.getNextSibling();
-		c.setDisabled(false);
-		if (pergunta.getTipoPergunta() == 0) {
-			text.setDisabled(true);
-			text.setVisible(true);
-			div.setVisible(false);
-			b.setDisabled(true);
-		} else {
-			if (pergunta.getTipoPergunta() == 3) {
-				text.setVisible(false);
-				div.setVisible(true);
-				b.setDisabled(true);
-			} else {
-				text.setVisible(true);
-				text.setDisabled(false);
-				div.setVisible(false);
-				b.setDisabled(false);
-			}
-		}
-	}
-
-	@Command
 	@NotifyChange("questionario")
 	public void ativa(@BindingParam("questionario") Questionario questionario) {
 		if (!questionario.getPrazos().isEmpty()) {
@@ -489,7 +655,7 @@ public class QuestionariosController extends GenericController {
 	}
 
 	public Pergunta getPergunta() {
-		return pergunta;
+		return ((List<Pergunta>) session.getAttribute("perguntas")).get(getIndex());
 	}
 
 	public void setPergunta(Pergunta pergunta) {
@@ -571,7 +737,7 @@ public class QuestionariosController extends GenericController {
 	public void setAvaliacao(Avaliacao avaliacao) {
 		this.avaliacao = avaliacao;
 	}
-
+	
 	public List<Integer> getTiposQuestionario() {
 		return tiposQuestionario;
 	}
@@ -604,6 +770,7 @@ public class QuestionariosController extends GenericController {
 		this.prazos = prazos;
 	}
 
+	
 	public List<Integer> getTiposPergunta() {
 		return tiposPergunta;
 	}
@@ -629,19 +796,14 @@ public class QuestionariosController extends GenericController {
 	}
 
 	public Integer getSpinnerInicio() {
-		return spinnerInicio;
+		((List<Integer>) session.getAttribute("spinnerInicio")).add(0);
+		return ((List<Integer>) session.getAttribute("spinnerInicio")).get(getIndex());
 	}
 
-	public void setSpinnerInicio(Integer spinnerInicio) {
-		this.spinnerInicio = spinnerInicio;
-	}
 
 	public Integer getSpinnerFinal() {
-		return spinnerFinal;
-	}
-
-	public void setSpinnerFinal(Integer spinnerFinal) {
-		this.spinnerFinal = spinnerFinal;
+		((List<Integer>) session.getAttribute("spinnerFinal")).add(0);
+		return ((List<Integer>) session.getAttribute("spinnerFinal")).get(getIndex());
 	}
 
 	public List<RespostaEspecifica> getRespostas() {
@@ -675,5 +837,11 @@ public class QuestionariosController extends GenericController {
 	public void setPrazosSessao(List<PrazoQuestionario> prazosSessao) {
 		this.prazosSessao = prazosSessao;
 	}
+
+	public List<String> getLista_opcoes() {
+		List<String> aux = new ArrayList<String>();
+		return aux;
+	}
+
 
 }

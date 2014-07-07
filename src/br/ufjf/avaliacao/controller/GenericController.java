@@ -83,7 +83,10 @@ public class GenericController {
 		usuario = (Usuario) session.getAttribute("usuario");
 		usuarioBusiness = new UsuarioBusiness();
 		if (usuarioBusiness.checaLogin(usuario)) {
-			if (usuario.getTipoUsuario() != Usuario.COORDENADOR) {
+			if (usuario.getTipoUsuario() != Usuario.PROFESSOR
+					|| !(usuario.getCurso().getCoordenador()== usuario
+					|| usuario.getCurso().getViceCoordenador()== usuario)) {
+				
 				Executions.sendRedirect("/home.zul");
 			}
 		} else {
@@ -96,10 +99,13 @@ public class GenericController {
 		usuario = (Usuario) session.getAttribute("usuario");
 		if (usuario != null) {
 			int tipoUsuario = usuario.getTipoUsuario();
-			if (tipoUsuario == Usuario.COORDENADOR)
-				return "/menuCoordenador.zul";
 			if (tipoUsuario == Usuario.PROFESSOR)
-				return "/menuProfessor.zul";
+			{
+				if(usuario.getCurso().getCoordenador()==usuario || usuario.getCurso().getViceCoordenador()==usuario)
+					return "/menuCoordenador.zul";
+				else 
+					return "/menuProfessor.zul";
+			}
 			if (tipoUsuario == Usuario.ALUNO)
 				return "/menuAluno.zul";
 			return "/menuAdministrador.zul";

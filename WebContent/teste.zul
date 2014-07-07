@@ -1,0 +1,57 @@
+<window style="text-align:center;" title="Avaliar" border="normal"
+	closable="true" width="80%">
+    <style>
+        .plusTab .z-tab-text { 
+            font-weight: bold; color: #9c9c9c; 
+        } 
+        .z-toolbarbutton-cnt, .z-toolbar-tabs { 
+            padding: 0; text-align: center; font-weight: bold; font-size: 14px;color: #9c9c9c; 
+        }
+    </style>
+	<zscript>
+		int i = 2
+	</zscript>
+
+  <div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')">
+
+    <groupbox closable="false" sclass="z-demo-config" style="padding: 10px;">
+        <caption label="Perguntas"></caption>
+        <tabbox id="tbx2" hflex="1"  mold="accordion">
+            <attribute name="onTabAdd">
+                Tab newTab = new Tab("Pergunta "+ i++);
+                newTab.setSelected(true);
+                newTab.setParent(tbx2.getTabs());
+                Tabpanel newTabpanel = new Tabpanel();
+               	Iframe frame = new Iframe();
+               	frame.setWidth("100%");
+               	frame.setSrc("/criarPergunta.zul");
+                newTabpanel.appendChild(frame);
+                newTabpanel.setParent(tbx2.getTabpanels());
+                session.setAttribute("novaTab",newTab);
+             	session.setAttribute("novaTabpanel",newTabpanel);
+             	
+             </attribute>
+
+            <tabs>
+                <tab onCreate="@command('tabInicial',tab=self)">Pergunta 1</tab>
+            </tabs>
+            <tabpanels>
+                <tabpanel>
+					<iframe visible="true" src="/criarPergunta.zul" width="100%" />
+				</tabpanel>
+            </tabpanels>
+        </tabbox>
+    </groupbox>
+       <button label="+">
+			<attribute name="onClick">
+                	Events.postEvent(tbx2, new Event("onTabAdd"));
+           	</attribute>
+		</button>
+		
+		
+					<button disabled="false" label="Finalizar"
+								onClick="@command('getTabSelecionada')" />
+	</div>
+    
+</window>

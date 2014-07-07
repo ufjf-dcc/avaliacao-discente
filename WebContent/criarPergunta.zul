@@ -1,57 +1,57 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
-<window onCreate="@command('initCriarPergunta', window=self)"
-	width="600px" border="normal" title="Criar Pergunta"
-	apply="org.zkoss.bind.BindComposer"
-	viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AddRespostaEspecificaController')"
-	form="@id('fm') @load(vm.pergunta) @save(vm.pergunta, before='finalizar')"
-	closable="true">
-	<grid>
-		<auxhead>
-			<auxheader align="center" label="Tipo de Pergunta: ">
-				<combobox model="@load(vm.tiposPergunta)"
-					selectedItem="@bind(fm.tipoPergunta)" readonly="true">
-					<template name="model">
-						<comboitem
-							label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Caixa de Seleção' : each eq 2 ? 'Múltipla Escolha' : 'Escala')" />
-					</template>
-				</combobox>
-			</auxheader>
-		</auxhead>
-		<columns></columns>
-	</grid>
-	<grid model="@load(vm.respostas)">
-		<columns>
-			<column align="center" label="Título" />
-			<column align="center" label="Opções" />
-		</columns>
-		<template name="model">
-			<row>
-				<textbox value="@bind(each.respostaEspecifica)" />
-				<div style="text-align:center">
-					<button image="/img/delete.png"
-						onClick="@command('excluiResposta', resposta=each)" />
-					<button image="/img/up.png"
-						onClick="@command('up', resposta=each)"
-						disabled="@load(not (forEachStatus.index eq forEachStatus.begin) ? 'false' : 'true')" />
-					<button image="/img/down.png"
-						onClick="@command('down', resposta=each)"
-						disabled="@load(not (forEachStatus.index + 1 eq forEachStatus.end) ? 'false' : 'true')" />
+<zk style="text-align:center;" title="" onCreate="@command('criarPergunta')" >
+		<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')">
+
+		<!-- Criação da pergunta e de suas respostas -->
+		
+		<div>
+			<label id="index" value="@load(vm.novoIndex)" />
+				<div>
+					Titulo:<textbox value="@load(vm.tituloPergunta)" width="80%" onChange="@command('mudancaTituloPergunta',titulo=self.value,index=index.value)"  />
 				</div>
-			</row>
-		</template>
-	</grid>
-	<div form="@id('fx') @load(vm.resposta) @save(vm.resposta, before='addNewResposta')">
-		<grid>
-			<columns>
-				<column align="center" />
-				<column align="center" />
-			</columns>
-			<rows>
-				<row>
-					<textbox value="@bind(fx.respostaEspecifica)" />
-					<button label="Adicionar" onClick="@command('addNewResposta')" />
-				</row>
-			</rows>
-		</grid>
+				
+			<grid>
+				<columns>
+					<column align="center" label="Tipo de Pergunta" />
+					<column align="center" label="Opções" />
+				</columns>
+				
+				<rows>
+					<row>
+						<combobox id="combo" model="@load(vm.tiposPergunta)"
+							selectedItem="@bind(vm.tipoPergunta)"
+							onChange="@command('tipoPergunta', textbox=texto, div=spinner, button=add,frame=frame,index=index.value,combo=combo)"
+							readonly="true">
+							<template name="model">
+								<comboitem
+									label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Caixa de Seleção' : each eq 2 ? 'Múltipla Escolha' : 'Escala Numérica')" />
+							</template>
+						</combobox>
+						<div
+							form="@id('fr') @load(vm.resposta) @save(vm.resposta, before='addRespostaEspecifica')">
+							<textbox id="texto"  />
+							<div height="20px" id="spinner"
+								visible="false">
+								<label value="De: " />
+								<spinner value="@load(vm.spinnerInicio)"
+									width="60px" readonly="true" constraint="min 0" onChange="@command('valorSpinnerInicio',valor=self.value,index=index.value)" />
+								<label value=" à " />
+								<spinner value="@load(vm.spinnerFinal)"
+									width="60px" readonly="true" constraint="min 0" onChange="@command('valorSpinnerFinal',valor=self.value,index=index.value)"/>
+							</div>
+							<separator />
+							<button disabled="true" id="add"
+								label="Adicionar" onClick="@command('addOpcao',frame=frame,index=index.value)" />
+							
+						</div>
+					</row>
+				</rows>	
+			</grid>
+			<iframe visible="false" id="frame" src="@load(vm.URL)" width="100%" height="500px"/>
+		</div>
+		<button label="teste()"
+				onClick="@command('teste',index=index.value)" />
+	
 	</div>
-</window>
+</zk>

@@ -6,7 +6,7 @@
 		<columns></columns>
 		<template name="model">
 			<row>
-				<textbox value="@bind(each.respostaEspecifica)" />
+				<textbox value="@load(each)" onChange="@command('salvarMudanca',opcao=each,nova_opcao=this.value)" />			
 			</row>
 		</template>
 	</grid>
