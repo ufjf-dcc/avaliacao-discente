@@ -29,7 +29,9 @@
                 newTabpanel.appendChild(frame);
                 newTabpanel.setParent(tbx2.getTabpanels());
                 session.setAttribute("novaTab",newTab);
-             	session.setAttribute("novaTabpanel",newTabpanel);
+             	session.setAttribute("criando_tab_opcao",true);
+             	session.setAttribute("criando_tab_tipo_pergunta",true);
+             	session.setAttribute("tipoPergunta",0);
              	
              </attribute>
 

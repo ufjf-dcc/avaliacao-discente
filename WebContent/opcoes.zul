@@ -1,17 +1,14 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
-<window  width="100%" title="Respostas" border="normal"
+<window  xmlns:w="client" width="100%" title="Respostas" border="normal"
 	apply="org.zkoss.bind.BindComposer" closable="false"
 	viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')">
 	
-	<script type="text/javascript">
-			var url =  document.URL;
-	</script>
-	
+
 	<grid model="@load(vm.lista_opcoes)">
 		<columns></columns>
 		<template name="model">
 			<row>
-				<textbox width="100%" value="@load(each) @save(each, before='confirm')" onChange="@command('salvarMudancaOpcao',opcao=each,nova_opcao=self.value,url=url)"/>			
+				<textbox width="100%" value="@load(each) @save(each, before='confirm')" onChange="@command('salvarMudancaOpcao',opcao=each,nova_opcao=self.value,url=url.value)"/>			
 			</row>
 		</template>
 		

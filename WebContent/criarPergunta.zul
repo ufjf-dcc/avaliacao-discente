@@ -1,12 +1,12 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
-<zk style="text-align:center;" title="" onCreate="@command('criarPergunta')" >
+<zk style="text-align:center;" title=""  >
 		<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')">
 
 		<!-- Criação da pergunta e de suas respostas -->
 		
-		<div>
-			<label id="index" value="@load(vm.novoIndex)" />
+		<div onCreate="@command('criarPergunta')">
+			<label visible="false" id="index" value="@load(vm.novoIndex)" />
 				<div>
 					Titulo:<textbox value="@load(vm.tituloPergunta)" width="80%" onChange="@command('mudancaTituloPergunta',titulo=self.value,index=index.value)"  />
 				</div>
@@ -41,17 +41,90 @@
 									width="60px" readonly="true" constraint="min 0" onChange="@command('valorSpinnerFinal',valor=self.value,index=index.value)"/>
 							</div>
 							<separator />
-							<button disabled="true" id="add"
-								label="Adicionar" onClick="@command('addOpcao',frame=frame,index=index.value)" />
+							
 							
 						</div>
 					</row>
 				</rows>	
 			</grid>
-			<iframe visible="false" id="frame" src="@load(vm.URL)" width="100%" height="500px"/>
-		</div>
-		<button label="teste()"
-				onClick="@command('teste',index=index.value)" />
+
+
+
+		<div style="padding: 10px;">
+			<panel collapsible="false" id="panel">
+				<panelchildren>
+					<listbox fixedLayout="true" id="lstTimesheet" >
+						<listhead>
+							<listheader label="Alternativas" width="150px"/>
+							<listheader width="100px">
+								<button label="Add" id="addRecord" onClick="addRow()"/>
+							</listheader>
+						</listhead>
+						<listitem onCreate="@command('novoListItem',li = self)">
+							<listcell><textbox width="120px" id="0" ></textbox></listcell>
+							<listcell><button label="Remove" onClick="removeRow(self.getParent().getParent())"/></listcell>
+						</listitem>
+						<listitem visible="false">
+							<listcell><textbox width="120px" ></textbox></listcell>
+							<listcell><button label="Remove" onClick="removeRow(self.getParent().getParent())"/></listcell>
+						</listitem>
+					</listbox>
+				</panelchildren>
+			</panel>
 	
+			
+			<zscript><![CDATA[
+			  import java.text.SimpleDateFormat;
+			  
+			  	session.setAttribute("id_textbox",1);	
+				Listitem baseItem = lstTimesheet.getItemAtIndex(lstTimesheet.getItemCount()-1);
+				void addRow() {
+					Listitem listitem = (Listitem)baseItem.clone();
+					listitem.setVisible(true);
+					lstTimesheet.insertBefore(listitem, baseItem);
+				}
+				
+				void removeRow(Object object) {
+					if(lstTimesheet.getItemCount() > 2 ) {
+						lstTimesheet.removeChild((Listitem)object);
+					}
+				}
+				
+				void submitData() {
+					System.out.println("total rows = " + lstTimesheet.getItemCount());
+					List list = lstTimesheet.getItems();
+					SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+					SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+			    
+			    for(int i = 0; i < list.size()-1; i++) {
+						Listitem item = (Listitem) list.get(i);
+						List items = item.getChildren();
+						for(int j = 0;  j < items.size()-1; j++) {
+							Listcell cell = (Listcell) items.get(j);
+							List cells = cell.getChildren();
+							for(int k = 0; k < cells.size(); k++) {
+								Object obj = cells.get(k);
+								Object val;
+								if(obj instanceof Datebox) {
+									val = ((Datebox) obj).getValue() != null ? dateFormat.format(((Datebox) obj).getValue()) : null;
+								} else if(obj instanceof Timebox) {
+									val = ((Timebox) obj).getValue() != null ? timeFormat.format(((Timebox) obj).getValue()) : null;
+								} else {
+									val = obj.getClass().getMethod("getValue", new Class[0]).invoke(obj, new Object[0]);
+								}
+								System.out.println("cell = " + cells.get(k) + ", value == " + val);
+							}
+						}
+					}
+				}
+			]]></zscript>
+		</div>
+
+
+
+
+		</div>
+
+				
 	</div>
 </zk>

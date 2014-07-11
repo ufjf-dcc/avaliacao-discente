@@ -16,6 +16,7 @@ import org.zkoss.zul.Button;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Iframe;
+import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Tab;
 import org.zkoss.zul.Textbox;
@@ -69,7 +70,8 @@ public class QuestionariosController extends GenericController {
 	private RespostaEspecificaDAO respostaEspecificaDAO = new RespostaEspecificaDAO();
 
 	private List<Pergunta> perguntas = new ArrayList<Pergunta>();
-
+	
+	
 
 	
 	@Init
@@ -96,10 +98,16 @@ public class QuestionariosController extends GenericController {
 		session.setAttribute("spinnerFinal", new ArrayList<Integer>());
 		session.setAttribute("titulos", new ArrayList<String>());
 		session.setAttribute("tabs", new ArrayList<Tab>());
-		session.setAttribute("ultimo_indice_lista", 0);
-		session.setAttribute("tipo_pergunta", new ArrayList<String>());
+		session.setAttribute("ultimo_indice_acessado", 0);
+		session.setAttribute("tipo_pergunta", new ArrayList<Integer>());
 		session.setAttribute("tipoPergunta", 0);
-
+		session.setAttribute("criando_tab_opcao",false);
+		session.setAttribute("criando_tab_tipo_pergunta",true);
+		session.setAttribute("index_tipo_pergunta",0);
+		session.setAttribute("nova_alternativa",true);
+		session.setAttribute("primeiro_listitem", new ArrayList<Listitem>());
+	
+		
 		
 		Window window = (Window) Executions.createComponents(
 				"/teste.zul", null, null);
@@ -110,50 +118,17 @@ public class QuestionariosController extends GenericController {
 	@Command
 	public void criarPergunta() // seta novos parametros para um nova pergunta do questionario setado acima
 	{
-		((List<Pergunta>) session.getAttribute("perguntas")).add(new Pergunta());
-		((List<List<String>>) session.getAttribute("lista_de_objetos")).add(new ArrayList<String>());
-	}
-	
-	@Command 
-	public void addOpcao(@BindingParam("frame") Iframe frame,@BindingParam("index") String index)
-	{	
-		int indice = Integer.parseInt(index);
-		session.setAttribute("ultimo_indice_lista", indice);
-		frame.invalidate();
-		((List<List<String>>) session.getAttribute("lista_de_objetos")).get(indice).add(nova_resposta);
 	}
 	
 	@Command
-	public void salvarMudancaOpcao(@BindingParam("opcao") String opcao, // para cada mudanca de algum valor de alguma linha no opcoes.zul aqui essa alteração tambem será computada
-			@BindingParam("nova_opcao") String nova_opcao, @BindingParam("url") String url) {
-		List<String> aux = new ArrayList<String>();
-		aux = ((List<List<String>>) session.getAttribute("lista_de_objetos")).get(0);
-		for(int i=0;i<aux.size();i++)
-		{
-			if(aux.get(i)==opcao)
-			{
-				aux.set(i, nova_opcao);
-				break;
-			}
-		}
-	}
-	
-	@Command
-	public void teste(@BindingParam("index") String index)
+	public void novoListItem(@BindingParam("li") Listitem li) // para cada mudanca de algum valor de alguma linha no opcoes.zul aqui essa alteração tambem será computada
 	{
-		
-		System.out.println("spinnerInicio - "+((List<Integer>) session.getAttribute("spinnerInicio")).size());
-		for(int i=0;i<((List<Integer>) session.getAttribute("spinnerInicio")).size();i++)
-			System.out.println(i+" = "+((List<Integer>) session.getAttribute("spinnerInicio")).get(i));
-		System.out.println("spinnerFinal - "+((List<Integer>) session.getAttribute("spinnerFinal")).size());
-		for(int i=0;i<((List<Integer>) session.getAttribute("spinnerFinal")).size();i++)
-			System.out.println(i+" = "+((List<Integer>) session.getAttribute("spinnerFinal")).get(i));
-		System.out.println("titulos - "+((List<Integer>) session.getAttribute("titulos")).size());
-		for(int i=0;i<((List<String>) session.getAttribute("titulos")).size();i++)
-			System.out.println(i+" = "+((List<Integer>) session.getAttribute("titulos")).get(i));
-		
-
+		((List<Listitem>)session.getAttribute("primeiro_listitem")).add(li);
 	}
+	
+
+	
+	
 	@Command
 	public void mudancaTituloPergunta(@BindingParam("titulo") String titulo,@BindingParam("index") String index)// para cada mudança no titulo da pergunta, ela será salva em seu respectivo lugar
 	{
@@ -179,13 +154,10 @@ public class QuestionariosController extends GenericController {
 		((List<Tab>) session.getAttribute("tabs")).get((int) session.getAttribute("indice_pergunta")).setLabel(titulo);
 	}
 	
-	public String getURL() { // rerna a url do frama, mais tarde sera usado como se fosse o metodo get para adquirir o indice da pergunta
-		return "/opcoes.zul?"+((int)session.getAttribute("indice_tab")-1);
-	}
-	
 	@Command
 	public int getNovoIndex() { // informa qual é o proximo valor de indice(usado para cada frame saber a qual pergunta pertence)
 		session.setAttribute("indice_tab", 1 + (int) session.getAttribute("indice_tab"));
+		session.setAttribute("ultimo_indice_acessado",((int) session.getAttribute("indice_tab") - 1));
 		return ((int) session.getAttribute("indice_tab") - 1);
 	}
 	
@@ -224,42 +196,54 @@ public class QuestionariosController extends GenericController {
 
 	@Command
 	public void tipoPergunta(@BindingParam("textbox") Textbox text,
-			@BindingParam("div") Div div, @BindingParam("button") Button b,
-			@BindingParam("frame") Iframe frame, @BindingParam("index") String index,
+			@BindingParam("div") Div div, @BindingParam("index") String index,
 			@BindingParam("combo") Combobox combo) {
 		
 		int indice = Integer.parseInt(index);
 		
+		session.setAttribute("index_tipo_pergunta", indice);
+				
 		String tipo;
+		int escolhido;
 		if (combo.getSelectedIndex() == 0)
+		{
 			tipo = "Texto";
+			escolhido = 0;
+		}
 		else if (combo.getSelectedIndex() == 1)
+		{
 			tipo = "Caixa de Seleção";
+			escolhido = 1;
+		}
 		else if (combo.getSelectedIndex() == 2)
+		{
 			tipo = "Múltipla Escolha";
+			escolhido = 2;
+		}
 		else
-			tipo = "Escala Numérica";
+		{
+			tipo = "Escala Numérica";	
+			escolhido = 3;
+		}
 		
 		combo.setText(tipo);
+		
+		((List<Integer>) session.getAttribute("tipo_pergunta")).set(indice, escolhido);
 		
 		if (combo.getSelectedIndex() == 0) {
 			text.setDisabled(true);
 			text.setVisible(true);
 			div.setVisible(false);
-			b.setDisabled(true);
-			frame.setVisible(false);
 		} else {
 			if (combo.getSelectedIndex() == 3) {
 				text.setVisible(false);
 				div.setVisible(true);
-				b.setDisabled(true);
-				frame.setVisible(false);
+
 			} else {
 				text.setVisible(true);
 				text.setDisabled(false);
 				div.setVisible(false);
-				b.setDisabled(false);
-				frame.setVisible(true);
+
 			}
 		}
 	}
@@ -267,7 +251,14 @@ public class QuestionariosController extends GenericController {
 
 
 	public int getTipoPergunta() {
-		return ((int) session.getAttribute("tipoPergunta")) ;
+		if(((boolean) session.getAttribute("criando_tab_tipo_pergunta"))==true)
+		{
+			((List<Integer>) session.getAttribute("tipo_pergunta")).add(new Integer(0));
+			session.setAttribute("criando_tab_tipo_pergunta",false);
+			return 0;
+		}
+		else
+			return ((int) session.getAttribute("tipoPergunta"));
 	}
 	
 	public void setTipoPergunta(int valor) {
@@ -838,10 +829,7 @@ public class QuestionariosController extends GenericController {
 		this.prazosSessao = prazosSessao;
 	}
 
-	public List<String> getLista_opcoes() {
-		List<String> aux = new ArrayList<String>();
-		return aux;
-	}
+
 
 
 }
