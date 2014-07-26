@@ -8,12 +8,14 @@
 		<div onCreate="@command('criarPergunta')">
 			<label visible="false" id="index" value="@load(vm.novoIndex)" />
 				<div>
-					Titulo:<textbox value="@load(vm.tituloPergunta)" width="80%" onChange="@command('mudancaTituloPergunta',titulo=self.value,index=index.value)"  />
+					<label style="font-weight: bold">Titulo:</label><textbox value="@load(vm.tituloPergunta)" width="80%" onChange="@command('mudancaTituloPergunta',titulo=self.value,index=index.value)"  />
 				</div>
+				<separator />
 				
 			<grid>
 				<columns>
 					<column align="center" label="Tipo de Pergunta" />
+					<column align="center" label="Obrigatório" />
 					<column align="center" label="Opções" />
 				</columns>
 				
@@ -21,51 +23,51 @@
 					<row>
 						<combobox id="combo" model="@load(vm.tiposPergunta)"
 							selectedItem="@bind(vm.tipoPergunta)"
-							onChange="@command('tipoPergunta', textbox=texto, div=spinner, button=add,frame=frame,index=index.value,combo=combo)"
+							onChange="@command('tipoPergunta', div=spinner, div2=addOpcao ,index=index.value,combo=combo)"
 							readonly="true">
 							<template name="model">
 								<comboitem
 									label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Caixa de Seleção' : each eq 2 ? 'Múltipla Escolha' : 'Escala Numérica')" />
 							</template>
 						</combobox>
-						<div
-							form="@id('fr') @load(vm.resposta) @save(vm.resposta, before='addRespostaEspecifica')">
-							<textbox id="texto"  />
-							<div height="20px" id="spinner"
-								visible="false">
-								<label value="De: " />
-								<spinner value="@load(vm.spinnerInicio)"
-									width="60px" readonly="true" constraint="min 0" onChange="@command('valorSpinnerInicio',valor=self.value,index=index.value)" />
-								<label value=" à " />
-								<spinner value="@load(vm.spinnerFinal)"
-									width="60px" readonly="true" constraint="min 0" onChange="@command('valorSpinnerFinal',valor=self.value,index=index.value)"/>
-							</div>
-							<separator />
-							
-							
-						</div>
+						<checkbox onCheck="@command('obrigatorio',check=self,index=index.value)" />
+						<button label="Duplicar" onClick="@command('duplicarPergunta',index=index.value)"/>
 					</row>
 				</rows>	
 			</grid>
 
+			<div	align="center"
+					form="@id('fr') @load(vm.resposta) @save(vm.resposta, before='addRespostaEspecifica')">
+					<separator />
+					<div height="20px" id="spinner"
+						visible="false">
+						<label value="De: " />
+						<spinner value="@load(vm.spinnerInicio)"
+							width="60px" readonly="true" constraint="min 0" onChange="@command('valorSpinnerInicio',valor=self.value,index=index.value)" />
+						<label value=" à " />
+						<spinner value="@load(vm.spinnerFinal)"
+						width="60px" readonly="true" constraint="min 0" onChange="@command('valorSpinnerFinal',valor=self.value,index=index.value)"/>
+					</div>
+			</div>
 
 
-		<div style="padding: 10px;">
+
+		<div style="padding: 10px;" id="addOpcao" visible="false">
 			<panel collapsible="false" id="panel">
 				<panelchildren>
-					<listbox fixedLayout="true" id="lstTimesheet" >
+					<listbox fixedLayout="true" id="lstTimesheet"  >
 						<listhead>
-							<listheader label="Alternativas" width="150px"/>
-							<listheader width="100px">
-								<button label="Add" id="addRecord" onClick="addRow()"/>
+							<listheader label="Alternativas" />
+							<listheader width="150px">
+								<button label="Adicionar pergunta" id="addRecord" onClick="addRow()"/>
 							</listheader>
 						</listhead>
 						<listitem onCreate="@command('novoListItem',li = self)">
-							<listcell><textbox width="120px" id="0" ></textbox></listcell>
+							<listcell><textbox onChange="@command('atualizar',txt = self.value)" width="100%" id="0" ></textbox></listcell>
 							<listcell><button label="Remove" onClick="removeRow(self.getParent().getParent())"/></listcell>
 						</listitem>
 						<listitem visible="false">
-							<listcell><textbox width="120px" ></textbox></listcell>
+							<listcell><textbox onChange="@command('atualizar',txt = self.value)"></textbox></listcell>
 							<listcell><button label="Remove" onClick="removeRow(self.getParent().getParent())"/></listcell>
 						</listitem>
 					</listbox>
@@ -76,10 +78,10 @@
 			<zscript><![CDATA[
 			  import java.text.SimpleDateFormat;
 			  
-			  	session.setAttribute("id_textbox",1);	
 				Listitem baseItem = lstTimesheet.getItemAtIndex(lstTimesheet.getItemCount()-1);
 				void addRow() {
 					Listitem listitem = (Listitem)baseItem.clone();
+					((Textbox)listitem.getChildren().get(0).getChildren().get(0)).setWidth("100%");
 					listitem.setVisible(true);
 					lstTimesheet.insertBefore(listitem, baseItem);
 				}
@@ -90,33 +92,7 @@
 					}
 				}
 				
-				void submitData() {
-					System.out.println("total rows = " + lstTimesheet.getItemCount());
-					List list = lstTimesheet.getItems();
-					SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-					SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-			    
-			    for(int i = 0; i < list.size()-1; i++) {
-						Listitem item = (Listitem) list.get(i);
-						List items = item.getChildren();
-						for(int j = 0;  j < items.size()-1; j++) {
-							Listcell cell = (Listcell) items.get(j);
-							List cells = cell.getChildren();
-							for(int k = 0; k < cells.size(); k++) {
-								Object obj = cells.get(k);
-								Object val;
-								if(obj instanceof Datebox) {
-									val = ((Datebox) obj).getValue() != null ? dateFormat.format(((Datebox) obj).getValue()) : null;
-								} else if(obj instanceof Timebox) {
-									val = ((Timebox) obj).getValue() != null ? timeFormat.format(((Timebox) obj).getValue()) : null;
-								} else {
-									val = obj.getClass().getMethod("getValue", new Class[0]).invoke(obj, new Object[0]);
-								}
-								System.out.println("cell = " + cells.get(k) + ", value == " + val);
-							}
-						}
-					}
-				}
+			
 			]]></zscript>
 		</div>
 

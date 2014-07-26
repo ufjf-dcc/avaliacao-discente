@@ -12,12 +12,41 @@
 		int i = 2
 	</zscript>
 
-  <div apply="org.zkoss.bind.BindComposer"
-		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')">
-
-    <groupbox closable="false" sclass="z-demo-config" style="padding: 10px;">
+    <div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
+		id="form" >
+	
+	<grid model="@load(vm.perguntas)">
+			<auxhead style="text-align:center">
+				<auxheader label="Título:">
+					<textbox onChange="@command('tituloQuestionario',titulo=self.value)"/>
+				</auxheader>
+				<auxheader label="Tipo:">
+					<combobox model="@load(vm.tiposQuestionario)"
+						 onChange="@command('tipoQuestionario',tipo=self.selectedIndex)" readonly="true">
+						<template name="model">
+							<comboitem
+								label="@load(each eq 0 ? 'Avalição de Coordenador' : each eq 1 ? 'Avaliação de Professor' : each eq 2 ? 'Autoavaliação' : 'Avaliação de Infrestrutura')" />
+						</template>
+					</combobox>
+				</auxheader>
+			</auxhead>
+			<auxhead>
+			</auxhead>
+			<columns style="text-align:center;">
+			
+			</columns>
+			<template name="model">
+				<row>
+			
+				</row>
+			</template>
+		</grid>
+	
+	
+    <groupbox closable="false" sclass="z-demo-config" style="padding: 10px;" >
         <caption label="Perguntas"></caption>
-        <tabbox id="tbx2" hflex="1"  mold="accordion">
+        <tabbox id="tbx2" hflex="1"  mold="accordion" onCreate="@command('tabBox',tbox=self)">
             <attribute name="onTabAdd">
                 Tab newTab = new Tab("Pergunta "+ i++);
                 newTab.setSelected(true);
@@ -25,8 +54,10 @@
                 Tabpanel newTabpanel = new Tabpanel();
                	Iframe frame = new Iframe();
                	frame.setWidth("100%");
+               	frame.setHeight("100%");
                	frame.setSrc("/criarPergunta.zul");
                 newTabpanel.appendChild(frame);
+                newTabpanel.setHeight("300px");
                 newTabpanel.setParent(tbx2.getTabpanels());
                 session.setAttribute("novaTab",newTab);
              	session.setAttribute("criando_tab_opcao",true);
@@ -39,8 +70,8 @@
                 <tab onCreate="@command('tabInicial',tab=self)">Pergunta 1</tab>
             </tabs>
             <tabpanels>
-                <tabpanel>
-					<iframe visible="true" src="/criarPergunta.zul" width="100%" />
+                <tabpanel height="300px">
+					<iframe height="100%" visible="true" src="/criarPergunta.zul" width="100%" />
 				</tabpanel>
             </tabpanels>
         </tabbox>
@@ -51,9 +82,11 @@
            	</attribute>
 		</button>
 		
-		
-					<button disabled="false" label="Finalizar"
-								onClick="@command('getTabSelecionada')" />
+		<button disabled="false" label="Finalizar"
+				onClick="@command('salvarQuestionario')" />
+				
+		<button disabled="false" label="teste()"
+				onClick="@command('teste')" />
 	</div>
     
 </window>

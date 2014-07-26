@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.text.TabableView;
+
 import org.hibernate.HibernateException;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
@@ -13,12 +15,14 @@ import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zul.Button;
+import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Iframe;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Tab;
+import org.zkoss.zul.Tabbox;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
@@ -70,8 +74,9 @@ public class QuestionariosController extends GenericController {
 	private RespostaEspecificaDAO respostaEspecificaDAO = new RespostaEspecificaDAO();
 
 	private List<Pergunta> perguntas = new ArrayList<Pergunta>();
-	
-	
+	private String titulo_questionario;
+	private int tipo_questionario;
+	private Tabbox tabbox;
 
 	
 	@Init
@@ -106,8 +111,10 @@ public class QuestionariosController extends GenericController {
 		session.setAttribute("index_tipo_pergunta",0);
 		session.setAttribute("nova_alternativa",true);
 		session.setAttribute("primeiro_listitem", new ArrayList<Listitem>());
-	
-		
+		session.setAttribute("obrigatorio", new ArrayList<Boolean>());
+		titulo_questionario = "";
+		tipo_questionario = -1;
+		tabbox = new Tabbox();
 		
 		Window window = (Window) Executions.createComponents(
 				"/teste.zul", null, null);
@@ -116,7 +123,80 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
+	public void salvarQuestionario()
+	{
+		Questionario questionario = new Questionario();
+		questionario.setTipoQuestionario(tipo_questionario);
+		questionario.setTituloQuestionario(titulo_questionario);
+		questionario.setAtivo(false);
+		questionario.setCurso(usuario.getCurso());
+		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
+		questionarioDAO.salvar(questionario);
+				
+		while(((List<Boolean>) session.getAttribute("obrigatorio")).size()<((List<Integer>)session.getAttribute("tipo_pergunta")).size())
+		{
+			((List<Boolean>) session.getAttribute("obrigatorio")).add(false);
+		}
+		
+		PerguntaDAO perguntaDAO = new PerguntaDAO();
+		for(int i=0;i<((List<Integer>)session.getAttribute("tipo_pergunta")).size();i++)
+		{
+			Pergunta pergunta = new Pergunta();
+			pergunta.setQuestionario(questionario);
+			pergunta.setTituloPergunta(((List<String>) session.getAttribute("titulos")).get(i));
+			pergunta.setTipoPergunta(((List<Integer>)session.getAttribute("tipo_pergunta")).get(i));
+			pergunta.setObrigatorio(((List<Boolean>)session.getAttribute("obrigatorio")).get(i));
+			perguntaDAO.salvar(pergunta);
+			if(((List<Integer>)session.getAttribute("tipo_pergunta")).get(i) == 3)
+			{
+				RespostaEspecificaDAO respostaDAO = new RespostaEspecificaDAO();
+				for(int j=((List<Integer>)session.getAttribute("spinnerInicio")).get(i);j<=((List<Integer>)session.getAttribute("spinnerFinal")).get(i);j++)
+				{
+					RespostaEspecifica opcao = new RespostaEspecifica();
+					opcao.setPergunta(pergunta);
+					opcao.setRespostaEspecifica(String.valueOf(j));
+					respostaDAO.salvar(opcao);
+				}
+			}
+			
+			else if(((List<Integer>)session.getAttribute("tipo_pergunta")).get(i) == 1 || ((List<Integer>)session.getAttribute("tipo_pergunta")).get(i) == 2)
+			{
+				RespostaEspecificaDAO respostaDAO = new RespostaEspecificaDAO();
+				Listitem aux = ((List<Listitem>)session.getAttribute("primeiro_listitem")).get(i);
+
+				while(aux.getNextSibling() != null)
+				{
+					RespostaEspecifica opcao = new RespostaEspecifica();
+					opcao.setPergunta(pergunta);
+					opcao.setRespostaEspecifica(((Textbox) aux.getChildren().get(0).getChildren().get(0)).getValue());
+					respostaDAO.salvar(opcao);
+					aux=(Listitem) aux.getNextSibling();
+				}
+			}
+		}
+
+	
+	}
+	
+	@Command
+	public void tituloQuestionario(@BindingParam("titulo") String titulo)
+	{
+		titulo_questionario = titulo;
+	}
+	
+	@Command
+	public void tipoQuestionario(@BindingParam("tipo") int tipo)
+	{
+		tipo_questionario = tipo;	
+	}
+	
+	@Command
 	public void criarPergunta() // seta novos parametros para um nova pergunta do questionario setado acima
+	{
+	}
+	
+	@Command
+	public void atualizar(@BindingParam("txt") String txt) // usado para forçar a atualização dos valores das opções
 	{
 	}
 	
@@ -125,9 +205,6 @@ public class QuestionariosController extends GenericController {
 	{
 		((List<Listitem>)session.getAttribute("primeiro_listitem")).add(li);
 	}
-	
-
-	
 	
 	@Command
 	public void mudancaTituloPergunta(@BindingParam("titulo") String titulo,@BindingParam("index") String index)// para cada mudança no titulo da pergunta, ela será salva em seu respectivo lugar
@@ -195,8 +272,8 @@ public class QuestionariosController extends GenericController {
 	
 
 	@Command
-	public void tipoPergunta(@BindingParam("textbox") Textbox text,
-			@BindingParam("div") Div div, @BindingParam("index") String index,
+	public void tipoPergunta(@BindingParam("div") Div div,
+			@BindingParam("div2") Div div2, @BindingParam("index") String index,
 			@BindingParam("combo") Combobox combo) {
 		
 		int indice = Integer.parseInt(index);
@@ -231,24 +308,30 @@ public class QuestionariosController extends GenericController {
 		((List<Integer>) session.getAttribute("tipo_pergunta")).set(indice, escolhido);
 		
 		if (combo.getSelectedIndex() == 0) {
-			text.setDisabled(true);
-			text.setVisible(true);
+			div2.setVisible(false);
 			div.setVisible(false);
 		} else {
 			if (combo.getSelectedIndex() == 3) {
-				text.setVisible(false);
+				div2.setVisible(false);
 				div.setVisible(true);
 
 			} else {
-				text.setVisible(true);
-				text.setDisabled(false);
+				div2.setVisible(true);
 				div.setVisible(false);
-
 			}
 		}
 	}
 
-
+	@Command
+	public void obrigatorio(@BindingParam("check") Checkbox cbox,@BindingParam("index") String index)// verifica e salva a obrigatoriedade da pergunta
+	{	
+		int indice = Integer.parseInt(index);
+		while(((List<Boolean>) session.getAttribute("obrigatorio")).size()<(indice+1))
+		{
+			((List<Boolean>) session.getAttribute("obrigatorio")).add(false);
+		}
+		((List<Boolean>) session.getAttribute("obrigatorio")).set(indice,cbox.isChecked());
+	}
 
 	public int getTipoPergunta() {
 		if(((boolean) session.getAttribute("criando_tab_tipo_pergunta"))==true)
@@ -265,26 +348,25 @@ public class QuestionariosController extends GenericController {
 		session.setAttribute("tipoPergunta", valor);
 	}
 	
+	
 	@Command
-	@NotifyChange("perguntas")
-	public void duplicarPergunta(@BindingParam("pergunta") Pergunta p) {
-		Pergunta pergunta = new Pergunta();
-		pergunta.setTituloPergunta(p.getTituloPergunta());
-		pergunta.setTipoPergunta(p.getTipoPergunta());
-		if (p.getTipoPergunta() != 0) {
-			List<RespostaEspecifica> respostas = new ArrayList<RespostaEspecifica>();
-			for (RespostaEspecifica r : p.getRespostasEspecificas()) {
-				RespostaEspecifica re = new RespostaEspecifica();
-				re.setPergunta(pergunta);
-				re.setRespostaEspecifica(r.getRespostaEspecifica());
-				respostas.add(re);
-			}
-			pergunta.setRespostasEspecificas(respostas);
-		}
-		pergunta.setQuestionario(questionario);
-		perguntas.add(pergunta);
+	public void duplicarPergunta(@BindingParam("index") String index) {
+		
 	}
 
+	@Command
+	public void tabBox(@BindingParam("tbox") Tabbox tbox)
+	{
+		tabbox = tbox;
+	}
+	
+	@Command
+	public void teste()
+	{
+		for(int i=0;i<tabbox.getChildren().size();i++)
+		System.out.println(tabbox.getChildren().get(i));
+	}
+	
 	@Command
 	public void criarQuestionario() {
 		if ((new GenericBusiness().campoStrValido(questionario
@@ -318,6 +400,8 @@ public class QuestionariosController extends GenericController {
 			}
 		}
 	}
+	
+
 
 	@Command
 	public void zerarQuestionario() {
@@ -341,80 +425,6 @@ public class QuestionariosController extends GenericController {
 		window.doModal();
 	}
 
-	@Command
-	public void respostas() {
-		Window w = (Window) Executions.createComponents(
-				"/respostasEspecificas.zul", null, null);
-		w.doModal();
-	}
-
-	@Command
-	@NotifyChange({ "respostas", "resposta" })
-	public void addRespostaEspecifica() {
-		if (new GenericBusiness().campoStrValido(resposta
-				.getRespostaEspecifica())) {
-			resposta.setRespostaEspecifica(resposta.getRespostaEspecifica()
-					.trim());
-			resposta.setPergunta(pergunta);
-			respostas.add(resposta);
-			session.setAttribute("respostas", respostas);
-			resposta = new RespostaEspecifica();
-		}
-	}
-
-	/*
-	 * Método privado para finalizar a criação de uma pergunta e coloca la no
-	 * questionario. Verificações são feitas antes da chamada desse método.
-	 */
-	private void finalizar(Button b) {
-		pergunta.setTituloPergunta(pergunta.getTituloPergunta().trim());
-		pergunta.setQuestionario(questionario);
-		perguntas.add(pergunta);
-		if (pergunta.getTipoPergunta() == 3) {
-			respostas = new ArrayList<RespostaEspecifica>();
-			for (int i = ((List<Integer>) session.getAttribute("spinnerInicio")).get((int) session.getAttribute("indice_pergunta")); i <= ((List<Integer>) session.getAttribute("spinnerFinal")).get((int) session.getAttribute("indice_pergunta")); i++) {
-				resposta = new RespostaEspecifica();
-				resposta.setRespostaEspecifica(Integer.toString(i));
-				resposta.setPergunta(pergunta);
-				respostas.add(resposta);
-			}
-		}
-		if (pergunta.getTipoPergunta() != 0) {
-			pergunta.setRespostasEspecificas(respostas);
-		}
-		pergunta = new Pergunta();
-		respostas = new ArrayList<RespostaEspecifica>();
-		session.setAttribute("respostas", respostas);
-		b.setDisabled(true);
-		Button p = (Button) b.getPreviousSibling();
-		p.setDisabled(true);
-	}
-
-	@Command
-	@NotifyChange({ "perguntas", "pergunta" })
-	public void addPergunta(@BindingParam("button") Button b) {
-		if ((new GenericBusiness().campoStrValido(pergunta.getTituloPergunta()))
-				&& (pergunta.getTipoPergunta() != null)) {
-			if (pergunta.getTipoPergunta() != 3) {
-				if (pergunta.getTipoPergunta() == 0) {
-					finalizar(b);
-				} else {
-					if (!respostas.isEmpty()) {
-						finalizar(b);
-					} else {
-						Messagebox
-								.show("Nenhuma resposta cadastrada para essa pergunta.");
-					}
-				}
-			} else {
-				if (((List<Integer>) session.getAttribute("spinnerInicio")).get((int) session.getAttribute("indice_pergunta")) > ((List<Integer>) session.getAttribute("spinnerFinal")).get((int) session.getAttribute("indice_pergunta"))) {
-					finalizar(b);
-				} else {
-					Messagebox.show("Escala inicial menor ou igual à final");
-				}
-			}
-		}
-	}
 
 	@Command
 	@NotifyChange({ "prazos", "prazo" })

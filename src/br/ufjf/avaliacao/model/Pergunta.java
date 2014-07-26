@@ -87,6 +87,14 @@ public class Pergunta implements Serializable {
 	@Transient
 	private String nomeTipoPergunta;
 
+	public boolean isObrigatorio() {
+		return obrigatorio;
+	}
+
+	public void setObrigatorio(boolean obrigatorio) {
+		this.obrigatorio = obrigatorio;
+	}
+
 	public int getIdPergunta() {
 		return idPergunta;
 	}
