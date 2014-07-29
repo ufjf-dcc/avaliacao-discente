@@ -102,7 +102,9 @@ public class GenericController {
 			if (tipoUsuario == Usuario.PROFESSOR)
 			{
 				if(usuario.getCurso().getCoordenador()==usuario || usuario.getCurso().getViceCoordenador()==usuario)
+				{
 					return "/menuCoordenador.zul";
+				}
 				else 
 					return "/menuProfessor.zul";
 			}

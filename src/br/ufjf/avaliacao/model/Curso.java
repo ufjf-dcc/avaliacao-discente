@@ -65,13 +65,13 @@ public class Curso implements Serializable {
 	 * {@link Usuario}.
 	 * 
 	 */
-	@OneToOne(fetch = FetchType.LAZY, mappedBy="curso")
-	@JoinColumn(name = "Usuario_idUsuario", nullable = true)
+	@OneToOne()
+	@JoinColumn(name = "idCoordenador", nullable = true)
 	private Usuario coordenador;
 	
 	
-	@OneToOne(fetch = FetchType.LAZY, mappedBy="curso")
-	@JoinColumn(name = "Usuario_idUsuario1", nullable = true)
+	@OneToOne()
+	@JoinColumn(name = "idViceCoordenador", nullable = true)
 	private Usuario viceCoordenador;
 
 	public Curso() {
