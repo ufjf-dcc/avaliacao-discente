@@ -14,6 +14,7 @@ import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
+import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Combobox;
@@ -23,6 +24,8 @@ import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Tab;
 import org.zkoss.zul.Tabbox;
+import org.zkoss.zul.Tabpanel;
+import org.zkoss.zul.Tabs;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
@@ -112,12 +115,20 @@ public class QuestionariosController extends GenericController {
 		session.setAttribute("nova_alternativa",true);
 		session.setAttribute("primeiro_listitem", new ArrayList<Listitem>());
 		session.setAttribute("obrigatorio", new ArrayList<Boolean>());
+		session.setAttribute("tabbox", new Tabbox());
+		session.setAttribute("mudanca_perguntas",false);
+		session.setAttribute("mudanca_titulo_pergunta",false);
+		session.setAttribute("deletar_pergunta",true);
+		session.setAttribute("indice_deletar_pergunta", -1);
+		session.setAttribute("indice_mudanca_titulo_pergunta", -1);
+		
+		
 		titulo_questionario = "";
 		tipo_questionario = -1;
 		tabbox = new Tabbox();
 		
 		Window window = (Window) Executions.createComponents(
-				"/teste.zul", null, null);
+				"/criarQuestionario.zul", null, null);
 		window.doModal();
 		
 	}
@@ -211,6 +222,13 @@ public class QuestionariosController extends GenericController {
 	{
 		int indice = Integer.parseInt(index);
 		((List<String>) session.getAttribute("titulos")).set(indice,titulo);
+		
+		
+		session.setAttribute("mudanca_perguntas",true);
+		session.setAttribute("mudanca_titulo_pergunta",true);
+		session.setAttribute("texto_mudanca_titulo_pergunta", titulo);
+		session.setAttribute("indice_mudanca_titulo_pergunta", indice);
+	
 	}
 	
 	public String getTituloPergunta()
@@ -348,23 +366,48 @@ public class QuestionariosController extends GenericController {
 		session.setAttribute("tipoPergunta", valor);
 	}
 	
+	@Command
+	public void deletarPergunta(@BindingParam("index") String index)
+	{
+		int indice = Integer.parseInt(index);
+	
+		session.setAttribute("mudanca_perguntas",true);
+		session.setAttribute("deletar_pergunta",true);
+		session.setAttribute("indice_deletar_pergunta", indice);
+	}
 	
 	@Command
 	public void duplicarPergunta(@BindingParam("index") String index) {
 		
 	}
 
-	@Command
+	@Command // nao usada, so para teste
 	public void tabBox(@BindingParam("tbox") Tabbox tbox)
 	{
+		session.setAttribute("tabbox",tbox);
 		tabbox = tbox;
 	}
+	
+
 	
 	@Command
 	public void teste()
 	{
 		for(int i=0;i<tabbox.getChildren().size();i++)
-		System.out.println(tabbox.getChildren().get(i));
+		{
+			System.out.println(tabbox.getChildren().get(i));
+			if(i==0)
+			for(int j=0;j<tabbox.getChildren().get(i).getChildren().size();j++)
+			{
+				System.out.println(((Tab)tabbox.getChildren().get(i).getChildren().get(j)).getLabel());
+				((Tab)tabbox.getChildren().get(i).getChildren().get(j)).setLabel("p"+j);
+			}
+			else
+				for(int j=0;j<tabbox.getChildren().get(i).getChildren().size();j++)
+				{
+					System.out.println(((Tabpanel)tabbox.getChildren().get(i).getChildren().get(j)).getIndex());
+				}
+		}
 	}
 	
 	@Command
@@ -458,6 +501,7 @@ public class QuestionariosController extends GenericController {
 		}
 		w.detach();
 	}
+
 
 	private boolean validadaData(PrazoQuestionario prazo) {
 		if (prazo.getDataFinal().before(prazo.getDataInicial())) {

@@ -31,7 +31,10 @@
 							</template>
 						</combobox>
 						<checkbox onCheck="@command('obrigatorio',check=self,index=index.value)" />
-						<button label="Duplicar" onClick="@command('duplicarPergunta',index=index.value)"/>
+						<div>
+							<button label="Duplicar" onClick="@command('duplicarPergunta',index=index.value)"/>
+							<button label="Deletar" onClick="@command('deletarPergunta',index=index.value)"/>
+						</div>
 					</row>
 				</rows>	
 			</grid>

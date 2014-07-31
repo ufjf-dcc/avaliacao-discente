@@ -122,10 +122,6 @@
 		<div align="center">
 			<button label="Criar novo questionário"
 				onClick="@command('criarQuest')" />
-			<button label="Criar nova pergunta"
-				href="/criarQuestionario.zul" />
-			<button label="Teste"
-				href="/teste.zul" />
 		</div>
 	</div>
 </zk>

@@ -1,22 +1,29 @@
-<?init class="br.ufjf.avaliacao.controller.AuthController"?>
-<window style="text-align:center;" id="win" title="Criar Questionário"
-	border="normal" closable="true">
-	<div style="width:800px;margin:5px;"
-		apply="org.zkoss.bind.BindComposer"
-		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
-		form="@id('fm') @load(vm.questionario) @save(vm.questionario, before='criarQuestionario')"
-		id="form" onCreate="@command('zerarQuestionario')">
+<window style="text-align:center;" title="Criação de Questionário" border="normal"
+	closable="true" width="80%">
+    <style>
+        .plusTab .z-tab-text { 
+            font-weight: bold; color: #9c9c9c; 
+        } 
+        .z-toolbarbutton-cnt, .z-toolbar-tabs { 
+            padding: 0; text-align: center; font-weight: bold; font-size: 14px;color: #9c9c9c; 
+        }
+    </style>
+	<zscript>
+		int i = 2
+	</zscript>
 
-		<!-- Exibição das perguntas que vao sendo cadastradas
-			e cadastro dos dados do questionario -->
-		<grid model="@load(vm.perguntas)">
+    <div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
+		id="form" >
+	
+	<grid model="@load(vm.perguntas)">
 			<auxhead style="text-align:center">
 				<auxheader label="Título:">
-					<textbox value="@bind(fm.tituloQuestionario)" />
+					<textbox onChange="@command('tituloQuestionario',titulo=self.value)"/>
 				</auxheader>
 				<auxheader label="Tipo:">
 					<combobox model="@load(vm.tiposQuestionario)"
-						selectedItem="@bind(fm.tipoQuestionario)" readonly="true">
+						 onChange="@command('tipoQuestionario',tipo=self.selectedIndex)" readonly="true">
 						<template name="model">
 							<comboitem
 								label="@load(each eq 0 ? 'Avalição de Coordenador' : each eq 1 ? 'Avaliação de Professor' : each eq 2 ? 'Autoavaliação' : 'Avaliação de Infrestrutura')" />
@@ -25,93 +32,90 @@
 				</auxheader>
 			</auxhead>
 			<auxhead>
-				<auxheader align="center" label="Perguntas" colspan="3" />
 			</auxhead>
 			<columns style="text-align:center;">
-				<column label="Pergunta" />
-				<column label="Opções" />
+			
 			</columns>
 			<template name="model">
 				<row>
-					<textbox width="85%"
-						value="@bind(each.tituloPergunta)" />
-					<div style="text-align:center">
-						<button image="/img/delete.png"
-							onClick="@command('excluiPergunta',pergunta=each)" />
-						<button label="Duplicar"
-							onClick="@command('duplicarPergunta',pergunta=each)" />
-						<button label="top"
-							onClick="@command('top',pergunta=each)" />
-						<button image="/img/up.png"
-							onClick="@command('up',pergunta=each)"
-							disabled="@load(not (forEachStatus.index eq forEachStatus.begin) ? 'false' : 'true')" />
-						<button image="/img/down.png"
-							onClick="@command('down',pergunta=each)"
-							disabled="@load(not (forEachStatus.index + 1 eq forEachStatus.end) ? 'false' : 'true')" />
-						<button label="bottom"
-							onClick="@command('bottom',pergunta=each)" />
-						<button label="list perguntas"
-							onClick="@command('listarPerguntas',pergunta=each)" />
-					</div>
+			
 				</row>
 			</template>
 		</grid>
+	
+	
+    <groupbox closable="false" sclass="z-demo-config" style="padding: 10px;" >
+        <caption label="Perguntas"></caption>
+        <tabbox id="tbx2" hflex="1"  mold="accordion" onCreate="@command('tabBox',tbox=self)">
+            <attribute name="onTabAdd">
+                Tab newTab = new Tab("Pergunta "+ i++);
+                newTab.setSelected(true);
+                newTab.setParent(tbx2.getTabs());
+                Tabpanel newTabpanel = new Tabpanel();
+               	Iframe frame = new Iframe();
+               	frame.setWidth("100%");
+               	frame.setHeight("100%");
+               	frame.setSrc("/criarPergunta.zul");
+                newTabpanel.appendChild(frame);
+                newTabpanel.setHeight("300px");
+                newTabpanel.setParent(tbx2.getTabpanels());
+            	session.setAttribute("tabbox",tbx2);
+                session.setAttribute("novaTab",newTab);
+             	session.setAttribute("criando_tab_opcao",true);
+             	session.setAttribute("criando_tab_tipo_pergunta",true);
+             	session.setAttribute("tipoPergunta",0);
+             	
+             </attribute>
 
-		<!-- Criação da pergunta e de suas respostas -->
-
-		<div>
-			<grid>
-				<columns>
-					<column align="center" label="Pergunta" />
-					<column align="center" label="Tipo de Pergunta" />
-					<column align="center" label="Resposta" />
-				</columns>
-				<rows>
-					<row>
-						<div>
-							<textbox width="80%"
-								value="@bind(vm.pergunta.tituloPergunta)" />
-							<button label="Ver Respostas"
-								onClick="@command('respostas')" />
-						</div>
-						<combobox model="@load(vm.tiposPergunta)"
-							selectedItem="@bind(vm.pergunta.tipoPergunta)"
-							onChange="@command('tipoPergunta', textbox=texto, div=spinner, button=add)"
-							readonly="true">
-							<template name="model">
-								<comboitem
-									label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Caixa de Seleção' : each eq 2 ? 'Múltipla Escolha' : 'Escala Numérica')" />
-							</template>
-						</combobox>
-						<div
-							form="@id('fr') @load(vm.resposta) @save(vm.resposta, before='addRespostaEspecifica')">
-							<textbox id="texto"
-								value="@bind(fr.respostaEspecifica)" />
-							<div height="20px" id="spinner"
-								visible="false">
-								<label value="De: " />
-								<spinner value="@bind(vm.spinnerInicio)"
-									width="60px" readonly="true" constraint="min 0" />
-								<label value=" à " />
-								<spinner value="@bind(vm.spinnerFinal)"
-									width="60px" readonly="true" constraint="min 0" />
-							</div>
-							<separator />
-							<button disabled="true" id="add"
-								label="Adicionar" onClick="@command('addRespostaEspecifica')" />
-							<button disabled="false" label="Finalizar"
-								onClick="@command('addPergunta',button=self)" />
-						</div>
-					</row>
-				</rows>
-			</grid>
-		</div>
-
-		<!-- Botão para criar e salvar o questionario -->
-		<button style="margin-top:5px;" label="Criar Questionário"
-			onClick="@command('criarQuestionario')" />
-		<popup id="respostas">
-			<include src="/respostasEspecificas.zul" />
-		</popup>
+            <tabs>
+                <tab onCreate="@command('tabInicial',tab=self)">Pergunta 1</tab>
+            </tabs>
+            <tabpanels>
+                <tabpanel height="300px">
+					<iframe height="100%" visible="true" src="/criarPergunta.zul" width="100%" />
+				</tabpanel>
+            </tabpanels>
+        </tabbox>
+    </groupbox>
+       <button label="+">
+			<attribute name="onClick">
+                	Events.postEvent(tbx2, new Event("onTabAdd"));
+           	</attribute>
+		</button>
+		
+		<button disabled="false" label="Finalizar"
+				onClick="@command('salvarQuestionario')" />
+				
+		<button disabled="false" label="teste()"
+				onClick="@command('teste')" />
 	</div>
+	
+
+
+
+
+    <timer id="timer" delay="500" repeats="true">
+        <attribute name="onTimer">
+        if((boolean) session.getAttribute("mudanca_perguntas"))
+        {
+        	if((boolean) session.getAttribute("mudanca_titulo_pergunta"))
+        	{
+				((Tab)tbx2.getChildren().get(0).getChildren().get( (int) session.getAttribute("indice_mudanca_titulo_pergunta"))).setLabel((String)session.getAttribute("texto_mudanca_titulo_pergunta"));
+				session.setAttribute("mudanca_titulo_pergunta",false);
+				session.setAttribute("indice_mudanca_titulo_pergunta", -1);
+        	}
+        	if((boolean) session.getAttribute("deletar_pergunta")) 
+        	{
+        		((Tab)tbx2.getChildren().get(0).getChildren().get( (int) session.getAttribute("indice_deletar_pergunta"))).setVisible(false);
+        		((Tabpanel)tbx2.getChildren().get(1).getChildren().get( (int) session.getAttribute("indice_deletar_pergunta"))).setVisible(false);
+				session.setAttribute("deletar_pergunta",false);
+				session.setAttribute("indice_deletar_pergunta", -1);
+        	}
+        	session.setAttribute("mudanca_perguntas",false);
+        }
+		</attribute>
+    </timer>
+
+
+    
 </window>
