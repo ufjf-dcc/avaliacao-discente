@@ -118,9 +118,11 @@ public class QuestionariosController extends GenericController {
 		session.setAttribute("tabbox", new Tabbox());
 		session.setAttribute("mudanca_perguntas",false);
 		session.setAttribute("mudanca_titulo_pergunta",false);
-		session.setAttribute("deletar_pergunta",true);
+		session.setAttribute("deletar_pergunta",false);
 		session.setAttribute("indice_deletar_pergunta", -1);
 		session.setAttribute("indice_mudanca_titulo_pergunta", -1);
+		session.setAttribute("perguntas_deletadas", new ArrayList<Integer>());
+
 		
 		
 		titulo_questionario = "";
@@ -132,60 +134,127 @@ public class QuestionariosController extends GenericController {
 		window.doModal();
 		
 	}
+	
+	public boolean questionarioValido() // valida todos os campos antes de salvar questionario
+	{
+		if(tipo_questionario==-1)//verifica o tipo de questionario
+		{
+			Messagebox.show("Escolha o tipo de questionário");
+			return false;
+		}
+		GenericBusiness gb = new GenericBusiness();//verifica o titulo do questionario
+		if(!gb.campoStrValido(titulo_questionario))
+		{
+			Messagebox.show("Preencha corretamente o titulo do questionário");
+			return false;
+		}
+		for(int i=0;i<((List<String>)session.getAttribute("titulos")).size();i++)// verifica o titulo de cada pergunta
+		{
+			if(!gb.campoStrValido(((List<String>)session.getAttribute("titulos")).get(i)))
+			{
+				Messagebox.show("O titulo de alguma pergunta não está preenchido corretamente");
+				return false;
+			}
+		}
+		for(int i=0;i<((List<Integer>) session.getAttribute("tipo_pergunta")).size();i++)// verifica as opções
+		{
+			if(((List<Integer>) session.getAttribute("tipo_pergunta")).get(i)==1 
+					|| ((List<Integer>) session.getAttribute("tipo_pergunta")).get(i)==2)
+			{
+				
+					int quantidade_validos = 0;
+					Listitem aux = ((List<Listitem>)session.getAttribute("primeiro_listitem")).get(i);
+	
+					while(aux.getNextSibling() != null)
+					{
+						String opcao = ((Textbox) aux.getChildren().get(0).getChildren().get(0)).getValue();
+						if(gb.campoStrValido(opcao))
+						{
+							quantidade_validos++;
+						}
+						aux=(Listitem) aux.getNextSibling();
+					}
+					
+					if(quantidade_validos == 0)
+					{
+						Messagebox.show("Existe alguma pergunta em que as opções não foram preenhidas corretamente");
+						return false;
+					}
+			}
+		}
+		for(int i=0;i<((List<Integer>)session.getAttribute("spinnerInicio")).size();i++)//verifica os valores dos spinners
+		{
+			if(((List<Integer>) session.getAttribute("tipo_pergunta")).get(i)==3)
+			if(((List<Integer>)session.getAttribute("spinnerInicio")).get(i)>=((List<Integer>)session.getAttribute("spinnerFinal")).get(i))
+			{
+				Messagebox.show("Existe alguma pergunta em que os spinners não foram preenhidos corretamente");
+				return false;
+			}
+		}
+		
+		
+		return true;
+	}
 
 	@Command
 	public void salvarQuestionario()
 	{
-		Questionario questionario = new Questionario();
-		questionario.setTipoQuestionario(tipo_questionario);
-		questionario.setTituloQuestionario(titulo_questionario);
-		questionario.setAtivo(false);
-		questionario.setCurso(usuario.getCurso());
-		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
-		questionarioDAO.salvar(questionario);
-				
-		while(((List<Boolean>) session.getAttribute("obrigatorio")).size()<((List<Integer>)session.getAttribute("tipo_pergunta")).size())
-		{
-			((List<Boolean>) session.getAttribute("obrigatorio")).add(false);
-		}
 		
-		PerguntaDAO perguntaDAO = new PerguntaDAO();
-		for(int i=0;i<((List<Integer>)session.getAttribute("tipo_pergunta")).size();i++)
+		if(questionarioValido())
 		{
-			Pergunta pergunta = new Pergunta();
-			pergunta.setQuestionario(questionario);
-			pergunta.setTituloPergunta(((List<String>) session.getAttribute("titulos")).get(i));
-			pergunta.setTipoPergunta(((List<Integer>)session.getAttribute("tipo_pergunta")).get(i));
-			pergunta.setObrigatorio(((List<Boolean>)session.getAttribute("obrigatorio")).get(i));
-			perguntaDAO.salvar(pergunta);
-			if(((List<Integer>)session.getAttribute("tipo_pergunta")).get(i) == 3)
+			Questionario questionario = new Questionario();
+			questionario.setTipoQuestionario(tipo_questionario);
+			questionario.setTituloQuestionario(titulo_questionario);
+			questionario.setAtivo(false);
+			questionario.setCurso(usuario.getCurso());
+			QuestionarioDAO questionarioDAO = new QuestionarioDAO();
+			questionarioDAO.salvar(questionario);
+					
+			while(((List<Boolean>) session.getAttribute("obrigatorio")).size()<((List<Integer>)session.getAttribute("tipo_pergunta")).size())
 			{
-				RespostaEspecificaDAO respostaDAO = new RespostaEspecificaDAO();
-				for(int j=((List<Integer>)session.getAttribute("spinnerInicio")).get(i);j<=((List<Integer>)session.getAttribute("spinnerFinal")).get(i);j++)
-				{
-					RespostaEspecifica opcao = new RespostaEspecifica();
-					opcao.setPergunta(pergunta);
-					opcao.setRespostaEspecifica(String.valueOf(j));
-					respostaDAO.salvar(opcao);
-				}
+				((List<Boolean>) session.getAttribute("obrigatorio")).add(false);
 			}
 			
-			else if(((List<Integer>)session.getAttribute("tipo_pergunta")).get(i) == 1 || ((List<Integer>)session.getAttribute("tipo_pergunta")).get(i) == 2)
+			PerguntaDAO perguntaDAO = new PerguntaDAO();
+			for(int i=0;i<((List<Integer>)session.getAttribute("tipo_pergunta")).size();i++)
 			{
-				RespostaEspecificaDAO respostaDAO = new RespostaEspecificaDAO();
-				Listitem aux = ((List<Listitem>)session.getAttribute("primeiro_listitem")).get(i);
-
-				while(aux.getNextSibling() != null)
-				{
-					RespostaEspecifica opcao = new RespostaEspecifica();
-					opcao.setPergunta(pergunta);
-					opcao.setRespostaEspecifica(((Textbox) aux.getChildren().get(0).getChildren().get(0)).getValue());
-					respostaDAO.salvar(opcao);
-					aux=(Listitem) aux.getNextSibling();
-				}
+				if(!((List<Integer>) session.getAttribute("perguntas_deletadas")).contains(i))
+				{	
+					Pergunta pergunta = new Pergunta();
+					pergunta.setQuestionario(questionario);
+					pergunta.setTituloPergunta(((List<String>) session.getAttribute("titulos")).get(i));
+					pergunta.setTipoPergunta(((List<Integer>)session.getAttribute("tipo_pergunta")).get(i));
+					pergunta.setObrigatorio(((List<Boolean>)session.getAttribute("obrigatorio")).get(i));
+					perguntaDAO.salvar(pergunta);
+					if(((List<Integer>)session.getAttribute("tipo_pergunta")).get(i) == 3)
+					{
+						RespostaEspecificaDAO respostaDAO = new RespostaEspecificaDAO();
+						for(int j=((List<Integer>)session.getAttribute("spinnerInicio")).get(i);j<=((List<Integer>)session.getAttribute("spinnerFinal")).get(i);j++)
+						{
+							RespostaEspecifica opcao = new RespostaEspecifica();
+							opcao.setPergunta(pergunta);
+							opcao.setRespostaEspecifica(String.valueOf(j));
+							respostaDAO.salvar(opcao);
+						}
+					}
+					
+					else if(((List<Integer>)session.getAttribute("tipo_pergunta")).get(i) == 1 || ((List<Integer>)session.getAttribute("tipo_pergunta")).get(i) == 2)
+					{
+						RespostaEspecificaDAO respostaDAO = new RespostaEspecificaDAO();
+						Listitem aux = ((List<Listitem>)session.getAttribute("primeiro_listitem")).get(i);
+		
+						while(aux.getNextSibling() != null)
+						{
+							RespostaEspecifica opcao = new RespostaEspecifica();
+							opcao.setPergunta(pergunta);
+							opcao.setRespostaEspecifica(((Textbox) aux.getChildren().get(0).getChildren().get(0)).getValue());
+							respostaDAO.salvar(opcao);
+							aux=(Listitem) aux.getNextSibling();
+						}
+					}
+				}	
 			}
 		}
-
 	
 	}
 	
@@ -222,8 +291,7 @@ public class QuestionariosController extends GenericController {
 	{
 		int indice = Integer.parseInt(index);
 		((List<String>) session.getAttribute("titulos")).set(indice,titulo);
-		
-		
+				
 		session.setAttribute("mudanca_perguntas",true);
 		session.setAttribute("mudanca_titulo_pergunta",true);
 		session.setAttribute("texto_mudanca_titulo_pergunta", titulo);
@@ -300,6 +368,7 @@ public class QuestionariosController extends GenericController {
 				
 		String tipo;
 		int escolhido;
+		
 		if (combo.getSelectedIndex() == 0)
 		{
 			tipo = "Texto";
@@ -374,6 +443,7 @@ public class QuestionariosController extends GenericController {
 		session.setAttribute("mudanca_perguntas",true);
 		session.setAttribute("deletar_pergunta",true);
 		session.setAttribute("indice_deletar_pergunta", indice);
+		((List<Integer>) session.getAttribute("perguntas_deletadas")).add(indice);
 	}
 	
 	@Command
@@ -393,21 +463,7 @@ public class QuestionariosController extends GenericController {
 	@Command
 	public void teste()
 	{
-		for(int i=0;i<tabbox.getChildren().size();i++)
-		{
-			System.out.println(tabbox.getChildren().get(i));
-			if(i==0)
-			for(int j=0;j<tabbox.getChildren().get(i).getChildren().size();j++)
-			{
-				System.out.println(((Tab)tabbox.getChildren().get(i).getChildren().get(j)).getLabel());
-				((Tab)tabbox.getChildren().get(i).getChildren().get(j)).setLabel("p"+j);
-			}
-			else
-				for(int j=0;j<tabbox.getChildren().get(i).getChildren().size();j++)
-				{
-					System.out.println(((Tabpanel)tabbox.getChildren().get(i).getChildren().get(j)).getIndex());
-				}
-		}
+		System.out.println(tipo_questionario);
 	}
 	
 	@Command
