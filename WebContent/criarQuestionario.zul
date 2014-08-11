@@ -48,6 +48,7 @@
         <caption label="Perguntas"></caption>
         <tabbox id="tbx2" hflex="1"  mold="accordion" onCreate="@command('tabBox',tbox=self)">
             <attribute name="onTabAdd">
+
                 Tab newTab = new Tab("Pergunta "+ i++);
                 newTab.setSelected(true);
                 newTab.setParent(tbx2.getTabs());
@@ -64,7 +65,7 @@
              	session.setAttribute("criando_tab_opcao",true);
              	session.setAttribute("criando_tab_tipo_pergunta",true);
              	session.setAttribute("tipoPergunta",0);
-             	
+     	
              </attribute>
 
             <tabs>
@@ -111,7 +112,32 @@
 				session.setAttribute("deletar_pergunta",false);
 				session.setAttribute("indice_deletar_pergunta", -1);
         	}
+        	if((boolean) session.getAttribute("duplicar_pergunta")) 
+        	{
+
+	        		Tab newTab = new Tab("Pergunta "+ i++);
+	                newTab.setSelected(true);
+	                newTab.setParent(tbx2.getTabs());
+	                Tabpanel newTabpanel = new Tabpanel();
+	               	Iframe frame = new Iframe();
+	               	frame.setWidth("100%");
+	               	frame.setHeight("100%");
+	               	frame.setSrc("/criarPergunta.zul");
+	                newTabpanel.appendChild(frame);
+	                newTabpanel.setHeight("300px");
+	                newTabpanel.setParent(tbx2.getTabpanels());
+	            	session.setAttribute("tabbox",tbx2);
+	                session.setAttribute("novaTab",newTab);
+	             	session.setAttribute("criando_tab_opcao",true);
+	             	session.setAttribute("criando_tab_tipo_pergunta",true);
+	             	session.setAttribute("tipoPergunta",0);
+	             	
+					
+            	
+          	}
+        	
         	session.setAttribute("mudanca_perguntas",false);
+        	
         }
 		</attribute>
     </timer>

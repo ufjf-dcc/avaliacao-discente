@@ -25,15 +25,7 @@
 							value="@bind(fm.dataFinal)" format="dd/MM/yyyy"
 							constraint="no past" />
 					</row>
-					<row>
-						<label value="Semestre: " />
-						<combobox
-							model="@load(vm.semestres)" selectedItem="@bind(vm.semestreEscolhido)">
-							<template name="model">
-								<comboitem label="@load(each)"/>
-							</template>
-						</combobox>
-					</row>
+				
 				</rows>
 			</grid>
 			<div align="center" style="margin-top:5px;">

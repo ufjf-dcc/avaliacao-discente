@@ -22,15 +22,15 @@
 				<rows>
 					<row>
 						<combobox id="combo" model="@load(vm.tiposPergunta)"
-							selectedItem="@bind(vm.tipoPergunta)"
+							selectedItem="@load(vm.tipoPergunta)"
 							onChange="@command('tipoPergunta', div=spinner, div2=addOpcao ,index=index.value,combo=combo)"
-							readonly="true">
+							readonly="true" >
 							<template name="model">
 								<comboitem
 									label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Caixa de Seleção' : each eq 2 ? 'Múltipla Escolha' : 'Escala Numérica')" />
 							</template>
 						</combobox>
-						<checkbox onCheck="@command('obrigatorio',check=self,index=index.value)" />
+						<checkbox value="@load('obrigatorio_inicio')" onCheck="@command('obrigatorio',check=self,index=index.value)" />
 						<div>
 							<button label="Duplicar" onClick="@command('duplicarPergunta',index=index.value)"/>
 							<button label="Deletar" onClick="@command('deletarPergunta',index=index.value)"/>
@@ -77,7 +77,7 @@
 				</panelchildren>
 			</panel>
 	
-			
+
 			<zscript><![CDATA[
 			  import java.text.SimpleDateFormat;
 			  
@@ -98,12 +98,60 @@
 			
 			]]></zscript>
 		</div>
-
-
-
-
-		</div>
-
-				
 	</div>
+	</div>
+	
+	  <timer id="timer" delay="500" repeats="true">
+       <attribute name="onTimer">
+       
+        if((boolean) session.getAttribute("mudar_combo"))
+        if(Integer.parseInt(index.getValue()) == (-1 + session.getAttribute("titulos").size()))
+        {
+        	combo.setSelectedItem(combo.getChildren().get((session.getAttribute("tipo_pergunta")).get((session.getAttribute("indice_duplicar_pergunta")))));
+       		(session.getAttribute("tipo_pergunta")).set(Integer.parseInt(index.getValue()),session.getAttribute("tipo_pergunta").get((session.getAttribute("indice_duplicar_pergunta"))));
+       		session.setAttribute("mudar_combo",false);
+       		
+   		
+       		if (session.getAttribute("tipo_pergunta").get((session.getAttribute("indice_duplicar_pergunta"))) == 0) {
+				addOpcao.setVisible(false);
+				spinner.setVisible(false);
+			} else {
+			if (session.getAttribute("tipo_pergunta").get((session.getAttribute("indice_duplicar_pergunta"))) == 3) {
+				addOpcao.setVisible(false);
+				spinner.setVisible(true);
+	
+			} else {
+				addOpcao.setVisible(true);
+				spinner.setVisible(false);
+			}
+		}
+       		timer.setRepeats(false);
+       	
+       	// PARTE DE DUPLICAR AS OPÇÕES
+      		Listitem aux = (session.getAttribute("primeiro_listitem")).get((session.getAttribute("indice_duplicar_pergunta")));
+      		Listitem aux2 = (session.getAttribute("primeiro_listitem")).get(Integer.parseInt(index.getValue()));
+			while(aux.getNextSibling() != null)
+			{
+				System.out.println(((Textbox) aux.getChildren().get(0).getChildren().get(0)).getValue());
+				if(aux.getNextSibling().getNextSibling() != null)//para não fazer a copia extra
+				{
+					addRow();
+				}
+				((Textbox) aux2.getChildren().get(0).getChildren().get(0)).setValue(((Textbox) aux.getChildren().get(0).getChildren().get(0)).getValue());	
+				aux=(Listitem) aux.getNextSibling();	
+				aux2=(Listitem) aux2.getNextSibling();	
+			
+			}
+       	
+       	}
+       	
+       	else
+       	{
+     	  	timer.setRepeats(false);
+       	}
+
+		</attribute>
+    </timer>
+	
+	
 </zk>
