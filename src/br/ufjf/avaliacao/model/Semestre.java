@@ -4,8 +4,11 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -51,12 +54,31 @@ public class Semestre implements Serializable {
 	 */
 	@Column(name = "dataFinal", nullable = false)
 	private Date dataFinalSemestre;
+	
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "idCurso", nullable = false)
+	private Curso curso;
 
 	@Transient
 	private boolean editingStatus;
 
+	
 	public Semestre() {
 
+	}
+	
+	public Semestre(String nomeSemestre, Date dataFinal, Curso curso) {
+		this.setNomeSemestre(nomeSemestre);
+		this.setDataFinalSemestre(dataFinal);
+		this.setCurso(curso);		
+	}
+	
+	public Curso getCurso() {
+		return curso;
+	}
+
+	public void setCurso(Curso curso) {
+		this.curso = curso;
 	}
 
 	public int getIdSemestre() {
@@ -81,6 +103,11 @@ public class Semestre implements Serializable {
 
 	public Date getDataFinalSemestre() {
 		return dataFinalSemestre;
+	}
+	
+	public String getDataFinal() {
+		return (dataFinalSemestre.getDate() + "/" + (dataFinalSemestre.getMonth() + 1) + "/" + (dataFinalSemestre
+				.getYear() + 1900));
 	}
 
 	public void setDataFinalSemestre(Date dataFinalSemestre) {

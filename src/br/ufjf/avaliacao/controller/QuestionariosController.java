@@ -2,6 +2,7 @@ package br.ufjf.avaliacao.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.text.TabableView;
@@ -42,6 +43,7 @@ import br.ufjf.avaliacao.persistent.impl.PerguntaDAO;
 import br.ufjf.avaliacao.persistent.impl.PrazoQuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.RespostaEspecificaDAO;
+import br.ufjf.avaliacao.persistent.impl.SemestreDAO;
 import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 
 public class QuestionariosController extends GenericController {
@@ -120,18 +122,16 @@ public class QuestionariosController extends GenericController {
 		session.setAttribute("mudanca_perguntas",false);
 		session.setAttribute("mudanca_titulo_pergunta",false);
 		session.setAttribute("deletar_pergunta",false);
-		session.setAttribute("indice_deletar_pergunta", -1);
+		session.setAttribute("indice_deletar_pergunta", -1);//deletar
 		session.setAttribute("indice_mudanca_titulo_pergunta", -1);
-		session.setAttribute("perguntas_deletadas", new ArrayList<Integer>());
-		session.setAttribute("duplicar_pergunta", false);
-		session.setAttribute("indice_duplicar_pergunta", -1);
-		session.setAttribute("aux_duplicar_pergunta", 0);
-		session.setAttribute("obrigatorio_inicio", false);
-		session.setAttribute("mudar_combo", false);
-
+		session.setAttribute("perguntas_deletadas", new ArrayList<Integer>());//deletar
+		session.setAttribute("duplicar_pergunta", false);//duplicar
+		session.setAttribute("indice_duplicar_pergunta", -1);//duplicar
+		session.setAttribute("aux_duplicar_pergunta", 0);//duplicar
+		session.setAttribute("obrigatorio_inicio", false);//duplicar
+		session.setAttribute("mudar_combo", false);//duplicar
+		session.setAttribute("chekbox", null);//duplicar
 		
-		session.setAttribute("combobox", null);
-
 		titulo_questionario = "";
 		tipo_questionario = -1;
 		tabbox = new Tabbox();
@@ -263,6 +263,14 @@ public class QuestionariosController extends GenericController {
 					}
 				}	
 			}
+			Messagebox.show("Questionário salvo", "Concluído",
+					Messagebox.OK, Messagebox.INFORMATION,
+					new EventListener<Event>() {
+						@Override
+						public void onEvent(Event event) throws Exception {
+							Executions.sendRedirect(null);
+						}
+					});
 		}
 	
 	}
@@ -323,8 +331,6 @@ public class QuestionariosController extends GenericController {
 			session.setAttribute("texto_mudanca_titulo_pergunta", ((List<String>) session.getAttribute("titulos")).get((int) session.getAttribute("indice_duplicar_pergunta")));
 			session.setAttribute("indice_mudanca_titulo_pergunta", ((List<String>) session.getAttribute("titulos")).size() - 1);
 			
-			System.out.println("Titulo");
-			            
 			return ((List<String>) session.getAttribute("titulos")).get((int) session.getAttribute("indice_duplicar_pergunta"));
 		}
 
@@ -383,7 +389,6 @@ public class QuestionariosController extends GenericController {
 		((List<Integer>) session.getAttribute("spinnerFinal")).set(indice,valor);
 	}
 	
-
 	@Command
 	public void obrigatorio(@BindingParam("check") Checkbox cbox,@BindingParam("index") String index)// verifica e salva a obrigatoriedade da pergunta
 	{	
@@ -397,7 +402,11 @@ public class QuestionariosController extends GenericController {
 	
 	public boolean getObrigatorio_inicio()
 	{
-		System.out.println("obrigatorio");
+		if((boolean) session.getAttribute("duplicar_pergunta"))// usado para Duplicar os valores
+		{
+			((List<Boolean>) session.getAttribute("obrigatorio")).set(-1 + ((List<String>)session.getAttribute("titulos")).size(),((List<Boolean>) session.getAttribute("obrigatorio")).get((int) session.getAttribute("indice_duplicar_pergunta")));
+			
+		}
 		return false;
 	}
 	
@@ -504,6 +513,7 @@ public class QuestionariosController extends GenericController {
 	
 
 	
+	
 	@Command
 	public void teste()
 	{
@@ -516,9 +526,7 @@ public class QuestionariosController extends GenericController {
 		((Combobox)session.getAttribute("combobox")).setSelectedItem((Comboitem)((Combobox)session.getAttribute("combobox")).getChildren().get(3));
 	}
 	
-	
 	public Integer getSpinnerInicio() {
-		System.out.println("SI");
 		
 		if((boolean) session.getAttribute("duplicar_pergunta"))// usado para Duplicar os valores
 		{
@@ -531,8 +539,6 @@ public class QuestionariosController extends GenericController {
 
 	public Integer getSpinnerFinal() {
 		
-		System.out.println("SF");
-
 		if((boolean) session.getAttribute("duplicar_pergunta"))// usado para Duplicar os valores
 		{
 			((List<Integer>) session.getAttribute("spinnerFinal")).add(((List<Integer>) session.getAttribute("spinnerFinal")).get((int) session.getAttribute("indice_duplicar_pergunta")));
@@ -544,7 +550,6 @@ public class QuestionariosController extends GenericController {
 	
 		return ((List<Integer>) session.getAttribute("spinnerFinal")).get(getIndex());
 	}
-
 
 	@Command
 	public void editarQuest(
@@ -563,7 +568,6 @@ public class QuestionariosController extends GenericController {
 		window.doModal();
 	}
 
-
 	@Command
 	@NotifyChange({ "prazos", "prazo" })
 	public void adicionaPrazo() {
@@ -573,19 +577,28 @@ public class QuestionariosController extends GenericController {
 
 	@Command
 	public void adcPrazo(@BindingParam("questionario") Questionario questionario) {
-		session.setAttribute("questionario", questionario);
-		Window window = (Window) Executions.createComponents("/add-prazo.zul",
-				null, null);
-		window.doModal();
+		SemestreDAO semestreDAO = new SemestreDAO();
+		if(semestreDAO.getSemestreAtualCurso(usuario.getCurso()) != null)
+		{
+			session.setAttribute("questionario", questionario);
+			Window window = (Window) Executions.createComponents("/add-prazo.zul",
+					null, null);
+			window.doModal();
+		}
+		else
+		{
+			Messagebox.show("O sistema não tem um sistema referente a data atual, favor adicionar");
+		}
 	}
 
 	@Command
 	public void addPrazo(@BindingParam("window") Window w) {
 		if (new QuestionariosBusiness().prazoValido(prazo)) {
+			SemestreDAO semestreDAO = new SemestreDAO();
 			if (validadaData(prazo) && semestreEscolhido!="") {
 				prazo.setQuestionario((Questionario) session
 						.getAttribute("questionario"));
-				prazo.setSemestre(semestreEscolhido);
+				prazo.setSemestre(semestreDAO.getSemestreAtualCurso(usuario.getCurso()).getNomeSemestre());
 				prazoDAO.salvar(prazo);
 				prazos.add(prazo);
 				w.detach();
@@ -596,7 +609,6 @@ public class QuestionariosController extends GenericController {
 		}
 		w.detach();
 	}
-
 
 	private boolean validadaData(PrazoQuestionario prazo) {
 		if (prazo.getDataFinal().before(prazo.getDataInicial())) {
@@ -617,6 +629,13 @@ public class QuestionariosController extends GenericController {
 					return false;
 				}
 			}
+		SemestreDAO semestreDAO = new SemestreDAO();
+		Date dataFinal = semestreDAO.getSemestreAtualCurso(usuario.getCurso()).getDataFinalSemestre();
+		if(dataFinal.before(prazo.getDataFinal()))
+		{
+			Messagebox.show("Não pode criar nessa data");
+			return false;
+		}
 		return true;
 	}
 
@@ -647,13 +666,13 @@ public class QuestionariosController extends GenericController {
 		}
 
 	}
-
-	@Command
-	@NotifyChange({ "perguntas", "pergunta" })
-	public void excluiPergunta(@BindingParam("pergunta") Pergunta pergunta) {
-		perguntas.remove(pergunta);
-	}
-
+	
+	@Command // exclui questionario da lista
+	public void excluirQuestionario(@BindingParam("questionario") Questionario questionario) {
+		session.setAttribute("questionario",questionario);
+		exclui();
+	}	
+	
 	@Command
 	public void exclui() {
 		/*

@@ -190,5 +190,30 @@ public class TurmaDAO extends GenericoDAO implements ITurmaDAO {
 		}
 		return turmas;
 	}
+	
+	public void trocarSemestreTurmasCurso(String semestre, String novoTituloSemestre, Curso curso) {
+		UsuarioDAO usuarioDAO = new UsuarioDAO();
+		List<Usuario> professores = usuarioDAO.retornaProfessorCurso(curso);
+		List<Turma> turmas = new ArrayList<Turma>();
+		List<Integer> aux = new ArrayList<Integer>();
+		for (int i = 0; i < professores.size(); i++) {
+			List<Turma> turmasAux = getTurmasUsuario(professores.get(i));
+			for (int j = 0; j < turmasAux.size(); j++) {
+				if (!aux.contains(turmasAux.get(j).getIdTurma())) {
+					aux.add(turmasAux.get(j).getIdTurma());
+					turmas.add(turmasAux.get(j));
+				}
+			}
+		}
+		TurmaDAO turmaDAO = new TurmaDAO();
+		for(int i=0;i<turmas.size();i++)
+		{
+			if(turmas.get(i).getSemestre() == semestre)
+			{
+				turmas.get(i).setSemestre(novoTituloSemestre);
+				turmaDAO.editar(turmas.get(i));
+			}
+		}
+	}
 
 }

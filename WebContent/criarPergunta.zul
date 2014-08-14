@@ -30,7 +30,7 @@
 									label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Caixa de Seleção' : each eq 2 ? 'Múltipla Escolha' : 'Escala Numérica')" />
 							</template>
 						</combobox>
-						<checkbox value="@load('obrigatorio_inicio')" onCheck="@command('obrigatorio',check=self,index=index.value)" />
+						<checkbox id="check" value="@load('obrigatorio_inicio')" onCheck="@command('obrigatorio',check=self,index=index.value)" />
 						<div>
 							<button label="Duplicar" onClick="@command('duplicarPergunta',index=index.value)"/>
 							<button label="Deletar" onClick="@command('deletarPergunta',index=index.value)"/>
@@ -132,7 +132,6 @@
       		Listitem aux2 = (session.getAttribute("primeiro_listitem")).get(Integer.parseInt(index.getValue()));
 			while(aux.getNextSibling() != null)
 			{
-				System.out.println(((Textbox) aux.getChildren().get(0).getChildren().get(0)).getValue());
 				if(aux.getNextSibling().getNextSibling() != null)//para não fazer a copia extra
 				{
 					addRow();
@@ -142,6 +141,9 @@
 				aux2=(Listitem) aux2.getNextSibling();	
 			
 			}
+		
+		//DUPLICAR OBRIGATORIO
+			check.setChecked((session.getAttribute("obrigatorio")).get((int) session.getAttribute("indice_duplicar_pergunta")));
        	
        	}
        	

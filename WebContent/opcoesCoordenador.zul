@@ -1,0 +1,16 @@
+<?page title="Home" contentType="text/html;charset=UTF-8"?>
+<?link rel="shortcut icon" type="image/x-icon" href="/img/ufjf.ico"?>
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<zk>
+	<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.HomeController')">
+
+		<include src="@load(vm.menu)" />
+
+		<div align="center">
+			<button label="Semestres..."
+				onClick="@command('semestres')" />
+		</div>
+
+	</div>
+</zk>
