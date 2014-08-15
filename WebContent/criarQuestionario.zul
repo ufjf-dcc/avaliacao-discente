@@ -22,7 +22,7 @@
 					<textbox onChange="@command('tituloQuestionario',titulo=self.value)"/>
 				</auxheader>
 				<auxheader label="Tipo:">
-					<combobox model="@load(vm.tiposQuestionario)"
+					<combobox id="cmb" model="@load(vm.tiposQuestionario)"
 						 onChange="@command('tipoQuestionario',tipo=self.selectedIndex)" readonly="true">
 						<template name="model">
 							<comboitem

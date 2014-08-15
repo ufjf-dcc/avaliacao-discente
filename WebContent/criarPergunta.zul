@@ -144,7 +144,6 @@
 		
 		//DUPLICAR OBRIGATORIO
 			check.setChecked((session.getAttribute("obrigatorio")).get((int) session.getAttribute("indice_duplicar_pergunta")));
-       	
        	}
        	
        	else

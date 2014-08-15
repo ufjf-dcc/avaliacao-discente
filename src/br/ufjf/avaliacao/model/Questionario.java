@@ -149,7 +149,7 @@ public class Questionario implements Serializable {
 
 	public String getNomeTipoQuestionario() {
 		if (tipoQuestionario == 0)
-			return "Avaliação de Coordenador";
+			return "Avaliação de Coordenação";
 		else if (tipoQuestionario == 1)
 			return "Avaliação de Professor";
 		else if (tipoQuestionario == 2)

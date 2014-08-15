@@ -339,7 +339,8 @@ public class QuestionariosController extends GenericController {
 	}
 	
 	@Command
-	public void tabInicial(@BindingParam("tab") Tab tab) { // seta a tab inicial, que a partir dela é possivel chegar a todas as outras
+	public void tabInicial(@BindingParam("tab") Tab tab) 
+	{ // seta a tab inicial, que a partir dela é possivel chegar a todas as outras
 		((List<Tab>) session.getAttribute("tabs")).add(tab);
 		session.setAttribute("inicial_tab", tab);
 	}
@@ -393,10 +394,12 @@ public class QuestionariosController extends GenericController {
 	public void obrigatorio(@BindingParam("check") Checkbox cbox,@BindingParam("index") String index)// verifica e salva a obrigatoriedade da pergunta
 	{	
 		int indice = Integer.parseInt(index);
-		while(((List<Boolean>) session.getAttribute("obrigatorio")).size()<(indice+1))
+		int i = ((List<Boolean>) session.getAttribute("obrigatorio")).size();
+		for(;i<=((List<String>)session.getAttribute("titulos")).size();i++)
 		{
 			((List<Boolean>) session.getAttribute("obrigatorio")).add(false);
 		}
+		
 		((List<Boolean>) session.getAttribute("obrigatorio")).set(indice,cbox.isChecked());
 	}
 	
@@ -502,6 +505,12 @@ public class QuestionariosController extends GenericController {
 		session.setAttribute("indice_duplicar_pergunta", indice);
 		session.setAttribute("mudanca_perguntas",true);
 
+		int i = ((List<Boolean>) session.getAttribute("obrigatorio")).size();
+		for(;i<=((List<String>)session.getAttribute("titulos")).size();i++)
+		{
+			((List<Boolean>) session.getAttribute("obrigatorio")).add(false);
+		}
+		
 	}
 
 	@Command // nao usada, so para teste
@@ -633,10 +642,9 @@ public class QuestionariosController extends GenericController {
 		Date dataFinal = semestreDAO.getSemestreAtualCurso(usuario.getCurso()).getDataFinalSemestre();
 		if(dataFinal.before(prazo.getDataFinal()))
 		{
-			Messagebox.show("Não pode criar nessa data");
 			return false;
 		}
-		return true;
+			return true;
 	}
 
 	@Command

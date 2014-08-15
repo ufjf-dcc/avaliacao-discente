@@ -42,17 +42,17 @@
 				<columns>
 					<column align="center" label="Título da Pergunta" />
 					<column align="center" label="Tipo de Resposta" />
+					<column align="center" label="Obrigatório" />
 				</columns>
 				<template name="model">
 					<row>
 						<label value="@load(each.tituloPergunta)" />
 						<label value="@load(each.nomeTipoPergunta)" />
+						<checkbox checked="@load(each.obrigatorio)" disabled="true" />
 					</row>
 				</template>
 			</grid>
 			<div align="center" style="margin-top:5px;">
-				<button image="/img/edit.png"
-					onClick="@command('editarQuest')" />
 				<button image="/img/delete.png"
 					onClick="@command('exclui')" />
 			</div>
