@@ -7,12 +7,15 @@ import org.hibernate.HibernateException;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.Init;
+import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.Clients;
+import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Div;
+import org.zkoss.zul.Grid;
 import org.zkoss.zul.Iframe;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
@@ -33,6 +36,7 @@ import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
 import br.ufjf.avaliacao.persistent.impl.PrazoQuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.RespostaDAO;
+import br.ufjf.avaliacao.persistent.impl.SemestreDAO;
 import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
 
@@ -94,21 +98,181 @@ public class HomeAlunoController extends GenericController {
 				vetorQuestionarios[i]=questionarios.get(i);
 			quantidadeQuestionarios=questionarios.size();		
 		}
-		if(session.getAttribute("janelas")==null)
-			session.setAttribute("janelas", new ArrayList<Window>());
-
+		
+		if(((List<Window>) session.getAttribute("janelas"))==null)
+		{
+			carregarJanelas();
+		}
+		
 		if(session.getAttribute("indiceJanela")==null)
 			session.setAttribute("indiceJanela", 0);
 		
 		if(session.getAttribute("indiceQuestionario")==null)
-			session.setAttribute("indiceQuestionario", 0);
+			session.setAttribute("indiceQuestionario", 1);
+		
+		if(session.getAttribute("indice_linha")==null)
+			session.setAttribute("indice_linha", 0);
 	}
 
+
+	
 	@Command
-	public void getCoor()
+	public void carregarJanelas()
 	{
-		System.out.println("coor:"+usuario.getCurso().getCoordenador().getNome());
-		System.out.println("vice:"+usuario.getCurso().getViceCoordenador().getNome());
+		session.setAttribute("janelas", new ArrayList<Window>());
+		session.setAttribute("questionarios", questionariosDisponiveis());
+		for(int i=0;i<((List<Questionario>) session.getAttribute("questionarios")).size();i++)
+		{
+			((List<Window>) session.getAttribute("janelas")).add(null);
+		}
+		
+	}
+	
+	@Command
+	public void fecharQuestionarios()// torna todos os questionarios invisivel
+	{
+		for(int i=0;i < ((List<Window>) session.getAttribute("janelas")).size();i++)
+		{
+			if(((List<Window>) session.getAttribute("janelas")).get(i)!=null)
+				((List<Window>) session.getAttribute("janelas")).get(i).setVisible(false);
+		}
+	}
+	
+	@Command
+	public void escolherJanela(int indice)
+	{
+		
+
+		if(((List<Questionario>) session.getAttribute("questionarios")).get(indice).getTipoQuestionario()==0
+				|| ((List<Questionario>) session.getAttribute("questionarios")).get(indice).getTipoQuestionario()==2
+				|| ((List<Questionario>) session.getAttribute("questionarios")).get(indice).getTipoQuestionario()==3)
+			session.setAttribute("turma",null);
+		
+	
+		else{
+			int adicionar = 0;
+			
+			if (questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario) != null //verificando se ha questionrio coordenador pra ser avaliado
+					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario))!=null)
+				adicionar++;
+		
+			
+			if (questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario) != null //verificando se ha questionrio autoavaliação pra ser avaliado
+					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario))!=null)
+				adicionar++;	
+			
+			if (questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario) != null
+					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario))!=null) 
+				adicionar++;
+			
+			
+			if(((List<Questionario>) session.getAttribute("questionarios")).get(indice).getTipoQuestionario()==1)
+			{	
+				for(int j=0;j<turmasDoUsuario.size();j++)
+				{
+						List<Usuario> professoresTurma = usuarioDAO.retornaProfessoresTurma(turmasDoUsuario.get(j));
+							
+						int numprof = 0;
+						for(int i=0;i<professoresTurma.size();i++)
+						{
+							if(adicionar==indice)
+							{
+								session.setAttribute("turma", turmasDoUsuario.get(j));
+								session.setAttribute("numProfTurma",numprof);
+								break;
+							}
+							else
+							{
+								adicionar++;
+							}
+							ordemProfessores.add(professoresTurma.get(i));
+							numprof++;
+						}
+						if(adicionar==indice)
+							break;
+				}
+			}
+		}
+
+		
+		for(int i=0;i < ((List<Window>) session.getAttribute("janelas")).size();i++)
+		{
+			
+			if(((List<Window>) session.getAttribute("janelas")).get(i)!=null)
+			{
+				if(i==indice)
+				{
+					session.setAttribute("questionarioAtual", ((List<Questionario>) session.getAttribute("questionarios")).get(i));
+					((List<Window>) session.getAttribute("janelas")).get(i).setVisible(true);
+				}
+				else
+					((List<Window>) session.getAttribute("janelas")).get(i).setVisible(false);
+			}
+			else
+			{
+				if(i==indice)
+				{
+					session.setAttribute("questionarioAtual", ((List<Questionario>) session.getAttribute("questionarios")).get(i));
+					session.setAttribute("indiceQuestionario", i+1);
+					Window novaJanela= new Window();
+	
+					novaJanela = (Window) Executions.createComponents("/avaliacoes.zul",null, null);
+					((List<Window>) session.getAttribute("janelas")).set(i,novaJanela);
+					((List<Window>) session.getAttribute("janelas")).get(i).doModal();
+	
+				}
+			}
+		}
+	}
+	
+	@Command
+	public void avaliarQuestionario(@BindingParam("butao") Button botao,//no zul essa função seleciona qual questionario vai ser avaliado incialmente
+			@BindingParam("grid") Grid grid)
+	{
+		
+	
+		for(int i=0;i<grid.getChildren().get(1).getChildren().size();i++)
+		{
+			if(grid.getChildren().get(1).getChildren().get(i).getChildren().get(4).getChildren().get(1) == botao)
+			{
+				int adiciona = 0;
+				//feito pra funcionar o homealuno para redirecionar direto em avaliar pois la não mostra de coordenador ou infra ou auto---------
+				if (questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario) != null //verificando se ha questionrio coordenador pra ser avaliado
+						&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario))!=null)
+					adiciona++;
+			
+				
+				if (questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario) != null //verificando se ha questionrio autoavaliação pra ser avaliado
+						&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario))!=null)
+					adiciona++;	
+				
+				if (questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario) != null
+						&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario))!=null) 
+					adiciona++;
+				//-----------------------------------------------------------
+				escolherJanela(i+adiciona);
+			}
+		}
+	}
+	
+	public int getIndiceLinha()
+	{
+		session.setAttribute("indice_linha", 1 + (int)session.getAttribute("indice_linha"));
+		return -1 + ((int) session.getAttribute("indice_linha"));
+	}
+	
+	@Command
+	public void avaliacaoGeral()
+	{
+		escolherJanela(0);
+	}
+	
+	@Command
+	public void teste(@BindingParam("indice") String indice)
+	{
+		int indiceQ = Integer.parseInt(indice);
+		System.out.println(verificaAvaliado(indiceQ));
+		
 	}
 	
 	public void funcao(){
@@ -122,89 +286,119 @@ public class HomeAlunoController extends GenericController {
 //		validar windows quando confirmar
 //			- cada window ou esta completamente preenchida ou nao está preenchida
 //			- vai ter q poder limpar as respostas
-//			- um botao pra passar pra proxima window com o procimo questionario tudo controlado
+//			- um botao pra passar pra proxima window com o proximo questionario tudo controlado
 		
 	}
 	
 	
-	
-	// essa função diz quem precisa ser avaliado agora
-	private List<Questionario> questionariosDisponiveis() {
+	private List<Questionario> questionariosDisponiveis() {//função que retorna todos os questionarios que pode ser avaliados
 			
 			List<Questionario> questionariosAAvaliar = new ArrayList<Questionario>();
 			
-			if (!avaliacaoDAO.jaAvaliouCoordenadorDataAtual(usuario) //verificando se ha questionrio coordenador pra ser avaliado
-					&& questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario) != null
+			if ( //verificando se ha questionrio coordenador pra ser avaliado
+					questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario) != null
 					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario))!=null)
 					
 					questionariosAAvaliar.add(questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario));
 		
 			
-			if (!avaliacaoDAO.jaSeAvaliouDataAtual(usuario) //verificando se ha questionrio autoavaliação pra ser avaliado
-					&& questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario) != null
+			if ( //verificando se ha questionrio autoavaliação pra ser avaliado
+					questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario) != null
 					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario))!=null)
 						
 				questionariosAAvaliar.add(questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario));
 	
-			if (!avaliacaoDAO.jaAvaliouInfraestruturaDataAtual(usuario)
-					&& questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario) != null
+			if (
+					questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario) != null
 					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario))!=null) 
 			
 				questionariosAAvaliar.add(questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario));
 			
 				for(int j=0;j<turmasDoUsuario.size();j++)
 				{
-					if(!avaliacaoDAO.jaAvaliou(usuario, turmasDoUsuario.get(j)))
-					{
-						
 						List<Usuario> professoresTurma = usuarioDAO.retornaProfessoresTurma(turmasDoUsuario.get(j));
 
 						for(int i=0;i<professoresTurma.size();i++)
 						{
-							if(!avaliacaoDAO.alunoJaAvaliouEsteProfessor(usuario, professoresTurma.get(i),turmasDoUsuario.get(j)))
-							{
 								ordemProfessores.add(professoresTurma.get(i));
 								questionariosAAvaliar.add(questionarioProf);
-							}
 						}
-
-					}
 				}
 				return questionariosAAvaliar;
 	}
 
-		
 	@Command
-	public void proximoQuestionario()
+	public void checkAvaliado(@BindingParam("quest") Questionario quest,
+			@BindingParam("check") Checkbox check)
 	{
-		if(questionarios.size()==0)
-			questionarios=questionariosDisponiveis();
-		
-		if(((int)session.getAttribute("indiceQuestionario"))<questionarios.size())
+		List<Questionario> quests = questionariosDisponiveis();
+		for(int i=0;i<quests.size();i++)
 		{
-			if(((int)session.getAttribute("indiceJanela"))==((List<Window>) session.getAttribute("janelas")).size())// se o numero de janelas e  o indice forem iguais cria uma nova janela
+			if(quests.get(i).getIdQuestionario() == quest.getIdQuestionario())
 			{
-				session.setAttribute("questionarioAtual", questionarios.get((int)session.getAttribute("indiceQuestionario")));
-				session.setAttribute("indiceQuestionario", 1 +(int) session.getAttribute("indiceQuestionario"));
-				Window novaJanela= new Window();
-
-				novaJanela = (Window) Executions.createComponents("/avaliacoes.zul",null, null);
-				if(((List<Window>) session.getAttribute("janelas")).add(novaJanela));
-				((List<Window>) session.getAttribute("janelas")).get(((List<Window>) session.getAttribute("janelas")).size()-1).doModal();
-				session.setAttribute("indiceJanela", 1 + (int)session.getAttribute("indiceJanela"));
-				if(((List<Window>) session.getAttribute("janelas")).size()>=2)
-					((List<Window>) session.getAttribute("janelas")).get(((List<Window>) session.getAttribute("janelas")).size()-2).setVisible(false);
+				if(verificaAvaliado(i))
+					check.setChecked(true);
+				check.setDisabled(true);
+				break;
 			}
-
-			else
+		}
+	}
+	
+	public boolean verificaAvaliado(int indice)//mostra se o questionario ja foi avaliado esse indice é baseado no questionariosDisponiveis()
+			
+	{
+		Questionario quest = questionariosDisponiveis().get(indice);
+		
+		AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
+		
+		if(quest.getTipoQuestionario()==0)//coordenação
+		{
+			return avaliacaoDAO.jaAvaliouCoordenadorDataAtual(usuario);
+		}
+		
+		if(quest.getTipoQuestionario()==1)//professores
+		{
+			UsuarioDAO usuarioDAO = new UsuarioDAO();
+			List<Usuario> professoresTurma = new ArrayList<Usuario>();
+			List<Turma> turmasProfessor = new ArrayList<Turma>();
+			for(int i=0;i<turmasDoUsuario.size();i++)
 			{
-				session.setAttribute("indiceQuestionario", 1 + (int)session.getAttribute("indiceQuestionario"));
-				session.setAttribute("indiceJanela",1 + (int)session.getAttribute("indiceJanela"));
-				session.setAttribute("questionarioAtual", questionarios.get((int)session.getAttribute("indiceQuestionario")));
-				((List<Window>) session.getAttribute("janelas")).get((int)session.getAttribute("indiceJanela")).setVisible(true);
-				if(((List<Window>) session.getAttribute("janelas")).size()>(-1 + (int)session.getAttribute("indiceJanela")))
-					((List<Window>) session.getAttribute("janelas")).get(-1 + (int)session.getAttribute("indiceJanela")).setVisible(false);
+				professoresTurma.addAll(usuarioDAO.retornaProfessoresTurma(turmasDoUsuario.get(i)));
+				for(int j=0;j<usuarioDAO.retornaProfessoresTurma(turmasDoUsuario.get(i)).size();j++)
+					turmasProfessor.add(turmasDoUsuario.get(i));
 			}
+			QuestionarioDAO questionarioDAO = new QuestionarioDAO();
+			int adiciona = 0;
+			if(questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario)!=null)
+				adiciona++;
+			if(questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario)!=null)
+				adiciona++;
+			if(questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario)!=null)
+				adiciona++;
+			indice -= adiciona;
+			avaliacaoDAO.alunoJaAvaliouEsteProfessor(usuario,professoresTurma.get(indice),turmasProfessor.get(indice));
+		}
+		
+		if(quest.getTipoQuestionario()==2)//autoavaliação
+		{
+			return avaliacaoDAO.jaSeAvaliouDataAtual(usuario);
+		}
+		
+		if(quest.getTipoQuestionario()==3)//infraestrutura
+		{
+			return avaliacaoDAO.jaAvaliouInfraestruturaDataAtual(usuario);
+		}
+		
+		return false;
+	}
+	
+	@Command
+	public void proximoQuestionario(@BindingParam("indiceQuestionario") String indice)
+	{
+		int indiceQuest = Integer.parseInt(indice);
+		if(indiceQuest < ((List<Window>) session.getAttribute("janelas")).size())
+		{
+			escolherJanela(indiceQuest);
 		}
 		else
 			Messagebox.show("Já chegou ao limite de questionarios");
@@ -213,21 +407,16 @@ public class HomeAlunoController extends GenericController {
 
 
 	@Command
-	public void questionarioAnterior()
+	public void questionarioAnterior(@BindingParam("indiceQuestionario") String indice)
 	{
-		if((int) session.getAttribute("indiceJanela")>0)
+		int indiceQuest = Integer.parseInt(indice)-2;
+		if(indiceQuest >= 0)
 		{
-			session.setAttribute("indiceQuestionario", -1 + (int)session.getAttribute("indiceQuestionario"));
-			session.setAttribute("indiceJanela",-1 + (int)session.getAttribute("indiceJanela"));
-			session.setAttribute("questionarioAtual", questionarios.get((int)session.getAttribute("indiceQuestionario")));
-			((List<Window>) session.getAttribute("janelas")).get((int)session.getAttribute("indiceJanela")).setVisible(true);
-			if(((List<Window>) session.getAttribute("janelas")).size()>(1+(int)session.getAttribute("indiceJanela")))
-				((List<Window>) session.getAttribute("janelas")).get(1 + (int)session.getAttribute("indiceJanela")).setVisible(false);
+			escolherJanela(indiceQuest);
 		}
-	
 		else
 			Messagebox.show("Já chegou ao limite de questionarios");
-	
+		
 	}
 
 	
@@ -492,9 +681,10 @@ public class HomeAlunoController extends GenericController {
 	public void escolha(@BindingParam("string") String escolha,
 			@BindingParam("pergunta") Pergunta perg) {
 
+		SemestreDAO semestreDAO = new SemestreDAO();
 		resposta.setResposta(escolha);
 		resposta.setPergunta(perg);
-		resposta.setSemestre(((Turma) session.getAttribute("turma")).getSemestre());
+		resposta.setSemestre(semestreDAO.getSemestreAtualCurso(usuario.getCurso()).getNomeSemestre());
 
 		for (int i = 0; i < respostas.size(); i++)
 			if (respostas.get(i).getPergunta() == resposta.getPergunta()) {

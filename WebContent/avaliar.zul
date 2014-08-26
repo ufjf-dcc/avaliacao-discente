@@ -1,6 +1,6 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
 <window style="text-align:center;" title="Avaliar" border="normal"
-	closable="true" width="80%">
+	closable="false" width="80%">
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.HomeAlunoController')"
 		form="@id('fm') @load(vm.questionarioAtual)" id="form">
@@ -11,7 +11,7 @@
 			</columns>
 			<template name="model">
 				<row>
-					<label value="@load(each.tituloPergunta)"
+					<label value="@load(each.tituloPerguntaObrigatoria)"
 						onCreate="@command('criarCampoResposta', label=self, pergunta=each)" />
 					<textbox maxlength="250" cols="60" rows="7"
 						onBlur="@command('escolha', string=self.value, pergunta=each)" />
@@ -35,7 +35,7 @@
 			</template>
 		</grid>
 		<div align="center">
-			<button label="Terminar e Enviar Avaliação"
+			<button label="Salvar"
 				onClick="@command('terminarAvaliacao')" />
 		</div>
 	</div>

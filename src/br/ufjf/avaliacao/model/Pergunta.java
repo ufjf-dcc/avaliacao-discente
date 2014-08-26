@@ -137,6 +137,17 @@ public class Pergunta implements Serializable {
 		return tituloPergunta;
 	}
 
+	public String getTituloPerguntaObrigatoria() {// caso seja obrigatorio, adiciona um * sinalizando obrigatorio
+		if(this.isObrigatorio())
+		{
+			return tituloPergunta+" *";
+		}
+		else
+		{
+			return tituloPergunta;
+		}
+	}
+	
 	public void setTituloPergunta(String tituloPergunta) {
 		this.tituloPergunta = tituloPergunta;
 	}

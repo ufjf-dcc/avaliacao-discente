@@ -271,7 +271,7 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 
 	public List<Questionario> retornaQuestionariosSemestreAutoavaliacao(
 			String semestre, Curso curso) {// retornas os questionarios de um
-											// semestre para autoavaliação
+											// semestre para autoavaliaï¿½ï¿½o
 		List<Questionario> questionarios = retornaQuestionariosSemestre(semestre);
 		for (int j = questionarios.size() - 1; j >= 0; j--)
 			if (questionarios.get(j).getTipoQuestionario() != 2
