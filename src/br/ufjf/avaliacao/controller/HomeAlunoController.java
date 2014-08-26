@@ -25,6 +25,7 @@ import org.zkoss.zul.Tabbox;
 import org.zkoss.zul.Tabs;
 import org.zkoss.zul.Window;
 
+import br.ufjf.avaliacao.business.GenericBusiness;
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
@@ -142,6 +143,7 @@ public class HomeAlunoController extends GenericController {
 	public void escolherJanela(int indice)
 	{
 		
+		respostas = new ArrayList<Resposta>();
 
 		if(((List<Questionario>) session.getAttribute("questionarios")).get(indice).getTipoQuestionario()==0
 				|| ((List<Questionario>) session.getAttribute("questionarios")).get(indice).getTipoQuestionario()==2
@@ -272,8 +274,48 @@ public class HomeAlunoController extends GenericController {
 	{
 		int indiceQ = Integer.parseInt(indice);
 		System.out.println(verificaAvaliado(indiceQ));
-		
+	
 	}
+	
+	@Command
+	public void teste2()
+	{
+		List<Pergunta> perguntas = ((Questionario) session.getAttribute("questionarioAtual")).getPerguntas();
+		
+		List<Integer> perguntasObrigatorias = new ArrayList();
+		for(int i = (perguntas.size() - 1);i>=0;i--)
+		{
+			if(perguntas.get(i).isObrigatorio())
+			{
+				perguntasObrigatorias.add(perguntas.get(i).getIdPergunta());
+			}
+		}
+		
+		GenericBusiness gb = new GenericBusiness();
+		for(int i= (respostas.size() - 1);i>=0;i--)
+		{
+			if(!gb.campoStrValido(respostas.get(i).getResposta()))
+			{
+				respostas.remove(i);
+			}
+		}
+		
+		List<Integer> perguntasRespondidas = new ArrayList();
+		for(int i=0;i<respostas.size();i++)
+		{
+			perguntasRespondidas.add(respostas.get(i).getPergunta().getIdPergunta());
+		}
+		
+		for(int i = 0;i<perguntasObrigatorias.size();i++)
+		{
+			if(!perguntasRespondidas.contains(perguntasObrigatorias.get(i)))
+			{
+				System.out.println("false");
+			}
+		}
+			
+	}
+	
 	
 	public void funcao(){
 		
@@ -291,42 +333,155 @@ public class HomeAlunoController extends GenericController {
 	}
 	
 	
-	private List<Questionario> questionariosDisponiveis() {//função que retorna todos os questionarios que pode ser avaliados
+	// salva a avaliação e verifica se vai precisar retornar na função que
+		// verifica quem deve ser avalido agora (avaliarAuz)
+		@Command
+		public void terminarAvaliacao() {
 			
-			List<Questionario> questionariosAAvaliar = new ArrayList<Questionario>();
-			
-			if ( //verificando se ha questionrio coordenador pra ser avaliado
-					questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario) != null
-					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario))!=null)
-					
-					questionariosAAvaliar.add(questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario));
+			if(verificarRespostasQuestionario())
+			{
 		
+			Usuario avaliado = null;
+			Turma turmaUsada = null;
+			prazo = prazoDAO.getPrazoQuestionarioDisponivel((Questionario) session
+					.getAttribute("questionarioAtual"));
 			
-			if ( //verificando se ha questionrio autoavaliação pra ser avaliado
-					questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario) != null
-					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario))!=null)
-						
-				questionariosAAvaliar.add(questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario));
 	
-			if (
-					questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario) != null
-					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario))!=null) 
-			
-				questionariosAAvaliar.add(questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario));
-			
-				for(int j=0;j<turmasDoUsuario.size();j++)
+			// setando o usuario que vai ser avaliado e a
+			// turma-----------------------------------------------------
+			if (((Questionario) session.getAttribute("questionarioAtual"))
+					.getTipoQuestionario() == 0) { // verifica se o
+				// questionario é do
+				// tipo coodenador
+				avaliado = usuarioDAO.retornaCoordenadorCurso(usuario.getCurso());
+			}
+			if (((Questionario) session.getAttribute("questionarioAtual"))
+					.getTipoQuestionario() == 1) { // verifica se o
+				// questionario é do
+				// tipo professor
+				
+				UsuarioDAO usuarioDAO = new UsuarioDAO();
+				if(usuarioDAO.retornaProfessoresTurma((Turma) session.getAttribute("turma")).size()==1)
 				{
-						List<Usuario> professoresTurma = usuarioDAO.retornaProfessoresTurma(turmasDoUsuario.get(j));
-
-						for(int i=0;i<professoresTurma.size();i++)
-						{
-								ordemProfessores.add(professoresTurma.get(i));
-								questionariosAAvaliar.add(questionarioProf);
-						}
+					avaliado = usuarioDAO.retornaProfessoresTurma((Turma) session.getAttribute("turma")).get(0);
 				}
-				return questionariosAAvaliar;
-	}
+				else
+				{
+					avaliado = usuarioDAO.retornaProfessoresTurma((Turma) session.getAttribute("turma")).get((int) session.getAttribute("numProfTurma"));
+				}
+				
+				turmaUsada = (Turma) session.getAttribute("turma");
+				
+			}
+			if (((Questionario) session.getAttribute("questionarioAtual"))
+					.getTipoQuestionario() == 2) { // verifica se o
+				// questionario é do
+				// tipo auto
+				// avaliação
+				avaliado = usuario;
+	
+			}
+			if (((Questionario) session.getAttribute("questionarioAtual"))
+					.getTipoQuestionario() == 3) { // verifica se o
+				// questionario é do
+				// tipo
+				// infraestrutura
+	
+			}
+			// -------------------------------------------------------------------------------
+	
+			Clients.showBusy("Salvando avaliação..");
+			
 
+				Avaliacao avaliacao = new Avaliacao();
+				avaliacao.setAvaliando(usuario);
+				avaliacao.setAvaliado(avaliado);
+				avaliacao.setPrazoQuestionario(prazo);
+				avaliacao.setTurma(turmaUsada);
+				new AvaliacaoDAO().salvar(avaliacao);
+	
+				for (Resposta r : respostas) {
+					r.setAvaliacao(avaliacao);
+				}
+				new RespostaDAO().salvarLista(respostas);
+				Clients.clearBusy();
+	
+				// se tiver mais de um professor a ser avaliado ou nao for uma
+				// avaliação de professor, ele verifica o que mais precisa ser
+				// avaliado
+				if (((Questionario) session.getAttribute("questionarioAtual"))
+						.getTipoQuestionario() != 1
+						|| ((int) session.getAttribute("numProfTurma")) > 0) {
+					Messagebox.show("Avaliação Salva com Sucesso", "Concluído",
+							Messagebox.OK, Messagebox.INFORMATION,
+							new EventListener<Event>() {
+	
+								@Override
+								public void onEvent(Event event) throws Exception {
+									avaliarAux();
+								}
+							});
+	
+				}
+				// se acabar de avaliar a ultima coisa(que seria o ultimo professor
+				// da turma(ou o unico)) ele finaliza as avaliaçoes e da um refresh
+				// na pagina
+				else {
+					Messagebox.show("Salvo", "Concluído", Messagebox.OK,
+							Messagebox.INFORMATION, new EventListener<Event>() {
+								@Override
+								public void onEvent(Event event) throws Exception {
+									Executions.sendRedirect(null);
+								}
+							});
+				}
+			
+			}
+			else
+			{
+				Messagebox.show("Preencha as perguntas obrigatórias(*)");
+			}
+	
+		}
+		
+	@Command
+		public void escolha(@BindingParam("string") String escolha,
+				@BindingParam("pergunta") Pergunta perg) {
+		
+			SemestreDAO semestreDAO = new SemestreDAO();
+			resposta.setResposta(escolha);
+			resposta.setPergunta(perg);
+			resposta.setSemestre(semestreDAO.getSemestreAtualCurso(usuario.getCurso()).getNomeSemestre());
+		
+			for (int i = 0; i < respostas.size(); i++)
+				if (respostas.get(i).getPergunta() == resposta.getPergunta()) {
+					respostas.remove(respostas.get(i));
+					break;
+				}
+			respostas.add(resposta);
+			resposta = new Resposta();
+		}
+	
+	@Command
+	public void doChecked(@BindingParam("string") String escolha,
+			@BindingParam("pergunta") Pergunta perg,
+			@BindingParam("check") Checkbox box) {
+		if (box.isChecked()) {
+			resposta.setResposta(escolha);
+			resposta.setPergunta(perg);
+			resposta.setSemestre(((Turma) session.getAttribute("turma"))
+					.getSemestre());
+			respostas.add(resposta);
+			resposta = new Resposta();
+		} else {
+			for (Resposta r : respostas) {
+				if (r.getResposta() == escolha) {
+					respostas.remove(r);
+					break;
+				}
+			}
+		}
+	}
 	@Command
 	public void checkAvaliado(@BindingParam("quest") Questionario quest,
 			@BindingParam("check") Checkbox check)
@@ -392,6 +547,91 @@ public class HomeAlunoController extends GenericController {
 		return false;
 	}
 	
+	public boolean verificarRespostasQuestionario()//valida o questionario quanto a obrigatoriedade de responder pergunta
+	{
+	List<Pergunta> perguntas = ((Questionario) session.getAttribute("questionarioAtual")).getPerguntas();
+		
+		List<Integer> perguntasObrigatorias = new ArrayList();
+		for(int i = (perguntas.size() - 1);i>=0;i--)
+		{
+			if(perguntas.get(i).isObrigatorio())
+			{
+				perguntasObrigatorias.add(perguntas.get(i).getIdPergunta());
+			}
+		}
+		
+		GenericBusiness gb = new GenericBusiness();
+		for(int i= (respostas.size() - 1);i>=0;i--)
+		{
+			if(!gb.campoStrValido(respostas.get(i).getResposta()))
+			{
+				respostas.remove(i);
+			}
+		}
+		
+		List<Integer> perguntasRespondidas = new ArrayList();
+		for(int i=0;i<respostas.size();i++)
+		{
+			perguntasRespondidas.add(respostas.get(i).getPergunta().getIdPergunta());
+		}
+		
+		for(int i = 0;i<perguntasObrigatorias.size();i++)
+		{
+			if(!perguntasRespondidas.contains(perguntasObrigatorias.get(i)))
+			{
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	@Command
+	public void jaAvaliou(@BindingParam("div") Div d,
+			@BindingParam("turma") Turma t) {
+	
+		if (!new AvaliacaoDAO().jaAvaliou(usuario, t)) {
+			d.getFirstChild().setVisible(false);
+			d.getLastChild().setVisible(true);
+		} else {
+			d.getFirstChild().setVisible(true);
+			d.getLastChild().setVisible(false);
+		}
+	}
+	private List<Questionario> questionariosDisponiveis() {//função que retorna todos os questionarios que pode ser avaliados
+			
+			List<Questionario> questionariosAAvaliar = new ArrayList<Questionario>();
+			
+			if ( //verificando se ha questionrio coordenador pra ser avaliado
+					questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario) != null
+					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario))!=null)
+					
+					questionariosAAvaliar.add(questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario));
+		
+			
+			if ( //verificando se ha questionrio autoavaliação pra ser avaliado
+					questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario) != null
+					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario))!=null)
+						
+				questionariosAAvaliar.add(questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario));
+	
+			if (
+					questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario) != null
+					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario))!=null) 
+			
+				questionariosAAvaliar.add(questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario));
+			
+				for(int j=0;j<turmasDoUsuario.size();j++)
+				{
+						List<Usuario> professoresTurma = usuarioDAO.retornaProfessoresTurma(turmasDoUsuario.get(j));
+	
+						for(int i=0;i<professoresTurma.size();i++)
+						{
+								ordemProfessores.add(professoresTurma.get(i));
+								questionariosAAvaliar.add(questionarioProf);
+						}
+				}
+				return questionariosAAvaliar;
+	}
 	@Command
 	public void proximoQuestionario(@BindingParam("indiceQuestionario") String indice)
 	{
@@ -529,107 +769,6 @@ public class HomeAlunoController extends GenericController {
 		}
 	}
 
-	// salva a avaliação e verifica se vai precisar retornar na função que
-	// verifica quem deve ser avalido agora (avaliarAuz)
-	@Command
-	public void terminarAvaliacao() {
-
-		Usuario avaliado = null;
-		Turma turmaUsada = null;
-		prazo = prazoDAO.getPrazoQuestionarioDisponivel((Questionario) session
-				.getAttribute("questionarioAtual"));
-		
-
-		// setando o usuario que vai ser avaliado e a
-		// turma-----------------------------------------------------
-		if (((Questionario) session.getAttribute("questionarioAtual"))
-				.getTipoQuestionario() == 0) { // verifica se o
-			// questionario é do
-			// tipo coodenador
-			avaliado = usuarioDAO.retornaCoordenadorCurso(usuario.getCurso());
-		}
-		if (((Questionario) session.getAttribute("questionarioAtual"))
-				.getTipoQuestionario() == 1) { // verifica se o
-			// questionario é do
-			// tipo professor
-			avaliado = avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario,
-					(Turma) session.getAttribute("turma")).get(0);
-			turmaUsada = (Turma) session.getAttribute("turma");
-			session.setAttribute("numProfTurma",
-					((int) session.getAttribute("numProfTurma") - 1));
-
-		}
-		if (((Questionario) session.getAttribute("questionarioAtual"))
-				.getTipoQuestionario() == 2) { // verifica se o
-			// questionario é do
-			// tipo auto
-			// avaliação
-			avaliado = usuario;
-
-		}
-		if (((Questionario) session.getAttribute("questionarioAtual"))
-				.getTipoQuestionario() == 3) { // verifica se o
-			// questionario é do
-			// tipo
-			// infraestrutura
-			if (avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario,
-					(Turma) session.getAttribute("turma")).size() == 1)
-				avaliado = null;
-		}
-		// -------------------------------------------------------------------------------
-
-		Clients.showBusy("Salvando avaliação..");
-		if (respostas.size() < ((Questionario) session
-				.getAttribute("questionarioAtual")).getPerguntas().size()) {
-			Clients.clearBusy();
-			Messagebox.show("Responda todas as perguntas antes de finalizar!");
-		} else {
-			Avaliacao avaliacao = new Avaliacao();
-			avaliacao.setAvaliando(usuario);
-			avaliacao.setAvaliado(avaliado);
-			avaliacao.setPrazoQuestionario(prazo);
-			avaliacao.setTurma(turmaUsada);
-			new AvaliacaoDAO().salvar(avaliacao);
-
-			for (Resposta r : respostas) {
-				r.setAvaliacao(avaliacao);
-			}
-			new RespostaDAO().salvarLista(respostas);
-			Clients.clearBusy();
-
-			// se tiver mais de um professor a ser avaliado ou nao for uma
-			// avaliação de professor, ele verifica o que mais precisa ser
-			// avaliado
-			if (((Questionario) session.getAttribute("questionarioAtual"))
-					.getTipoQuestionario() != 1
-					|| ((int) session.getAttribute("numProfTurma")) > 0) {
-				Messagebox.show("Avaliação Salva com Sucesso", "Concluído",
-						Messagebox.OK, Messagebox.INFORMATION,
-						new EventListener<Event>() {
-
-							@Override
-							public void onEvent(Event event) throws Exception {
-								avaliarAux();
-							}
-						});
-
-			}
-			// se acabar de avaliar a ultima coisa(que seria o ultimo professor
-			// da turma(ou o unico)) ele finaliza as avaliaçoes e da um refresh
-			// na pagina
-			else {
-				Messagebox.show("Finalizado", "Concluído", Messagebox.OK,
-						Messagebox.INFORMATION, new EventListener<Event>() {
-							@Override
-							public void onEvent(Event event) throws Exception {
-								Executions.sendRedirect(null);
-							}
-						});
-			}
-		}
-
-	}
-
 	@Command
 	public void criarCampoResposta(@BindingParam("label") Label l,
 			@BindingParam("pergunta") Pergunta p) {
@@ -657,62 +796,10 @@ public class HomeAlunoController extends GenericController {
 	}
 
 	@Command
-	public void jaAvaliou(@BindingParam("div") Div d,
-			@BindingParam("turma") Turma t) {
-
-		if (!new AvaliacaoDAO().jaAvaliou(usuario, t)) {
-			d.getFirstChild().setVisible(false);
-			d.getLastChild().setVisible(true);
-		} else {
-			d.getFirstChild().setVisible(true);
-			d.getLastChild().setVisible(false);
-		}
-	}
-
-	@Command
 	public void questDisponivel(@BindingParam("questionario") Questionario q,
 			@BindingParam("row") Row r) {
 		if (!new PrazoQuestionarioDAO().questionarioEstaDisponivel(q)) {
 			r.detach();
-		}
-	}
-
-	@Command
-	public void escolha(@BindingParam("string") String escolha,
-			@BindingParam("pergunta") Pergunta perg) {
-
-		SemestreDAO semestreDAO = new SemestreDAO();
-		resposta.setResposta(escolha);
-		resposta.setPergunta(perg);
-		resposta.setSemestre(semestreDAO.getSemestreAtualCurso(usuario.getCurso()).getNomeSemestre());
-
-		for (int i = 0; i < respostas.size(); i++)
-			if (respostas.get(i).getPergunta() == resposta.getPergunta()) {
-				respostas.remove(respostas.get(i));
-				break;
-			}
-		respostas.add(resposta);
-		resposta = new Resposta();
-	}
-
-	@Command
-	public void doChecked(@BindingParam("string") String escolha,
-			@BindingParam("pergunta") Pergunta perg,
-			@BindingParam("check") Checkbox box) {
-		if (box.isChecked()) {
-			resposta.setResposta(escolha);
-			resposta.setPergunta(perg);
-			resposta.setSemestre(((Turma) session.getAttribute("turma"))
-					.getSemestre());
-			respostas.add(resposta);
-			resposta = new Resposta();
-		} else {
-			for (Resposta r : respostas) {
-				if (r.getResposta() == escolha) {
-					respostas.remove(r);
-					break;
-				}
-			}
 		}
 	}
 

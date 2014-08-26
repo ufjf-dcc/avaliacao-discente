@@ -1,6 +1,6 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
 <window style="text-align:center;" title="Avaliar" border="normal"
-	closable="false" width="80%">
+	closable="false" width="100%" height="100%">
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.HomeAlunoController')"
 		form="@id('fm') @load(vm.questionarioAtual)" id="form">
@@ -37,6 +37,8 @@
 		<div align="center">
 			<button label="Salvar"
 				onClick="@command('terminarAvaliacao')" />
+			<button label="teste2"
+				onClick="@command('teste2')" />
 		</div>
 	</div>
 </window>
