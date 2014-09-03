@@ -1,5 +1,5 @@
 <?page title=" " contentType="text/html;charset=UTF-8"?>
-<window style="text-align:center;" title="Avaliar" border="normal"
+<window style="text-align:center;" title="Avaliações" border="normal"
 	closable="false" width="80%" onClose="@command('fecharAvaliacoes')">
 	<div apply="org.zkoss.bind.BindComposer" width="100%"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.HomeAlunoController')"
@@ -9,7 +9,7 @@
 				  
 				<separator />
 				<label value="@bind(vm.questionarioAtual.nomeTipoQuestionario)" /> 
-<!-- 				<label value="@load(vm.professorAvaliado)" /> -->
+<!-- 				<label value="@load(vm.NomeProfessorAvaliado)" /> -->
 			</div>   
 			
 			<div style="text-align:right;vertical-align: top; font-size: 20px;">
@@ -18,7 +18,7 @@
 				<button label="Próximo Questionário" onClick="@command('proximoQuestionario',indiceQuestionario=indiceQuestionario.value)" />
 			</div>            
 			<iframe src="/avaliar.zul" width="100%" height="500px"/>
-			<button label="Fechar avaliação" href="/homeAluno.zul" />
+			<button label="Fechar avaliação" onClick="@command('fecharQuestionarios')" />
 			
 		
 	</div>

@@ -3,27 +3,19 @@ package br.ufjf.avaliacao.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.poi.hssf.record.formula.functions.T;
 import org.hibernate.HibernateException;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.Init;
-import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
-import org.zkoss.zk.ui.event.Event;
-import org.zkoss.zk.ui.event.EventListener;
 import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Grid;
-import org.zkoss.zul.Iframe;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Row;
-import org.zkoss.zul.Tab;
-import org.zkoss.zul.Tabbox;
-import org.zkoss.zul.Tabs;
 import org.zkoss.zul.Window;
 
 import br.ufjf.avaliacao.business.GenericBusiness;
@@ -69,7 +61,7 @@ public class HomeAlunoController extends GenericController {
 	private int quantidadeQuestionarios;
 	private List<Questionario> questionariosExibidos = new ArrayList<Questionario>();
 
-	private List<Avaliacao> avaliacoes = avaliacaoDAO.avaliacoesDataAtual(usuario);//usado para mostrar os questionarios que ja foram avaliados para uma possivel reavaliacao
+	private List<Avaliacao> avaliacoes = getAvaliaçoesOrganizadas();//usado para mostrar os questionarios que ja foram avaliados para uma possivel reavaliacao
 	
 
 	private String selecionado = new String();
@@ -196,19 +188,17 @@ public class HomeAlunoController extends GenericController {
 				}
 				session.setAttribute("turma", turmasAluno.get(indice));
 				session.setAttribute("professorAvaliado", professoresAluno.get(indice));
-				System.out.println(turmasAluno.get(indice).getDisciplinaLetraTurma());
-				System.out.println(professoresAluno.get(indice));
 			}
 		}
 
-		
+		System.out.println(((List<Window>) session.getAttribute("janelas")).size());
 		for(int i=0;i < ((List<Window>) session.getAttribute("janelas")).size();i++)
 		{
-			
 			if(((List<Window>) session.getAttribute("janelas")).get(i)!=null)
 			{
 				if(i==indice)
 				{
+					
 					session.setAttribute("questionarioAtual", ((List<Questionario>) session.getAttribute("questionarios")).get(i));
 					((List<Window>) session.getAttribute("janelas")).get(i).setVisible(true);
 				}
@@ -485,7 +475,7 @@ public class HomeAlunoController extends GenericController {
 			SemestreDAO semestreDAO = new SemestreDAO();
 			if(avaliacaoDAO.alunoJaAvaliouEsteProfessor(usuario, professorAvaliado, ((Turma) session.getAttribute("turma"))))
 			{
-				List<Avaliacao> avaliacoes = avaliacaoDAO.avaliacoesDataAtual(usuario);
+				List<Avaliacao> avaliacoes = getAvaliaçoesOrganizadas();
 				
 				for(int i=0;i<avaliacoes.size();i++)
 				{
@@ -920,6 +910,32 @@ public class HomeAlunoController extends GenericController {
 				+ coordAvaliado.getCurso().getNomeCurso());
 	}
 	
+	public List<Avaliacao> getAvaliaçoesOrganizadas() //organiza a ordem das avaliaçoes para a exibição no zul
+	{
+			AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
+			
+			List<Avaliacao> avaliacoes = avaliacaoDAO.avaliacoesDataAtual(usuario);
+			
+			if(avaliacaoDAO.jaAvaliouInfraestruturaDataAtual(usuario))
+			{
+				avaliacoes.add(0, avaliacoes.get(avaliacoes.size()-1));
+				avaliacoes.remove(avaliacoes.size() - 1);
+			}	
+			if(avaliacaoDAO.jaSeAvaliouDataAtual(usuario))
+			{
+				avaliacoes.add(0, avaliacoes.get(avaliacoes.size()-1));
+				avaliacoes.remove(avaliacoes.size() - 1);
+			}	
+			if(avaliacaoDAO.jaAvaliouCoordenadorDataAtual(usuario))
+			{
+				avaliacoes.add(0, avaliacoes.get(avaliacoes.size()-1));
+				avaliacoes.remove(avaliacoes.size() - 1);
+			}	
+			return avaliacoes;
+
+	}
+
+			
 ///GET e SETS__________________________________________________________________
 	
 	public Questionario[] getQuestionarios() {//em formato vetor para o zul
