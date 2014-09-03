@@ -177,25 +177,6 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 		return null;
 	}
 
-	public Usuario retornaCoordenadorCurso(Curso curso) {
-		try {
-			Query query = getSession()
-					.createQuery(
-							"SELECT u FROM Usuario AS u WHERE u.curso = :curso AND u.tipoUsuario = :tipoUsuario");
-			query.setParameter("curso", curso);
-			query.setParameter("tipoUsuario", 0);
-
-			Usuario u = (Usuario) query.uniqueResult();
-
-			getSession().close();
-			if (u != null) {
-				return u;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
 
 	public List<Usuario> retornaProfessorCurso(Curso curso) {
 		try {

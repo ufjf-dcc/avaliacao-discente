@@ -25,6 +25,8 @@ public class RespostaDAO extends GenericoDAO implements IRespostaDAO{
 			
 			List<Resposta> respostas = query.list();
 			
+			getSession().close();
+			
 			return respostas;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -181,6 +183,8 @@ public class RespostaDAO extends GenericoDAO implements IRespostaDAO{
 			@SuppressWarnings("unchecked")
 			List<Resposta> r = query.list();
 
+			getSession().close();
+			
 			List<String> semestres = new ArrayList<String>();
 
 			for (int i=0 ;i<r.size();i++) {
@@ -202,6 +206,8 @@ public class RespostaDAO extends GenericoDAO implements IRespostaDAO{
 			@SuppressWarnings("unchecked")
 			List<Resposta> r = query.list();
 
+			getSession().close();
+			
 			if(r!=null)
 				return r;
 		} catch (Exception e) {

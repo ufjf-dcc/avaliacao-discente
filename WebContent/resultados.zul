@@ -154,7 +154,7 @@ tr.overseld,td.overseld,tr.z-listitem-over-seld {
 						<label value="Graficos" />
 						<combobox width="98%"
 							model="@load(vm.graficos)"
-							selectedItem="@bind(vm.grafico)" onSelect="@command('carregarGraficos')">
+							selectedItem="@bind(vm.grafico)">
 							<template name="model">
 								<comboitem
 									label="@load(each.nome)" />

@@ -6,9 +6,10 @@
 		form="@id('fm') @load(vm.questionarioAtual)">
 			<div style="text-align:left;">
 				Questionário: <label value="@bind(vm.questionarioAtual.tituloQuestionario)" /> 
-				  <label value="avaliado aqui" /> 
+				  
 				<separator />
 				<label value="@bind(vm.questionarioAtual.nomeTipoQuestionario)" /> 
+<!-- 				<label value="@load(vm.professorAvaliado)" /> -->
 			</div>   
 			
 			<div style="text-align:right;vertical-align: top; font-size: 20px;">
@@ -17,7 +18,8 @@
 				<button label="Próximo Questionário" onClick="@command('proximoQuestionario',indiceQuestionario=indiceQuestionario.value)" />
 			</div>            
 			<iframe src="/avaliar.zul" width="100%" height="500px"/>
-			<button label="Fechar avaliação" onClick="@command('fecharQuestionarios')" />
+			<button label="Fechar avaliação" href="/homeAluno.zul" />
 			
+		
 	</div>
 </window>

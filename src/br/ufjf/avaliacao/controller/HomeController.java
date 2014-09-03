@@ -6,12 +6,4 @@ import org.zkoss.zul.Window;
 
 public class HomeController extends GenericController {
 
-	
-	@Command
-	public void semestres()
-	{
-		Window window = (Window) Executions.createComponents(
-				"/semestres.zul", null, null);
-		window.doModal();
-	}
 }

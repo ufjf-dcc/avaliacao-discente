@@ -83,6 +83,8 @@ public class TurmaDAO extends GenericoDAO implements ITurmaDAO {
 			@SuppressWarnings("unchecked")
 			List<Turma> turmas = query.list();
 
+			getSession().close();
+			
 			List<String> semestres = new ArrayList<String>();
 
 			for (Turma t : turmas) {
@@ -106,6 +108,8 @@ public class TurmaDAO extends GenericoDAO implements ITurmaDAO {
 			@SuppressWarnings("unchecked")
 			List<Turma> turmas = query.list();
 
+			getSession().close();
+			
 			return turmas;
 		} catch (Exception e) {
 			e.printStackTrace();

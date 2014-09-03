@@ -16,6 +16,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.zkoss.zk.ui.Session;
+import org.zkoss.zk.ui.Sessions;
 
 import br.ufjf.avaliacao.persistent.impl.PerguntaDAO;
 import br.ufjf.avaliacao.persistent.impl.PrazoQuestionarioDAO;
@@ -157,6 +159,7 @@ public class Questionario implements Serializable {
 		else
 			return "Avaliação de Infraestrutura";
 	}
+	
 
 	public void setNomeTipoQuestionario(String nomeTipoQuestionario) {
 		this.nomeTipoQuestionario = nomeTipoQuestionario;

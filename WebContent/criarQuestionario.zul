@@ -18,10 +18,10 @@
 	
 	<grid model="@load(vm.perguntas)">
 			<auxhead style="text-align:center">
-				<auxheader label="Título:">
+				<auxheader label="Título do Questionário:">
 					<textbox onChange="@command('tituloQuestionario',titulo=self.value)"/>
 				</auxheader>
-				<auxheader label="Tipo:">
+				<auxheader label="Tipo do Questionário:">
 					<combobox id="cmb" model="@load(vm.tiposQuestionario)"
 						 onChange="@command('tipoQuestionario',tipo=self.selectedIndex)" readonly="true">
 						<template name="model">

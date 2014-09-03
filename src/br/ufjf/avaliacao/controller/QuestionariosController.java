@@ -101,7 +101,9 @@ public class QuestionariosController extends GenericController {
 	
 	@Command
 	public void criarQuest() { // seta novos parametros para um novo questionario e abre a janela de questionario
-
+		// a ideia é pegar todos os valores da pagina do zk, e ao final, quando pedir para salvar, faz a verificação dos valores se for o caso salva o uqestionario e as perguntas
+		//algumas funções foram alterados para se adaptarem ao zul mas d
+		
 		session.setAttribute("indice_tab", 0);
 		session.setAttribute("lista_de_objetos",new ArrayList<ArrayList<String>>());
 		((List<List<String>>) session.getAttribute("lista_de_objetos")).add(new ArrayList<String>());
@@ -274,7 +276,30 @@ public class QuestionariosController extends GenericController {
 		}
 	
 	}
-	
+
+
+
+	@Command // exclui questionario da lista
+	public void excluirQuestionario(@BindingParam("questionario") Questionario questionario) {
+		if(questionario.getPrazos().size()==0)
+		{
+			session.setAttribute("questionario",questionario);
+			exclui();
+		}
+		else
+		{
+			Messagebox.show("O questionário não pode excluido pois possui prazos e alguem pode estar avaliando agora", "Concluido", Messagebox.OK,
+					Messagebox.INFORMATION, new EventListener<Event>() {
+						@Override
+						public void onEvent(Event event) throws Exception {
+							Executions.sendRedirect(null);
+						}
+					});
+		}
+	}
+
+
+
 	@Command
 	public void tituloQuestionario(@BindingParam("titulo") String titulo)
 	{
@@ -288,20 +313,143 @@ public class QuestionariosController extends GenericController {
 	}
 	
 	@Command
+	public void novoListItem(@BindingParam("li") Listitem li) // para cada mudanca de algum valor de alguma linha no opcoes.zul aqui essa alteração tambem será computada
+	{
+		((List<Listitem>)session.getAttribute("primeiro_listitem")).add(li);
+	}
+
+
+
+	@Command
+	public void tabInicial(@BindingParam("tab") Tab tab) 
+	{ // seta a tab inicial, que a partir dela é possivel chegar a todas as outras
+		((List<Tab>) session.getAttribute("tabs")).add(tab);
+		session.setAttribute("inicial_tab", tab);
+	}
+
+
+
+	@Command
 	public void criarPergunta() // seta novos parametros para um nova pergunta do questionario setado acima
 	{
 	}
 	
 	@Command
-	public void atualizar(@BindingParam("txt") String txt) // usado para forçar a atualização dos valores das opções
-	{
-	}
+	public void duplicarPergunta(@BindingParam("index") String index) {
+		int indice = Integer.parseInt(index);
+		
+		session.setAttribute("duplicar_pergunta", true);
+		session.setAttribute("indice_duplicar_pergunta", indice);
+		session.setAttribute("mudanca_perguntas",true);
 	
-	@Command
-	public void novoListItem(@BindingParam("li") Listitem li) // para cada mudanca de algum valor de alguma linha no opcoes.zul aqui essa alteração tambem será computada
-	{
-		((List<Listitem>)session.getAttribute("primeiro_listitem")).add(li);
+		int i = ((List<Boolean>) session.getAttribute("obrigatorio")).size();
+		for(;i<=((List<String>)session.getAttribute("titulos")).size();i++)
+		{
+			((List<Boolean>) session.getAttribute("obrigatorio")).add(false);
+		}
+		
 	}
+
+
+
+	@Command
+	public void deletarPergunta(@BindingParam("index") String index)
+	{
+		int indice = Integer.parseInt(index);
+	
+		session.setAttribute("mudanca_perguntas",true);
+		session.setAttribute("deletar_pergunta",true);
+		session.setAttribute("indice_deletar_pergunta", indice);
+		((List<Integer>) session.getAttribute("perguntas_deletadas")).add(indice);
+	}
+
+
+
+	@Command
+	public void tipoPergunta(@BindingParam("div") Div div,
+			@BindingParam("div2") Div div2, @BindingParam("index") String index,
+			@BindingParam("combo") Combobox combo) {
+		
+		int indice = Integer.parseInt(index);
+		
+		session.setAttribute("index_tipo_pergunta", indice);
+				
+		String tipo;
+		int escolhido;
+		
+		if (combo.getSelectedIndex() == 0)
+		{
+			tipo = "Texto";
+			escolhido = 0;
+		}
+		else if (combo.getSelectedIndex() == 1)
+		{
+			tipo = "Caixa de Seleção";
+			escolhido = 1;
+		}
+		else if (combo.getSelectedIndex() == 2)
+		{
+			tipo = "Múltipla Escolha";
+			escolhido = 2;
+		}
+		else
+		{
+			tipo = "Escala Numérica";	
+			escolhido = 3;
+		}
+		
+		combo.setText(tipo);
+		
+		((List<Integer>) session.getAttribute("tipo_pergunta")).set(indice, escolhido);
+		
+		if (combo.getSelectedIndex() == 0) {
+			div2.setVisible(false);
+			div.setVisible(false);
+		} else {
+			if (combo.getSelectedIndex() == 3) {
+				div2.setVisible(false);
+				div.setVisible(true);
+	
+			} else {
+				div2.setVisible(true);
+				div.setVisible(false);
+			}
+		}
+	}
+
+
+
+	public String getTituloPergunta()
+	{
+		if((boolean) session.getAttribute("duplicar_pergunta"))// usado para Duplicar os valores
+		{
+			((List<String>) session.getAttribute("titulos")).add(((List<String>) session.getAttribute("titulos")).get((int) session.getAttribute("indice_duplicar_pergunta")));
+			session.setAttribute("aux_duplicar_pergunta", 1 + (int) session.getAttribute("aux_duplicar_pergunta"));
+			
+			session.setAttribute("mudanca_perguntas",true);
+			session.setAttribute("mudanca_titulo_pergunta",true);
+			session.setAttribute("texto_mudanca_titulo_pergunta", ((List<String>) session.getAttribute("titulos")).get((int) session.getAttribute("indice_duplicar_pergunta")));
+			session.setAttribute("indice_mudanca_titulo_pergunta", ((List<String>) session.getAttribute("titulos")).size() - 1);
+			
+			return ((List<String>) session.getAttribute("titulos")).get((int) session.getAttribute("indice_duplicar_pergunta"));
+		}
+	
+		((List<String>) session.getAttribute("titulos")).add("");//add um novo espaço para fazer as operações
+		return "";
+	}
+
+
+
+	@Command
+	public void novoTitulo(@BindingParam("titulo") String titulo) { // seta um titulo
+		((List<String>) session.getAttribute("titulos")).set((int) session.getAttribute("indice_pergunta"), titulo);
+		((List<Tab>) session.getAttribute("tabs")).get((int) session.getAttribute("indice_pergunta")).setLabel(titulo);
+	}
+
+
+
+	@Command
+	public void atualizar(@BindingParam("txt") String txt){} // usado para forçar a atualização dos valores das opções
 	
 	@Command
 	public void mudancaTituloPergunta(@BindingParam("titulo") String titulo,@BindingParam("index") String index)// para cada mudança no titulo da pergunta, ela será salva em seu respectivo lugar
@@ -317,38 +465,6 @@ public class QuestionariosController extends GenericController {
 			session.setAttribute("indice_mudanca_titulo_pergunta", indice);
 		}
 	
-	}
-	
-	public String getTituloPergunta()
-	{
-		if((boolean) session.getAttribute("duplicar_pergunta"))// usado para Duplicar os valores
-		{
-			((List<String>) session.getAttribute("titulos")).add(((List<String>) session.getAttribute("titulos")).get((int) session.getAttribute("indice_duplicar_pergunta")));
-			session.setAttribute("aux_duplicar_pergunta", 1 + (int) session.getAttribute("aux_duplicar_pergunta"));
-			
-			session.setAttribute("mudanca_perguntas",true);
-			session.setAttribute("mudanca_titulo_pergunta",true);
-			session.setAttribute("texto_mudanca_titulo_pergunta", ((List<String>) session.getAttribute("titulos")).get((int) session.getAttribute("indice_duplicar_pergunta")));
-			session.setAttribute("indice_mudanca_titulo_pergunta", ((List<String>) session.getAttribute("titulos")).size() - 1);
-			
-			return ((List<String>) session.getAttribute("titulos")).get((int) session.getAttribute("indice_duplicar_pergunta"));
-		}
-
-		((List<String>) session.getAttribute("titulos")).add("");//add um novo espaço para fazer as operações
-		return "";
-	}
-	
-	@Command
-	public void tabInicial(@BindingParam("tab") Tab tab) 
-	{ // seta a tab inicial, que a partir dela é possivel chegar a todas as outras
-		((List<Tab>) session.getAttribute("tabs")).add(tab);
-		session.setAttribute("inicial_tab", tab);
-	}
-	
-	@Command
-	public void novoTitulo(@BindingParam("titulo") String titulo) {
-		((List<String>) session.getAttribute("titulos")).set((int) session.getAttribute("indice_pergunta"), titulo);
-		((List<Tab>) session.getAttribute("tabs")).get((int) session.getAttribute("indice_pergunta")).setLabel(titulo);
 	}
 	
 	@Command
@@ -432,87 +548,6 @@ public class QuestionariosController extends GenericController {
 		session.setAttribute("tipoPergunta", valor);
 	}
 	
-	@Command
-	public void tipoPergunta(@BindingParam("div") Div div,
-			@BindingParam("div2") Div div2, @BindingParam("index") String index,
-			@BindingParam("combo") Combobox combo) {
-		
-		int indice = Integer.parseInt(index);
-		
-		session.setAttribute("index_tipo_pergunta", indice);
-				
-		String tipo;
-		int escolhido;
-		
-		if (combo.getSelectedIndex() == 0)
-		{
-			tipo = "Texto";
-			escolhido = 0;
-		}
-		else if (combo.getSelectedIndex() == 1)
-		{
-			tipo = "Caixa de Seleção";
-			escolhido = 1;
-		}
-		else if (combo.getSelectedIndex() == 2)
-		{
-			tipo = "Múltipla Escolha";
-			escolhido = 2;
-		}
-		else
-		{
-			tipo = "Escala Numérica";	
-			escolhido = 3;
-		}
-		
-		combo.setText(tipo);
-		
-		((List<Integer>) session.getAttribute("tipo_pergunta")).set(indice, escolhido);
-		
-		if (combo.getSelectedIndex() == 0) {
-			div2.setVisible(false);
-			div.setVisible(false);
-		} else {
-			if (combo.getSelectedIndex() == 3) {
-				div2.setVisible(false);
-				div.setVisible(true);
-	
-			} else {
-				div2.setVisible(true);
-				div.setVisible(false);
-			}
-		}
-	}
-
-
-
-	@Command
-	public void deletarPergunta(@BindingParam("index") String index)
-	{
-		int indice = Integer.parseInt(index);
-	
-		session.setAttribute("mudanca_perguntas",true);
-		session.setAttribute("deletar_pergunta",true);
-		session.setAttribute("indice_deletar_pergunta", indice);
-		((List<Integer>) session.getAttribute("perguntas_deletadas")).add(indice);
-	}
-	
-	@Command
-	public void duplicarPergunta(@BindingParam("index") String index) {
-		int indice = Integer.parseInt(index);
-		
-		session.setAttribute("duplicar_pergunta", true);
-		session.setAttribute("indice_duplicar_pergunta", indice);
-		session.setAttribute("mudanca_perguntas",true);
-
-		int i = ((List<Boolean>) session.getAttribute("obrigatorio")).size();
-		for(;i<=((List<String>)session.getAttribute("titulos")).size();i++)
-		{
-			((List<Boolean>) session.getAttribute("obrigatorio")).add(false);
-		}
-		
-	}
-
 	@Command // nao usada, so para teste
 	public void tabBox(@BindingParam("tbox") Tabbox tbox)
 	{
@@ -520,24 +555,9 @@ public class QuestionariosController extends GenericController {
 		tabbox = tbox;
 	}
 	
-
-	
-	
-	@Command
-	public void teste()
-	{
-		System.out.println(session.getAttribute("combobox"));
-		System.out.println(((Combobox)session.getAttribute("combobox")).getChildren().size());
-		for(int i=0;i<((Combobox)session.getAttribute("combobox")).getChildren().size();i++)
-		{
-			System.out.println(((Combobox)session.getAttribute("combobox")).getChildren().get(i));
-		}
-		((Combobox)session.getAttribute("combobox")).setSelectedItem((Comboitem)((Combobox)session.getAttribute("combobox")).getChildren().get(3));
-	}
-	
 	public Integer getSpinnerInicio() {
 		
-		if((boolean) session.getAttribute("duplicar_pergunta"))// usado para Duplicar os valores
+		if((boolean) session.getAttribute("duplicar_pergunta"))// usado para Duplicar os valores, se está duplicando pega um valor do que ele está duplicando, se não ele seta o valor padrão
 		{
 			((List<Integer>) session.getAttribute("spinnerInicio")).add(((List<Integer>) session.getAttribute("spinnerInicio")).get((int)session.getAttribute("indice_duplicar_pergunta")));
 			return ((List<Integer>) session.getAttribute("spinnerInicio")).get((int)session.getAttribute("indice_duplicar_pergunta"));
@@ -548,7 +568,7 @@ public class QuestionariosController extends GenericController {
 
 	public Integer getSpinnerFinal() {
 		
-		if((boolean) session.getAttribute("duplicar_pergunta"))// usado para Duplicar os valores
+		if((boolean) session.getAttribute("duplicar_pergunta"))// // usado para Duplicar os valores, se está duplicando pega um valor do que ele está duplicando, se não ele seta o valor padrão
 		{
 			((List<Integer>) session.getAttribute("spinnerFinal")).add(((List<Integer>) session.getAttribute("spinnerFinal")).get((int) session.getAttribute("indice_duplicar_pergunta")));
 			session.setAttribute("duplicar_pergunta", false);
@@ -596,7 +616,10 @@ public class QuestionariosController extends GenericController {
 		}
 		else
 		{
-			Messagebox.show("O sistema não tem um sistema referente a data atual, favor adicionar");
+			Messagebox.show("O sistema não tem um semestre referente a data atual, favor adicionar");
+			Window window = (Window) Executions.createComponents(
+					"/semestres.zul", null, null);
+			window.doModal();
 		}
 	}
 
@@ -618,6 +641,36 @@ public class QuestionariosController extends GenericController {
 		}
 		w.detach();
 	}
+
+	@Command
+	public void excluiPrazo(@BindingParam("prazo") PrazoQuestionario prazo) { // deleta
+																				// um
+																				// prazo
+																				// se
+																				// for
+																				// possivel
+		if (avaliacaoDAO.prazoFoiUsado(prazo))
+			Messagebox.show("Prazo nao pode ser excluido, ja esta em uso");
+	
+		else {
+			prazoDAO.exclui(prazo); // exclui o prazo
+			if (questionario.isAtivo()) {
+				questionario.setAtivo(false);
+				questionarioDAO.editar(questionario);
+			}
+	
+			Messagebox.show("Prazo excluido", "Concluido", Messagebox.OK,
+					Messagebox.INFORMATION, new EventListener<Event>() {
+						@Override
+						public void onEvent(Event event) throws Exception {
+							Executions.sendRedirect(null);
+						}
+					});
+		}
+	
+	}
+
+
 
 	private boolean validadaData(PrazoQuestionario prazo) {
 		if (prazo.getDataFinal().before(prazo.getDataInicial())) {
@@ -647,40 +700,6 @@ public class QuestionariosController extends GenericController {
 			return true;
 	}
 
-	@Command
-	public void excluiPrazo(@BindingParam("prazo") PrazoQuestionario prazo) { // deleta
-																				// um
-																				// prazo
-																				// se
-																				// for
-																				// possivel
-		if (avaliacaoDAO.prazoFoiUsado(prazo))
-			Messagebox.show("Prazo nao pode ser excluido, ja esta em uso");
-
-		else {
-			prazoDAO.exclui(prazo); // exclui o prazo
-			if (questionario.isAtivo()) {
-				questionario.setAtivo(false);
-				questionarioDAO.editar(questionario);
-			}
-
-			Messagebox.show("Prazo excluido", "Concluido", Messagebox.OK,
-					Messagebox.INFORMATION, new EventListener<Event>() {
-						@Override
-						public void onEvent(Event event) throws Exception {
-							Executions.sendRedirect(null);
-						}
-					});
-		}
-
-	}
-	
-	@Command // exclui questionario da lista
-	public void excluirQuestionario(@BindingParam("questionario") Questionario questionario) {
-		session.setAttribute("questionario",questionario);
-		exclui();
-	}	
-	
 	@Command
 	public void exclui() {
 		/*

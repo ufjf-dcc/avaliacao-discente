@@ -274,8 +274,6 @@ public class ResultadosController extends GenericController implements
 			}
 		}
 		
-	
-		
 	}
 
 	
@@ -373,18 +371,17 @@ public class ResultadosController extends GenericController implements
 	public void carregarGraficos() {
 		
 		graficos = new ArrayList<Grafico>();
-		boolean texto=false;
-		
 		if(perguntaSelecionada!=null){
-			if(perguntaSelecionada.getRespostasEspecificasBanco().size()==0){
+			if(perguntaSelecionada.getTipoPergunta()==0){
 				Grafico aux = new Grafico("","/textos.zul");
 				aux.setNome("Texto");
 				graficos.add(aux);
-				texto=true;
 			}
 		}
 		
-		if(!texto){
+	if(perguntaSelecionada!=null)
+	if(perguntaSelecionada.getTipoPergunta()!=0)
+	{
 		Grafico aux = new Grafico("3d-pie","pie","/Highcharts/examples/3d-pie/index.htm");
 		graficos.add(aux);
 		aux = new Grafico("3d-pie-donut","pie","/Highcharts/examples/3d-pie-donut/index.htm");
@@ -668,7 +665,6 @@ public class ResultadosController extends GenericController implements
 		List<Resposta> respostas;
 
 		RespostaDAO respostaDAO = new RespostaDAO();
-		
 		if (professor.getNome() != "Todos") {
 			if (semestre != "Todos") {
 				if (turma.getDisciplina().getNomeDisciplina() != "Todas") {
@@ -698,6 +694,8 @@ public class ResultadosController extends GenericController implements
 				}
 			}
 		}
+		
+		System.out.println(grafico.getTipo());
 
 		//cada grafico é tratado de uma maneira diferente
 				if(grafico.getTipo()=="pie"){// se o tipo de grafico a ser exibido é do tipo pie
@@ -731,7 +729,8 @@ public class ResultadosController extends GenericController implements
 				}
 				
 				
-				if(grafico.getTipo()=="area" || grafico.getTipo()=="linha" || grafico.getTipo()=="barra" || grafico.getTipo()=="coluna"){
+				if(grafico.getTipo()=="area" || grafico.getTipo()=="linha" || grafico.getTipo()=="barra" || grafico.getTipo()=="coluna")
+				{
 					
 					
 					int quantItens=0;
@@ -940,9 +939,10 @@ public class ResultadosController extends GenericController implements
 					
 				}
 				
+				System.out.println(grafico.getURL());
 				session.setAttribute("grafico", grafico);
 				session.setAttribute("respostas", respostas);
-				if(perguntaSelecionada.getRespostasEspecificasBanco().size()==0)
+				if(perguntaSelecionada.getTipoPergunta()==0)
 					url="/texto.zul";
 				
 	}

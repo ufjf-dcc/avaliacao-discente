@@ -4,6 +4,7 @@
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.HomeAlunoController')"
 		form="@id('fm') @load(vm.questionarioAtual)" id="form">
+		
 		<grid model="@load(fm.perguntas)">
 			<columns>
 				<column align="center" />
@@ -37,8 +38,7 @@
 		<div align="center">
 			<button label="Salvar"
 				onClick="@command('terminarAvaliacao')" />
-			<button label="teste2"
-				onClick="@command('teste2')" />
+
 		</div>
 	</div>
 </window>

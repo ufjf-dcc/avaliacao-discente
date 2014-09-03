@@ -8,20 +8,11 @@
 		<div onCreate="@command('criarPergunta')">
 			<label visible="false" id="index" value="@load(vm.novoIndex)" />
 				<div>
-					<label style="font-weight: bold">Titulo:</label><textbox value="@load(vm.tituloPergunta)" width="80%" onChange="@command('mudancaTituloPergunta',titulo=self.value,index=index.value)"  />
+					<label  value="Pergunta: " style="font-weight: bold"/><textbox value="@load(vm.tituloPergunta)" width="80%" onChange="@command('mudancaTituloPergunta',titulo=self.value,index=index.value)"  />
 				</div>
 				<separator />
-				
-			<grid>
-				<columns>
-					<column align="center" label="Tipo de Pergunta" />
-					<column align="center" label="Obrigatório" />
-					<column align="center" label="Opções" />
-				</columns>
-				
-				<rows>
-					<row>
-						<combobox id="combo" model="@load(vm.tiposPergunta)"
+				<label value="Tipo de Pergunta:" style="font-weight: bold" />
+				<combobox id="combo" model="@load(vm.tiposPergunta)"
 							selectedItem="@load(vm.tipoPergunta)"
 							onChange="@command('tipoPergunta', div=spinner, div2=addOpcao ,index=index.value,combo=combo)"
 							readonly="true" >
@@ -30,15 +21,17 @@
 									label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Caixa de Seleção' : each eq 2 ? 'Múltipla Escolha' : 'Escala Numérica')" />
 							</template>
 						</combobox>
-						<checkbox id="check" value="@load('obrigatorio_inicio')" onCheck="@command('obrigatorio',check=self,index=index.value)" />
+					
+				<label value="   Obrigatoriedade:" style="font-weight: bold" />
+					<checkbox id="check" value="@load('obrigatorio_inicio')" onCheck="@command('obrigatorio',check=self,index=index.value)" />
+						<separator />
 						<div>
 							<button label="Duplicar" onClick="@command('duplicarPergunta',index=index.value)"/>
 							<button label="Deletar" onClick="@command('deletarPergunta',index=index.value)"/>
 						</div>
-					</row>
-				</rows>	
-			</grid>
-
+						
+						
+		
 			<div	align="center"
 					form="@id('fr') @load(vm.resposta) @save(vm.resposta, before='addRespostaEspecifica')">
 					<separator />

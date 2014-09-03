@@ -33,6 +33,7 @@
 					</row>
 				</template>
 			</grid>
+			<separator spacing="10px" />
 			<grid model="@load(vm.perguntasSessao)">
 				<auxhead>
 					<auxheader style="text-align:center" colspan="3"
@@ -41,7 +42,7 @@
 				</auxhead>
 				<columns>
 					<column align="center" label="Título da Pergunta" />
-					<column align="center" label="Tipo de Resposta" />
+					<column align="center" label="Tipo da Pergunta" />
 					<column align="center" label="Obrigatório" />
 				</columns>
 				<template name="model">

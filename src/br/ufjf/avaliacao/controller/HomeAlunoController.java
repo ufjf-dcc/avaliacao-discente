@@ -3,6 +3,7 @@ package br.ufjf.avaliacao.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.poi.hssf.record.formula.functions.T;
 import org.hibernate.HibernateException;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
@@ -43,48 +44,40 @@ import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
 
 public class HomeAlunoController extends GenericController {
 
-	private QuestionarioDAO questionarioDAO = new QuestionarioDAO();
-	private UsuarioDAO usuarioDAO = new UsuarioDAO();
 	private AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
+	private QuestionarioDAO questionarioDAO = new QuestionarioDAO();
 	private PrazoQuestionarioDAO prazoDAO = new PrazoQuestionarioDAO();
+	private UsuarioDAO usuarioDAO = new UsuarioDAO();
 	private Questionario questionarioProf = questionarioDAO
 			.retornaQuestionarioProf(usuario);
+	private Questionario questionarioAuto = questionarioDAO
+	.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario);
+	private Questionario questionarioCoord = questionarioDAO
+	.retornaQuestinarioParaUsuarioCoord(usuario);
+	private Questionario questionarioInfra = questionarioDAO
+	.retornaQuestinarioParaUsuarioInfra(usuario);
 	private List<Turma> turmasDoUsuario = new TurmaDAO()
 			.getTurmasUsuario(usuario);
+	private Usuario coordAvaliado = usuarioDAO.retornaCoordAvaliado(usuario);
 	private PrazoQuestionario prazo = new PrazoQuestionarioDAO()
 			.prazoQuestionario(questionarioProf);
 
-	private Questionario questionarioCoord = questionarioDAO
-			.retornaQuestinarioParaUsuarioCoord(usuario);
-	private Questionario questionarioAuto = questionarioDAO
-			.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario);
-	private Questionario questionarioInfra = questionarioDAO
-			.retornaQuestinarioParaUsuarioInfra(usuario);
-
 	private Resposta resposta = new Resposta();
 	private List<Resposta> respostas = new ArrayList<Resposta>();
-	private Usuario coordAvaliado = usuarioDAO.retornaCoordAvaliado(usuario);
-	
 	private List<Questionario> questionarios = new ArrayList<Questionario>();
 	private List<Usuario> ordemProfessores = new ArrayList<Usuario>();
 	private int quantidadeQuestionarios;
 	private List<Questionario> questionariosExibidos = new ArrayList<Questionario>();
 
+	private List<Avaliacao> avaliacoes = avaliacaoDAO.avaliacoesDataAtual(usuario);//usado para mostrar os questionarios que ja foram avaliados para uma possivel reavaliacao
 	
+
 	private String selecionado = new String();
 	
 	private Questionario[] vetorQuestionarios;
 	private int indiceQuestionario=0;
 	
-	public Questionario[] getQuestionarios() {//em formato vetor para o zul
-		return vetorQuestionarios;
-	}
-	public int getQuantidadeQuestionarios() {//em formato vetor para o zul
-		return quantidadeQuestionarios;
-	}
-	public int getIndiceQuestionario() {//em formato vetor para o zul
-		return (int)session.getAttribute("indiceQuestionario");
-	}
+
 	
 
 	@Init
@@ -120,12 +113,15 @@ public class HomeAlunoController extends GenericController {
 	@Command
 	public void carregarJanelas()
 	{
+		session.setAttribute("respostas_dos_questionarios",new ArrayList<ArrayList<Resposta>>());
 		session.setAttribute("janelas", new ArrayList<Window>());
 		session.setAttribute("questionarios", questionariosDisponiveis());
 		for(int i=0;i<((List<Questionario>) session.getAttribute("questionarios")).size();i++)
 		{
 			((List<Window>) session.getAttribute("janelas")).add(null);
+			((List<List<Resposta>>)session.getAttribute("respostas_dos_questionarios")).add(new ArrayList<Resposta>());
 		}
+		session.setAttribute("indice_respostas", 0);
 		
 	}
 	
@@ -142,9 +138,11 @@ public class HomeAlunoController extends GenericController {
 	@Command
 	public void escolherJanela(int indice)
 	{
-		
+		respostas = ((List<List<Resposta>>)session.getAttribute("respostas_dos_questionarios")).set((int) session.getAttribute("indice_respostas"),respostas);
+	
+		session.setAttribute("indice_respostas", indice);
 		respostas = new ArrayList<Resposta>();
-
+		
 		if(((List<Questionario>) session.getAttribute("questionarios")).get(indice).getTipoQuestionario()==0
 				|| ((List<Questionario>) session.getAttribute("questionarios")).get(indice).getTipoQuestionario()==2
 				|| ((List<Questionario>) session.getAttribute("questionarios")).get(indice).getTipoQuestionario()==3)
@@ -154,45 +152,52 @@ public class HomeAlunoController extends GenericController {
 		else{
 			int adicionar = 0;
 			
+			List<Usuario> professoresAluno = new ArrayList<Usuario>();
+			List<Turma> turmasAluno = new ArrayList<Turma>();
+			
 			if (questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario) != null //verificando se ha questionrio coordenador pra ser avaliado
 					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario))!=null)
-				adicionar++;
+			{
+				professoresAluno.add(null);
+				turmasAluno.add(null);
+			}
 		
 			
 			if (questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario) != null //verificando se ha questionrio autoavaliação pra ser avaliado
 					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario))!=null)
-				adicionar++;	
+			{
+				professoresAluno.add(null);
+				turmasAluno.add(null);
+			}	
 			
 			if (questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario) != null
 					&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario))!=null) 
-				adicionar++;
+			{
+				professoresAluno.add(null);
+				turmasAluno.add(null);
+			}
 			
 			
 			if(((List<Questionario>) session.getAttribute("questionarios")).get(indice).getTipoQuestionario()==1)
 			{	
-				for(int j=0;j<turmasDoUsuario.size();j++)
+				TurmaDAO turmaDAO = new TurmaDAO();
+				UsuarioDAO usuarioDAO = new UsuarioDAO();
+				List<Turma> turmas = turmaDAO.getTurmasUsuario(usuario);
+				
+				for(int j=0;j<turmas.size();j++)
 				{
-						List<Usuario> professoresTurma = usuarioDAO.retornaProfessoresTurma(turmasDoUsuario.get(j));
-							
-						int numprof = 0;
-						for(int i=0;i<professoresTurma.size();i++)
-						{
-							if(adicionar==indice)
-							{
-								session.setAttribute("turma", turmasDoUsuario.get(j));
-								session.setAttribute("numProfTurma",numprof);
-								break;
-							}
-							else
-							{
-								adicionar++;
-							}
-							ordemProfessores.add(professoresTurma.get(i));
-							numprof++;
-						}
-						if(adicionar==indice)
-							break;
+					List<Usuario> professoresTurma = usuarioDAO.retornaProfessoresTurma(turmas.get(j));
+					turmasAluno.add(turmas.get(j));
+					
+					for(int i=0;i<professoresTurma.size();i++)
+					{
+						professoresAluno.add(professoresTurma.get(i));					
+					}
 				}
+				session.setAttribute("turma", turmasAluno.get(indice));
+				session.setAttribute("professorAvaliado", professoresAluno.get(indice));
+				System.out.println(turmasAluno.get(indice).getDisciplinaLetraTurma());
+				System.out.println(professoresAluno.get(indice));
 			}
 		}
 
@@ -228,31 +233,14 @@ public class HomeAlunoController extends GenericController {
 	}
 	
 	@Command
-	public void avaliarQuestionario(@BindingParam("butao") Button botao,//no zul essa função seleciona qual questionario vai ser avaliado incialmente
+	public void avaliarQuestionario(@BindingParam("butao") Button botao,//no zul essa função seleciona qual questionario vai ser avaliado quando clicado
 			@BindingParam("grid") Grid grid)
 	{
-		
-	
 		for(int i=0;i<grid.getChildren().get(1).getChildren().size();i++)
 		{
-			if(grid.getChildren().get(1).getChildren().get(i).getChildren().get(4).getChildren().get(1) == botao)
+			if(grid.getChildren().get(1).getChildren().get(i).getChildren().get(4).getChildren().get(0) == botao)//verifica pelo botão que é mapeado aqui
 			{
-				int adiciona = 0;
-				//feito pra funcionar o homealuno para redirecionar direto em avaliar pois la não mostra de coordenador ou infra ou auto---------
-				if (questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario) != null //verificando se ha questionrio coordenador pra ser avaliado
-						&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioCoord(usuario))!=null)
-					adiciona++;
-			
-				
-				if (questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario) != null //verificando se ha questionrio autoavaliação pra ser avaliado
-						&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioAutoAvaliacao(usuario))!=null)
-					adiciona++;	
-				
-				if (questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario) != null
-						&& prazoDAO.getPrazoQuestionarioDisponivel(questionarioDAO.retornaQuestinarioParaUsuarioInfra(usuario))!=null) 
-					adiciona++;
-				//-----------------------------------------------------------
-				escolherJanela(i+adiciona);
+				escolherJanela(i);
 			}
 		}
 	}
@@ -280,42 +268,32 @@ public class HomeAlunoController extends GenericController {
 	@Command
 	public void teste2()
 	{
-		List<Pergunta> perguntas = ((Questionario) session.getAttribute("questionarioAtual")).getPerguntas();
+		List<Avaliacao> avaliacoes = avaliacaoDAO.avaliacoesDataAtual(usuario);
+		System.out.println(avaliacoes.size());
 		
-		List<Integer> perguntasObrigatorias = new ArrayList();
-		for(int i = (perguntas.size() - 1);i>=0;i--)
+		for(int i=0;i<avaliacoes.size();i++)
 		{
-			if(perguntas.get(i).isObrigatorio())
-			{
-				perguntasObrigatorias.add(perguntas.get(i).getIdPergunta());
-			}
-		}
-		
-		GenericBusiness gb = new GenericBusiness();
-		for(int i= (respostas.size() - 1);i>=0;i--)
-		{
-			if(!gb.campoStrValido(respostas.get(i).getResposta()))
-			{
-				respostas.remove(i);
-			}
-		}
-		
-		List<Integer> perguntasRespondidas = new ArrayList();
-		for(int i=0;i<respostas.size();i++)
-		{
-			perguntasRespondidas.add(respostas.get(i).getPergunta().getIdPergunta());
-		}
-		
-		for(int i = 0;i<perguntasObrigatorias.size();i++)
-		{
-			if(!perguntasRespondidas.contains(perguntasObrigatorias.get(i)))
-			{
-				System.out.println("false");
-			}
-		}
+
+			System.out.println(avaliacoes.get(i));
+			System.out.println(avaliacoes.get(i).getPrazoQuestionario().getQuestionario());
+			System.out.println(avaliacoes.get(i).getPrazoQuestionario().getQuestionario().getNomeTipoQuestionario());
+
+
 			
+		}
 	}
 	
+
+	@Command
+	public void teste3()
+	{
+		SemestreDAO semestreDAO = new SemestreDAO();
+
+		System.out.println(usuario);
+		System.out.println((Turma) session.getAttribute("turma"));
+		System.out.println( semestreDAO.getSemestreAtualCurso(usuario.getCurso()).getNomeSemestre());
+
+	}
 	
 	public void funcao(){
 		
@@ -333,110 +311,99 @@ public class HomeAlunoController extends GenericController {
 	}
 	
 	
-	// salva a avaliação e verifica se vai precisar retornar na função que
-		// verifica quem deve ser avalido agora (avaliarAuz)
-		@Command
-		public void terminarAvaliacao() {
+	public String getProfessorAvaliado()
+	{
+		if(session.getAttribute("professorAvaliado") != null)
+			return " - "+((Usuario) session.getAttribute("professorAvaliado")).getNome();
+		return "";
+	}
+	
+	
+	
+	@Command
+	public void terminarAvaliacao() {
 			
 			if(verificarRespostasQuestionario())
 			{
-		
-			Usuario avaliado = null;
-			Turma turmaUsada = null;
-			prazo = prazoDAO.getPrazoQuestionarioDisponivel((Questionario) session
-					.getAttribute("questionarioAtual"));
-			
-	
-			// setando o usuario que vai ser avaliado e a
-			// turma-----------------------------------------------------
-			if (((Questionario) session.getAttribute("questionarioAtual"))
-					.getTipoQuestionario() == 0) { // verifica se o
-				// questionario é do
-				// tipo coodenador
-				avaliado = usuarioDAO.retornaCoordenadorCurso(usuario.getCurso());
-			}
-			if (((Questionario) session.getAttribute("questionarioAtual"))
-					.getTipoQuestionario() == 1) { // verifica se o
-				// questionario é do
-				// tipo professor
-				
-				UsuarioDAO usuarioDAO = new UsuarioDAO();
-				if(usuarioDAO.retornaProfessoresTurma((Turma) session.getAttribute("turma")).size()==1)
-				{
-					avaliado = usuarioDAO.retornaProfessoresTurma((Turma) session.getAttribute("turma")).get(0);
-				}
-				else
-				{
-					avaliado = usuarioDAO.retornaProfessoresTurma((Turma) session.getAttribute("turma")).get((int) session.getAttribute("numProfTurma"));
-				}
-				
-				turmaUsada = (Turma) session.getAttribute("turma");
-				
-			}
-			if (((Questionario) session.getAttribute("questionarioAtual"))
-					.getTipoQuestionario() == 2) { // verifica se o
-				// questionario é do
-				// tipo auto
-				// avaliação
-				avaliado = usuario;
-	
-			}
-			if (((Questionario) session.getAttribute("questionarioAtual"))
-					.getTipoQuestionario() == 3) { // verifica se o
-				// questionario é do
-				// tipo
-				// infraestrutura
-	
-			}
-			// -------------------------------------------------------------------------------
-	
-			Clients.showBusy("Salvando avaliação..");
-			
 
-				Avaliacao avaliacao = new Avaliacao();
-				avaliacao.setAvaliando(usuario);
-				avaliacao.setAvaliado(avaliado);
-				avaliacao.setPrazoQuestionario(prazo);
-				avaliacao.setTurma(turmaUsada);
-				new AvaliacaoDAO().salvar(avaliacao);
-	
-				for (Resposta r : respostas) {
-					r.setAvaliacao(avaliacao);
-				}
-				new RespostaDAO().salvarLista(respostas);
-				Clients.clearBusy();
-	
-				// se tiver mais de um professor a ser avaliado ou nao for uma
-				// avaliação de professor, ele verifica o que mais precisa ser
-				// avaliado
-				if (((Questionario) session.getAttribute("questionarioAtual"))
-						.getTipoQuestionario() != 1
-						|| ((int) session.getAttribute("numProfTurma")) > 0) {
-					Messagebox.show("Avaliação Salva com Sucesso", "Concluído",
-							Messagebox.OK, Messagebox.INFORMATION,
-							new EventListener<Event>() {
-	
-								@Override
-								public void onEvent(Event event) throws Exception {
-									avaliarAux();
-								}
-							});
-	
-				}
-				// se acabar de avaliar a ultima coisa(que seria o ultimo professor
-				// da turma(ou o unico)) ele finaliza as avaliaçoes e da um refresh
-				// na pagina
-				else {
-					Messagebox.show("Salvo", "Concluído", Messagebox.OK,
-							Messagebox.INFORMATION, new EventListener<Event>() {
-								@Override
-								public void onEvent(Event event) throws Exception {
-									Executions.sendRedirect(null);
-								}
-							});
-				}
+				reavaliar();
+				
+				Usuario avaliado = null;
+				Turma turmaUsada = null;
+				prazo = prazoDAO.getPrazoQuestionarioDisponivel((Questionario) session
+							.getAttribute("questionarioAtual"));
+				
 			
+					// setando o usuario que vai ser avaliado e a
+					// turma-----------------------------------------------------
+					if (((Questionario) session.getAttribute("questionarioAtual"))
+							.getTipoQuestionario() == 0) { // verifica se o
+						// questionario é do
+						// tipo coodenador
+						avaliado = usuario.getCurso().getCoordenador();
+					}
+					if (((Questionario) session.getAttribute("questionarioAtual"))
+							.getTipoQuestionario() == 1) { // verifica se o
+						// questionario é do
+						// tipo professor
+						
+
+						avaliado = (Usuario) session.getAttribute("professorAvaliado");
+						turmaUsada = (Turma) session.getAttribute("turma");
+						
+					}
+					if (((Questionario) session.getAttribute("questionarioAtual"))
+							.getTipoQuestionario() == 2) { // verifica se o
+						// questionario é do
+						// tipo auto
+						// avaliação
+						avaliado = usuario;
+			
+					}
+					if (((Questionario) session.getAttribute("questionarioAtual"))
+							.getTipoQuestionario() == 3) { // verifica se o
+						// questionario é do
+						// tipo
+						// infraestrutura
+			
+					}
+					// -------------------------------------------------------------------------------
+			
+					Clients.showBusy("Salvando avaliação..");
+					
+		
+						Avaliacao avaliacao = new Avaliacao();
+						avaliacao.setAvaliando(usuario);
+						avaliacao.setAvaliado(avaliado);
+						avaliacao.setPrazoQuestionario(prazo);
+						avaliacao.setTurma(turmaUsada);
+						new AvaliacaoDAO().salvar(avaliacao);
+			
+						for (Resposta r : respostas) {
+							r.setAvaliacao(avaliacao);
+						}
+						new RespostaDAO().salvarLista(respostas);
+						Clients.clearBusy();
+			
+						// se tiver mais de um professor a ser avaliado ou nao for uma
+						// avaliação de professor, ele verifica o que mais precisa ser
+						// avaliado
+						if (((Questionario) session.getAttribute("questionarioAtual"))
+								.getTipoQuestionario() != 1) {
+							Messagebox.show("Avaliação Salva com Sucesso");
+			
+						}
+						// se acabar de avaliar a ultima coisa(que seria o ultimo professor
+						// da turma(ou o unico)) ele finaliza as avaliaçoes e da um refresh
+						// na pagina
+						else {
+							Messagebox.show("Problema ao salvar");
+						}
+
+					
 			}
+				
+			
 			else
 			{
 				Messagebox.show("Preencha as perguntas obrigatórias(*)");
@@ -444,6 +411,148 @@ public class HomeAlunoController extends GenericController {
 	
 		}
 		
+	public boolean precisaReavaliar()
+	{
+		AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
+		if(((Questionario) session.getAttribute("questionarioAtual")).getTipoQuestionario() == 0) //coordenação
+		{
+			if(avaliacaoDAO.jaAvaliouCoordenadorDataAtual(usuario))
+			{
+				return true;
+			}
+		}
+		
+		if(((Questionario) session.getAttribute("questionarioAtual")).getTipoQuestionario() == 1) //turma
+		{
+			if(!avaliacaoDAO.jaAvaliouTodosProfessoresTurma(usuario, (Turma) session.getAttribute("turma")))
+			{
+				if(avaliacaoDAO.retornaProfessoresNaoAvaliados(usuario, (Turma) session.getAttribute("turma")).size() == 0)
+				{
+					return true;
+				}
+			}
+		}
+		
+		if(((Questionario) session.getAttribute("questionarioAtual")).getTipoQuestionario() == 2) //auto
+		{
+			if(avaliacaoDAO.jaSeAvaliouDataAtual(usuario))
+			{
+				return true;
+			}
+		}
+		
+		if(((Questionario) session.getAttribute("questionarioAtual")).getTipoQuestionario() == 3) //infra
+		{
+			if(avaliacaoDAO.jaAvaliouInfraestruturaDataAtual(usuario))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+		
+	public void reavaliar()
+	{
+		AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
+		if(((Questionario) session.getAttribute("questionarioAtual")).getTipoQuestionario() == 0 //coordenação
+		&&	avaliacaoDAO.jaAvaliouCoordenadorDataAtual(usuario))
+		{
+				List<Avaliacao> avaliacoes = avaliacaoDAO.avaliacoesAtivasAluno(usuario);
+				Avaliacao avaliacaoCoordenador = null;
+				for(int i=0;i<avaliacoes.size();i++)
+				{
+					if(avaliacoes.get(i).getPrazoQuestionario().getQuestionario().getTipoQuestionario() == 0)
+					{
+						avaliacaoCoordenador = avaliacoes.get(i);
+						break;
+					}
+				}
+				if(avaliacaoCoordenador!=null)
+				{
+					List<Resposta> respostas = avaliacaoCoordenador.getRespostas();
+					RespostaDAO respostaDAO = new RespostaDAO();
+					respostaDAO.excluiLista(respostas);
+					avaliacaoDAO.exclui(avaliacaoCoordenador);
+				}
+				
+			
+		}
+		
+		if(((Questionario) session.getAttribute("questionarioAtual")).getTipoQuestionario() == 1) //turma
+		{
+			UsuarioDAO usuarioDAO = new UsuarioDAO();
+			Usuario professorAvaliado = (Usuario)session.getAttribute("professorAvaliado");
+			SemestreDAO semestreDAO = new SemestreDAO();
+			if(avaliacaoDAO.alunoJaAvaliouEsteProfessor(usuario, professorAvaliado, ((Turma) session.getAttribute("turma"))))
+			{
+				List<Avaliacao> avaliacoes = avaliacaoDAO.avaliacoesDataAtual(usuario);
+				
+				for(int i=0;i<avaliacoes.size();i++)
+				{
+					if(avaliacoes.get(i).getTurma().getIdTurma() == ((Turma) session.getAttribute("turma")).getIdTurma()
+					&& avaliacoes.get(i).getAvaliado().getIdUsuario() == professorAvaliado.getIdUsuario())
+					{
+						List<Resposta> respostas = avaliacoes.get(i).getRespostas();
+						RespostaDAO respostaDAO = new RespostaDAO();
+						
+						for(int j=0;j<respostas.size();j++)
+							System.out.println(respostas.get(j));
+						
+						respostaDAO.excluiLista(respostas);
+						avaliacaoDAO.exclui(avaliacoes.get(i));
+					}
+					
+				}				
+			}
+		}
+		
+		if(((Questionario) session.getAttribute("questionarioAtual")).getTipoQuestionario() == 2 //auto
+			&& avaliacaoDAO.jaSeAvaliouDataAtual(usuario))
+		{
+			List<Avaliacao> avaliacoes = avaliacaoDAO.avaliacoesAtivasAluno(usuario);
+			Avaliacao autoAvaliacao = null;
+			for(int i=0;i<avaliacoes.size();i++)
+			{
+				if(avaliacoes.get(i).getPrazoQuestionario().getQuestionario().getTipoQuestionario() == 2)
+				{
+					autoAvaliacao = avaliacoes.get(i);
+					break;
+				}
+			}
+			if(autoAvaliacao!=null)
+			{
+				List<Resposta> respostas = autoAvaliacao.getRespostas();
+				RespostaDAO respostaDAO = new RespostaDAO();
+				respostaDAO.excluiLista(respostas);
+				avaliacaoDAO.exclui(autoAvaliacao);
+			}
+			
+		}
+		
+		if(((Questionario) session.getAttribute("questionarioAtual")).getTipoQuestionario() == 3 //infra
+		&& avaliacaoDAO.jaAvaliouInfraestruturaDataAtual(usuario))
+		{
+			List<Avaliacao> avaliacoes = avaliacaoDAO.avaliacoesAtivasAluno(usuario);
+			Avaliacao avaliacaoInfraestrutura = null;
+			for(int i=0;i<avaliacoes.size();i++)
+			{
+				if(avaliacoes.get(i).getPrazoQuestionario().getQuestionario().getTipoQuestionario() == 3)
+				{
+					avaliacaoInfraestrutura = avaliacoes.get(i);
+					break;
+				}
+			}
+			if(avaliacaoInfraestrutura!=null)
+			{
+				List<Resposta> respostas = avaliacaoInfraestrutura.getRespostas();
+				RespostaDAO respostaDAO = new RespostaDAO();
+				respostaDAO.excluiLista(respostas);
+				avaliacaoDAO.exclui(avaliacaoInfraestrutura);
+			}
+		}
+		
+	}
+	
 	@Command
 		public void escolha(@BindingParam("string") String escolha,
 				@BindingParam("pergunta") Pergunta perg) {
@@ -467,10 +576,10 @@ public class HomeAlunoController extends GenericController {
 			@BindingParam("pergunta") Pergunta perg,
 			@BindingParam("check") Checkbox box) {
 		if (box.isChecked()) {
+			SemestreDAO semestreDAO = new SemestreDAO();
 			resposta.setResposta(escolha);
 			resposta.setPergunta(perg);
-			resposta.setSemestre(((Turma) session.getAttribute("turma"))
-					.getSemestre());
+			resposta.setSemestre(semestreDAO.getSemestreAtualCurso(usuario.getCurso()).getNomeSemestre());
 			respostas.add(resposta);
 			resposta = new Resposta();
 		} else {
@@ -632,6 +741,8 @@ public class HomeAlunoController extends GenericController {
 				}
 				return questionariosAAvaliar;
 	}
+
+		
 	@Command
 	public void proximoQuestionario(@BindingParam("indiceQuestionario") String indice)
 	{
@@ -808,6 +919,25 @@ public class HomeAlunoController extends GenericController {
 		l.setValue(coordAvaliado.getNome() + " - " + "Coordenador "
 				+ coordAvaliado.getCurso().getNomeCurso());
 	}
+	
+///GET e SETS__________________________________________________________________
+	
+	public Questionario[] getQuestionarios() {//em formato vetor para o zul
+		return vetorQuestionarios;
+	}
+	public int getQuantidadeQuestionarios() {//em formato vetor para o zul
+		return quantidadeQuestionarios;
+	}
+	public int getIndiceQuestionario() {//em formato vetor para o zul
+		return (int)session.getAttribute("indiceQuestionario");
+	}
+	
+	public List<Avaliacao> getAvaliacoes() {
+		return avaliacoes;
+	}
+	public void setAvaliacoes(List<Avaliacao> avaliacoes) {
+		this.avaliacoes = avaliacoes;
+	}
 
 	public PrazoQuestionario getPrazo() {
 		return prazo;
@@ -880,7 +1010,7 @@ public class HomeAlunoController extends GenericController {
 	public void setTurmasDoUsuario(List<Turma> turmasDoUsuario) {
 		this.turmasDoUsuario = turmasDoUsuario;
 	}
-
+	
 	
 
 }
