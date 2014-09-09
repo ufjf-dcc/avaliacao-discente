@@ -24,6 +24,7 @@ import org.zkoss.zul.Div;
 import org.zkoss.zul.Iframe;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Messagebox;
+import org.zkoss.zul.Panel;
 import org.zkoss.zul.Tab;
 import org.zkoss.zul.Tabbox;
 import org.zkoss.zul.Tabpanel;
@@ -796,15 +797,10 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	public void teste()
-	{
-		System.out.println("teste");
-	}
-	
-	@Command
 	public void exibirPergunta(@BindingParam("pergunta") Pergunta pergunta)
 	{
 		session.setAttribute("pergunta_exibida", pergunta);
+		session.setAttribute("listItens", new ArrayList<Listitem>());
 		
 		Window window = (Window) Executions.createComponents(
 				"/exibirPergunta.zul", null, null);
@@ -812,9 +808,98 @@ public class QuestionariosController extends GenericController {
 		
 	}
 	
+	@Command
+	public void janelaPergunta(@BindingParam("win") Window janela)//salva a janela para dar refresh nela
+	{
+		session.setAttribute("janela_pergunta_exibir", janela);
+	}
+	
+	@Command
+	public void salvarPerguntaExibir(@BindingParam("panel") Panel panel, //salva as mudanças da exibição do zul
+			@BindingParam("janela") Window janela)
+	{
+		RespostaEspecificaDAO respostaEspecificaDAO = new RespostaEspecificaDAO();
+		GenericBusiness gb  = new GenericBusiness();
+		PerguntaDAO perguntaDAO = new PerguntaDAO();
+		
+	
+		if(((Pergunta)session.getAttribute("pergunta_exibida")).getTipoPergunta()==0)
+		{
+			perguntaDAO.salvaOuEdita(((Pergunta)session.getAttribute("pergunta_exibida")));
+			Messagebox.show("Pergunta salva");
+			janela.setVisible(false);
+
+		}
+		
+		else if(((Pergunta)session.getAttribute("pergunta_exibida")).getTipoPergunta()==1 || ((Pergunta)session.getAttribute("pergunta_exibida")).getTipoPergunta()==2)
+		{
+			List<RespostaEspecifica> opcoes = new ArrayList<RespostaEspecifica>();
+			
+			for(int i=1;i<panel.getChildren().get(0).getChildren().get(0).getChildren().size();i++)
+			{
+				if(gb.campoStrValido(((Textbox) panel.getChildren().get(0).getChildren().get(0).getChildren().get(i).getChildren().get(0).getChildren().get(0)).getValue()))
+				{
+					RespostaEspecifica opcao = new RespostaEspecifica();
+					opcao.setPergunta(((Pergunta)session.getAttribute("pergunta_exibida")));
+					opcao.setRespostaEspecifica(((Textbox) panel.getChildren().get(0).getChildren().get(0).getChildren().get(i).getChildren().get(0).getChildren().get(0)).getValue());
+					opcoes.add(opcao);
+				}
+			}
+			if(opcoes.size()>0)
+			{
+				respostaEspecificaDAO.excluiLista(((Pergunta)session.getAttribute("pergunta_exibida")).getRespostasEspecificasBanco());
+				respostaEspecificaDAO.salvarLista(opcoes);
+				((Pergunta)session.getAttribute("pergunta_exibida")).setRespostasEspecificas(opcoes);
+				perguntaDAO.salvaOuEdita(((Pergunta)session.getAttribute("pergunta_exibida")));
+				Messagebox.show("Pergunta salva");
+				janela.setVisible(false);
+				
+			}
+			else
+			{
+				Messagebox.show("As opções estão preenchidas incorretamente");
+			}
+		}
+		else if(((Pergunta)session.getAttribute("pergunta_exibida")).getTipoPergunta()==3)
+		{
+			List<RespostaEspecifica> opcoes = new ArrayList<RespostaEspecifica>();
+			
+			for(int i=((int)session.getAttribute("spinnerInicio"));i<=((int)session.getAttribute("spinnerFinal"));i++)
+			{
+				RespostaEspecifica opcao = new RespostaEspecifica();
+				opcao.setPergunta(((Pergunta)session.getAttribute("pergunta_exibida")));
+				opcao.setRespostaEspecifica(((Integer)i).toString());
+				opcoes.add(opcao);
+			}
+			
+			if(opcoes.size()>0)
+			{
+				respostaEspecificaDAO.excluiLista(((Pergunta)session.getAttribute("pergunta_exibida")).getRespostasEspecificasBanco());
+				respostaEspecificaDAO.salvarLista(opcoes);
+
+				((Pergunta)session.getAttribute("pergunta_exibida")).setRespostasEspecificas(opcoes);
+				perguntaDAO.salvaOuEdita(((Pergunta)session.getAttribute("pergunta_exibida")));
+				Messagebox.show("Pergunta salva");
+				janela.setVisible(false);
+
+				
+			}
+			else
+			{
+				Messagebox.show("O intervalo está preenchido incorretamente");
+			}
+		}
+	}
+	
 	public String getTituloPerguntaExibir()
 	{
 		return ((Pergunta) session.getAttribute("pergunta_exibida")).getTituloPergunta();
+	}
+	
+	@Command
+	public void tituloPerguntaExibir(@BindingParam("titulo") String titulo)
+	{
+		((Pergunta) session.getAttribute("pergunta_exibida")).setTituloPergunta(titulo);
 	}
 	
 	public int getSpinnerInicioExibir()
@@ -829,10 +914,18 @@ public class QuestionariosController extends GenericController {
 				if(menor > Integer.parseInt(opcoes.get(i).getRespostaEspecifica()))
 					menor = Integer.parseInt(opcoes.get(i).getRespostaEspecifica());
 			}
+			session.setAttribute("spinnerInicio", menor);
 			return menor;
 		}
 		return 0;
 	}
+	
+	@Command
+	public void spinnerInicioExibir(@BindingParam("valor") int valor)
+	{
+		session.setAttribute("spinnerInicio", valor);
+	}
+	
 	
 	public int getSpinnerFinalExibir()
 	{
@@ -847,20 +940,38 @@ public class QuestionariosController extends GenericController {
 					maior = Integer.parseInt(opcoes.get(i).getRespostaEspecifica());
 				
 			}
+			session.setAttribute("spinnerFinal", maior);
 			return maior;
 		}
 		return 0;
 	}
 	
+	@Command
+	public void spinnerFinalExibir(@BindingParam("valor") int valor)
+	{
+		session.setAttribute("spinnerFinal", valor);
+	}
 	
 	public String getTipoPerguntaExibir()
 	{
 		return ((Pergunta) session.getAttribute("pergunta_exibida")).getNomeTipoPergunta();
 	}
 	
+	@Command
+	public void tipoPerguntaExibir(@BindingParam("tipo") int tipo)
+	{
+		((Pergunta) session.getAttribute("pergunta_exibida")).setTipoPergunta(tipo);
+	}
+	
 	public boolean getObrigatorioExibir()
 	{
 		return ((Pergunta) session.getAttribute("pergunta_exibida")).isObrigatorio();
+	}
+	
+	@Command
+	public void obrigatorioExibir(@BindingParam("obrigatorio") boolean obrigatorio)
+	{
+		((Pergunta) session.getAttribute("pergunta_exibida")).setObrigatorio(obrigatorio);
 	}
 	
 	public List<RespostaEspecifica> getOpcoesExibir() //retorna todas as opçoes de uma pergunta em formato de string
