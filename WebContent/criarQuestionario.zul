@@ -46,7 +46,7 @@
 	
     <groupbox closable="false" sclass="z-demo-config" style="padding: 10px;" >
         <caption label="Perguntas"></caption>
-        <tabbox id="tbx2" hflex="1"  mold="accordion" onCreate="@command('tabBox',tbox=self)">
+        <tabbox id="tbx2" hflex="1"  mold="accordion" >
             <attribute name="onTabAdd">
 
                 Tab newTab = new Tab("Pergunta "+ i++);

@@ -5,7 +5,7 @@
 
 		<!-- Criação da pergunta e de suas respostas -->
 		
-		<div onCreate="@command('criarPergunta')">
+		<div>
 			<label visible="false" id="index" value="@load(vm.novoIndex)" />
 				<div>
 					<label  value="Pergunta: " style="font-weight: bold"/><textbox value="@load(vm.tituloPergunta)" width="80%" onChange="@command('mudancaTituloPergunta',titulo=self.value,index=index.value)"  />

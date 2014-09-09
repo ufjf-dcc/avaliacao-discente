@@ -9,7 +9,8 @@
 				  
 				<separator />
 				<label value="@bind(vm.questionarioAtual.nomeTipoQuestionario)" /> 
-<!-- 				<label value="@load(vm.NomeProfessorAvaliado)" /> -->
+				<separator />
+				<label value="@load(vm.nomeProfessorAvaliado)" /> 
 			</div>   
 			
 			<div style="text-align:right;vertical-align: top; font-size: 20px;">

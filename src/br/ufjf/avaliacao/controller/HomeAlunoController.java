@@ -138,7 +138,10 @@ public class HomeAlunoController extends GenericController {
 		if(((List<Questionario>) session.getAttribute("questionarios")).get(indice).getTipoQuestionario()==0
 				|| ((List<Questionario>) session.getAttribute("questionarios")).get(indice).getTipoQuestionario()==2
 				|| ((List<Questionario>) session.getAttribute("questionarios")).get(indice).getTipoQuestionario()==3)
+		{
 			session.setAttribute("turma",null);
+			session.setAttribute("professorAvaliado", null);
+		}
 		
 	
 		else{
@@ -935,7 +938,15 @@ public class HomeAlunoController extends GenericController {
 
 	}
 
-			
+	
+	public String getNomeProfessorAvaliado()
+	{
+		if((Usuario) session.getAttribute("professorAvaliado") != null)
+			return 	"Professor: "+((Usuario) session.getAttribute("professorAvaliado")).getNome();
+
+		return "";
+	}
+	
 ///GET e SETS__________________________________________________________________
 	
 	public Questionario[] getQuestionarios() {//em formato vetor para o zul

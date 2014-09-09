@@ -208,7 +208,7 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	public void salvarQuestionario()
+	public void salvarQuestionario()//salva o questionario e suas informações no banco de dados
 	{
 		
 		if(questionarioValido())
@@ -328,13 +328,7 @@ public class QuestionariosController extends GenericController {
 	}
 
 
-
-	@Command
-	public void criarPergunta() // seta novos parametros para um nova pergunta do questionario setado acima
-	{
-	}
-	
-	@Command
+	@Command //seta variaveis para dizer que é necessario duplicar os itens de uma pergunta
 	public void duplicarPergunta(@BindingParam("index") String index) {
 		int indice = Integer.parseInt(index);
 		
@@ -351,9 +345,8 @@ public class QuestionariosController extends GenericController {
 	}
 
 
-
 	@Command
-	public void deletarPergunta(@BindingParam("index") String index)
+	public void deletarPergunta(@BindingParam("index") String index)//deleta pergunta(apenas as informações relacionadas para a pergunta na hora de criar o questionario, não esta relacionado a banco de dados ou a edição de questionario)
 	{
 		int indice = Integer.parseInt(index);
 	
@@ -366,7 +359,7 @@ public class QuestionariosController extends GenericController {
 
 
 	@Command
-	public void tipoPergunta(@BindingParam("div") Div div,
+	public void tipoPergunta(@BindingParam("div") Div div, //seta no zul e no questionario na hora da criação os componentes que devem ficar visiveis e guarda informações sobre as mudaas de tipo de questionario
 			@BindingParam("div2") Div div2, @BindingParam("index") String index,
 			@BindingParam("combo") Combobox combo) {
 		
@@ -419,7 +412,9 @@ public class QuestionariosController extends GenericController {
 
 
 
-	public String getTituloPergunta()
+
+	
+	public String getTituloPergunta()// retorna um valor para o zul pegar como titulo da pergunta, caso seja uma duplicação, o valor passado sera a da pergunta a ser duplicada
 	{
 		if((boolean) session.getAttribute("duplicar_pergunta"))// usado para Duplicar os valores
 		{
@@ -434,24 +429,21 @@ public class QuestionariosController extends GenericController {
 			return ((List<String>) session.getAttribute("titulos")).get((int) session.getAttribute("indice_duplicar_pergunta"));
 		}
 	
+			
 		((List<String>) session.getAttribute("titulos")).add("");//add um novo espaço para fazer as operações
 		return "";
 	}
 
-
-
 	@Command
-	public void novoTitulo(@BindingParam("titulo") String titulo) { // seta um titulo
+	public void novoTitulo(@BindingParam("titulo") String titulo) { // seta o titulo direto no zul
 		((List<String>) session.getAttribute("titulos")).set((int) session.getAttribute("indice_pergunta"), titulo);
 		((List<Tab>) session.getAttribute("tabs")).get((int) session.getAttribute("indice_pergunta")).setLabel(titulo);
 	}
 
-
-
 	@Command
 	public void atualizar(@BindingParam("txt") String txt){} // usado para forçar a atualização dos valores das opções
 	
-	@Command
+	@Command // salva nas informações a repeito do questionario as mudanças de titulo da pergunta, alem de setar variaveis para dizer para o zul mudar o titulo da tab
 	public void mudancaTituloPergunta(@BindingParam("titulo") String titulo,@BindingParam("index") String index)// para cada mudança no titulo da pergunta, ela será salva em seu respectivo lugar
 	{
 		int indice = Integer.parseInt(index);
@@ -476,11 +468,11 @@ public class QuestionariosController extends GenericController {
 	
 
 	@Command
-	public int getIndex() {
+	public int getIndex() {// retorna um idice que que é salvo no zul da pergunta como um label, para controlar a respeito de qual pergunta está havendo mudança
 		return ((int) session.getAttribute("indice_tab")-1);
 	}
 	
-	public List<Tab> getTabs() // retorna todas as tab a partir da primeira
+	public List<Tab> getTabs() // retorna todas as tabs a partir da primeira
 	{
 		List<Tab> aux = new ArrayList<Tab>();
 		session.setAttribute("tab", ((Tab) session.getAttribute("inicial_tab")));
@@ -519,7 +511,7 @@ public class QuestionariosController extends GenericController {
 		((List<Boolean>) session.getAttribute("obrigatorio")).set(indice,cbox.isChecked());
 	}
 	
-	public boolean getObrigatorio_inicio()
+	public boolean getObrigatorio_inicio()// da um valor padrão para obrigatoriedade
 	{
 		if((boolean) session.getAttribute("duplicar_pergunta"))// usado para Duplicar os valores
 		{
@@ -529,7 +521,7 @@ public class QuestionariosController extends GenericController {
 		return false;
 	}
 	
-	public int getTipoPergunta() {
+	public int getTipoPergunta() {// retorna o tipo da pergunta, se for uma duplicação ela carrega as informações para repassar
 		if(((boolean) session.getAttribute("criando_tab_tipo_pergunta"))==true)
 		{
 			if((boolean) session.getAttribute("duplicar_pergunta"))// usado para Duplicar os valores
@@ -548,14 +540,7 @@ public class QuestionariosController extends GenericController {
 		session.setAttribute("tipoPergunta", valor);
 	}
 	
-	@Command // nao usada, so para teste
-	public void tabBox(@BindingParam("tbox") Tabbox tbox)
-	{
-		session.setAttribute("tabbox",tbox);
-		tabbox = tbox;
-	}
-	
-	public Integer getSpinnerInicio() {
+	public Integer getSpinnerInicio() {// retorna o valor inicial do spinnerInicio, se for uma duplicação ela carrega as informações para repassar
 		
 		if((boolean) session.getAttribute("duplicar_pergunta"))// usado para Duplicar os valores, se está duplicando pega um valor do que ele está duplicando, se não ele seta o valor padrão
 		{
@@ -566,7 +551,7 @@ public class QuestionariosController extends GenericController {
 		return ((List<Integer>) session.getAttribute("spinnerInicio")).get(getIndex());
 	}
 
-	public Integer getSpinnerFinal() {
+	public Integer getSpinnerFinal() {// retorna o valor inicial do spinnerFinal, se for uma duplicação ela carrega as informações para repassar
 		
 		if((boolean) session.getAttribute("duplicar_pergunta"))// // usado para Duplicar os valores, se está duplicando pega um valor do que ele está duplicando, se não ele seta o valor padrão
 		{
@@ -580,7 +565,7 @@ public class QuestionariosController extends GenericController {
 		return ((List<Integer>) session.getAttribute("spinnerFinal")).get(getIndex());
 	}
 
-	@Command
+	@Command///REMOVER
 	public void editarQuest(
 			@BindingParam("questionario") Questionario questionario) {
 		session.setAttribute("questionario", questionario);
@@ -589,7 +574,7 @@ public class QuestionariosController extends GenericController {
 		window.doModal();
 	}
 
-	@Command
+	@Command//exibi um questionario ja pronto, alem de outras informações e funçoes
 	public void verQuest(@BindingParam("questionario") Questionario questionario) {
 		session.setAttribute("questionario", questionario);
 		Window window = (Window) Executions.createComponents(
@@ -597,6 +582,7 @@ public class QuestionariosController extends GenericController {
 		window.doModal();
 	}
 
+	
 	@Command
 	@NotifyChange({ "prazos", "prazo" })
 	public void adicionaPrazo() {
@@ -809,6 +795,79 @@ public class QuestionariosController extends GenericController {
 			Messagebox.show("Questionário não possui prazo");
 	}
 
+	@Command
+	public void teste()
+	{
+		System.out.println("teste");
+	}
+	
+	@Command
+	public void exibirPergunta(@BindingParam("pergunta") Pergunta pergunta)
+	{
+		session.setAttribute("pergunta_exibida", pergunta);
+		
+		Window window = (Window) Executions.createComponents(
+				"/exibirPergunta.zul", null, null);
+		window.doModal();
+		
+	}
+	
+	public String getTituloPerguntaExibir()
+	{
+		return ((Pergunta) session.getAttribute("pergunta_exibida")).getTituloPergunta();
+	}
+	
+	public int getSpinnerInicioExibir()
+	{
+
+		if(((Pergunta) session.getAttribute("pergunta_exibida")).getTipoPergunta()==3)
+		{
+			List<RespostaEspecifica> opcoes = ((Pergunta) session.getAttribute("pergunta_exibida")).getRespostasEspecificasBanco();
+			int menor = Integer.parseInt(opcoes.get(0).getRespostaEspecifica());
+			for(int i=0;i<opcoes.size();i++)
+			{
+				if(menor > Integer.parseInt(opcoes.get(i).getRespostaEspecifica()))
+					menor = Integer.parseInt(opcoes.get(i).getRespostaEspecifica());
+			}
+			return menor;
+		}
+		return 0;
+	}
+	
+	public int getSpinnerFinalExibir()
+	{
+		if(((Pergunta) session.getAttribute("pergunta_exibida")).getTipoPergunta()==3)
+		{
+			List<RespostaEspecifica> opcoes = ((Pergunta) session.getAttribute("pergunta_exibida")).getRespostasEspecificasBanco();
+
+			int maior= Integer.parseInt(opcoes.get(0).getRespostaEspecifica());
+			for(int i=0;i<opcoes.size();i++)
+			{
+				if(maior < Integer.parseInt(opcoes.get(i).getRespostaEspecifica()))
+					maior = Integer.parseInt(opcoes.get(i).getRespostaEspecifica());
+				
+			}
+			return maior;
+		}
+		return 0;
+	}
+	
+	
+	public String getTipoPerguntaExibir()
+	{
+		return ((Pergunta) session.getAttribute("pergunta_exibida")).getNomeTipoPergunta();
+	}
+	
+	public boolean getObrigatorioExibir()
+	{
+		return ((Pergunta) session.getAttribute("pergunta_exibida")).isObrigatorio();
+	}
+	
+	public List<RespostaEspecifica> getOpcoesExibir() //retorna todas as opçoes de uma pergunta em formato de string
+	{
+		return ((Pergunta) session.getAttribute("pergunta_exibida")).getRespostasEspecificasBanco();
+	}
+	
 	public List<Pergunta> getPerguntas() {
 		return perguntas;
 	}
@@ -901,14 +960,6 @@ public class QuestionariosController extends GenericController {
 		this.avaliacao = avaliacao;
 	}
 	
-	public List<Integer> getTiposQuestionario() {
-		return tiposQuestionario;
-	}
-
-	public void setTiposQuestionario(List<Integer> tiposQuestionario) {
-		this.tiposQuestionario = tiposQuestionario;
-	}
-
 	public List<Pergunta> getPerguntasSessao() {
 		return perguntasSessao;
 	}
@@ -934,8 +985,19 @@ public class QuestionariosController extends GenericController {
 	}
 
 	
+	public List<Integer> getTiposQuestionario() {
+		return tiposQuestionario;
+	}
+
+
+
+	public void setTiposQuestionario(List<Integer> tiposQuestionario) {
+		this.tiposQuestionario = tiposQuestionario;
+	}
+
+
+
 	public List<Integer> getTiposPergunta() {
-		System.out.println("combo");
 		return tiposPergunta;
 	}
 

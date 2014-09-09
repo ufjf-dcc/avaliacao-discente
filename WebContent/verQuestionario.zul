@@ -44,12 +44,17 @@
 					<column align="center" label="Título da Pergunta" />
 					<column align="center" label="Tipo da Pergunta" />
 					<column align="center" label="Obrigatório" />
+					<column align="center" label="Opções" />
 				</columns>
 				<template name="model">
 					<row>
 						<label value="@load(each.tituloPergunta)" />
 						<label value="@load(each.nomeTipoPergunta)" />
 						<checkbox checked="@load(each.obrigatorio)" disabled="true" />
+						<div>
+							<button image="/img/lupa.png" onClick="@command('exibirPergunta',pergunta=each)" />
+							<button image="/img/delete.png" />
+						</div>
 					</row>
 				</template>
 			</grid>
