@@ -54,7 +54,7 @@
 						<checkbox checked="@load(each.obrigatorio)" disabled="true" />
 						<div>
 							<button image="/img/lupa.png" onClick="@command('exibirPergunta',pergunta=each,botao=self)" />
-							<button image="/img/delete.png" />
+							<button image="/img/delete.png" onClick="@command('excluirPerguntaExibir',pergunta=each,botao=self)" />
 						</div>
 					</row>
 				</template>

@@ -819,7 +819,7 @@ public class QuestionariosController extends GenericController {
 		Messagebox.show("teste");
 	}
 	
-
+	
 	@Command
 	public void salvarPerguntaExibir(@BindingParam("panel") Panel panel, //salva as mudanças da exibição do zul
 			@BindingParam("janela") Window janela)
@@ -914,6 +914,28 @@ public class QuestionariosController extends GenericController {
 				Messagebox.show("O intervalo está preenchido incorretamente");
 			}
 		}
+	}
+	
+	@Command
+	public void excluirPerguntaExibir(@BindingParam("pergunta") Pergunta p, // excluir pergunta naa exibição
+			@BindingParam("botao") final Button botao)
+	{
+		if(questio)
+		this.pergunta = p;
+		Messagebox.show("Are you sure to save?", "Confirm Dialog", Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
+		    public void onEvent(Event evt) throws InterruptedException {
+		        if (evt.getName().equals("onYes")) {
+		        	RespostaEspecificaDAO respostaEspecificaDAO = new RespostaEspecificaDAO();
+		    		PerguntaDAO perguntaDAO = new PerguntaDAO();
+		    		respostaEspecificaDAO.excluiLista(pergunta.getRespostasEspecificasBanco());
+		    		perguntaDAO.exclui(pergunta);
+		    		botao.getParent().getParent().setVisible(false);
+		        } else if (evt.getName().equals("onNo")) {
+		        	 
+		        }
+		    }
+		});
+
 	}
 	
 	public String getTituloPerguntaExibir()
@@ -1189,8 +1211,5 @@ public class QuestionariosController extends GenericController {
 	public void setPrazosSessao(List<PrazoQuestionario> prazosSessao) {
 		this.prazosSessao = prazosSessao;
 	}
-
-
-
 
 }
