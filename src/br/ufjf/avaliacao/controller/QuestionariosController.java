@@ -22,9 +22,11 @@ import org.zkoss.zul.Combobox;
 import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.Div;
 import org.zkoss.zul.Iframe;
+import org.zkoss.zul.Label;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Messagebox;
 import org.zkoss.zul.Panel;
+import org.zkoss.zul.Row;
 import org.zkoss.zul.Tab;
 import org.zkoss.zul.Tabbox;
 import org.zkoss.zul.Tabpanel;
@@ -797,11 +799,14 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	public void exibirPergunta(@BindingParam("pergunta") Pergunta pergunta)
+	public void exibirPergunta(@BindingParam("pergunta") Pergunta pergunta,
+			@BindingParam("botao") Button botao)
 	{
 		session.setAttribute("pergunta_exibida", pergunta);
 		session.setAttribute("listItens", new ArrayList<Listitem>());
 		
+		session.setAttribute("botao_linha_pergunta", botao);
+			
 		Window window = (Window) Executions.createComponents(
 				"/exibirPergunta.zul", null, null);
 		window.doModal();
@@ -809,11 +814,12 @@ public class QuestionariosController extends GenericController {
 	}
 	
 	@Command
-	public void janelaPergunta(@BindingParam("win") Window janela)//salva a janela para dar refresh nela
+	public void janelaQuestionario(@BindingParam("janela") Window janela)//salva a janela para dar refresh nela
 	{
-		session.setAttribute("janela_pergunta_exibir", janela);
+		Messagebox.show("teste");
 	}
 	
+
 	@Command
 	public void salvarPerguntaExibir(@BindingParam("panel") Panel panel, //salva as mudanças da exibição do zul
 			@BindingParam("janela") Window janela)
@@ -821,14 +827,22 @@ public class QuestionariosController extends GenericController {
 		RespostaEspecificaDAO respostaEspecificaDAO = new RespostaEspecificaDAO();
 		GenericBusiness gb  = new GenericBusiness();
 		PerguntaDAO perguntaDAO = new PerguntaDAO();
-		
+
 	
 		if(((Pergunta)session.getAttribute("pergunta_exibida")).getTipoPergunta()==0)
 		{
+			respostaEspecificaDAO.excluiLista(((Pergunta)session.getAttribute("pergunta_exibida")).getRespostasEspecificasBanco());
 			perguntaDAO.salvaOuEdita(((Pergunta)session.getAttribute("pergunta_exibida")));
 			Messagebox.show("Pergunta salva");
-			janela.setVisible(false);
+			Event closeEvent = new Event( "onClose", janela, null ) ;
+			Events.postEvent( closeEvent ) ;
+						
+			Row row = (Row) ((Button) session.getAttribute("botao_linha_pergunta")).getParent().getParent();
+			((Label)row.getChildren().get(0)).setValue(((Pergunta)session.getAttribute("pergunta_exibida")).getTituloPergunta());
+			((Label)row.getChildren().get(1)).setValue(((Pergunta)session.getAttribute("pergunta_exibida")).getNomeTipoPergunta());
+			((Checkbox)row.getChildren().get(2)).setChecked(((Pergunta)session.getAttribute("pergunta_exibida")).isObrigatorio());
 
+			
 		}
 		
 		else if(((Pergunta)session.getAttribute("pergunta_exibida")).getTipoPergunta()==1 || ((Pergunta)session.getAttribute("pergunta_exibida")).getTipoPergunta()==2)
@@ -852,7 +866,13 @@ public class QuestionariosController extends GenericController {
 				((Pergunta)session.getAttribute("pergunta_exibida")).setRespostasEspecificas(opcoes);
 				perguntaDAO.salvaOuEdita(((Pergunta)session.getAttribute("pergunta_exibida")));
 				Messagebox.show("Pergunta salva");
-				janela.setVisible(false);
+				Event closeEvent = new Event( "onClose", janela, null ) ;
+				Events.postEvent( closeEvent ) ;
+				
+				Row row = (Row) ((Button) session.getAttribute("botao_linha_pergunta")).getParent().getParent();
+				((Label)row.getChildren().get(0)).setValue(((Pergunta)session.getAttribute("pergunta_exibida")).getTituloPergunta());
+				((Label)row.getChildren().get(1)).setValue(((Pergunta)session.getAttribute("pergunta_exibida")).getNomeTipoPergunta());
+				((Checkbox)row.getChildren().get(2)).setChecked(((Pergunta)session.getAttribute("pergunta_exibida")).isObrigatorio());
 				
 			}
 			else
@@ -880,8 +900,13 @@ public class QuestionariosController extends GenericController {
 				((Pergunta)session.getAttribute("pergunta_exibida")).setRespostasEspecificas(opcoes);
 				perguntaDAO.salvaOuEdita(((Pergunta)session.getAttribute("pergunta_exibida")));
 				Messagebox.show("Pergunta salva");
-				janela.setVisible(false);
+				Event closeEvent = new Event( "onClose", janela, null ) ;
+				Events.postEvent( closeEvent ) ;
 
+				Row row = (Row) ((Button) session.getAttribute("botao_linha_pergunta")).getParent().getParent();
+				((Label)row.getChildren().get(0)).setValue(((Pergunta)session.getAttribute("pergunta_exibida")).getTituloPergunta());
+				((Label)row.getChildren().get(1)).setValue(((Pergunta)session.getAttribute("pergunta_exibida")).getNomeTipoPergunta());
+				((Checkbox)row.getChildren().get(2)).setChecked(((Pergunta)session.getAttribute("pergunta_exibida")).isObrigatorio());
 				
 			}
 			else

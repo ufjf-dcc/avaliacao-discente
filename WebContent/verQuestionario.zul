@@ -1,11 +1,12 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
 <zk>
 	<window title="Vizualização de Questionario" border="normal"
-		closable="true" width="80%">
+		closable="true" id="janelaQuestionario" width="80%"
+		onCreate="@command('janelaQuestionario',janela=self)">
 		<div apply="org.zkoss.bind.BindComposer" style="margin:5px;"
 			viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
 			form="@id('fm') @load(vm.questSessao) @save(vm.questSessao, before='salvarQuest')"
-			id="form">
+			id="form" >
 			<grid model="@load(vm.prazosSessao)">
 				<auxhead>
 					<auxheader label="Título: ">
@@ -52,7 +53,7 @@
 						<label value="@load(each.nomeTipoPergunta)" />
 						<checkbox checked="@load(each.obrigatorio)" disabled="true" />
 						<div>
-							<button image="/img/lupa.png" onClick="@command('exibirPergunta',pergunta=each)" />
+							<button image="/img/lupa.png" onClick="@command('exibirPergunta',pergunta=each,botao=self)" />
 							<button image="/img/delete.png" />
 						</div>
 					</row>
@@ -63,5 +64,6 @@
 					onClick="@command('exclui')" />
 			</div>
 		</div>
+			
 	</window>
 </zk>
