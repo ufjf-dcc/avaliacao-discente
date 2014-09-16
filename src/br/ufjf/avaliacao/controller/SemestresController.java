@@ -94,8 +94,6 @@ public class SemestresController extends GenericController {
 			{
 				Semestre semestre = semestreDAO.getSemestreAtualCurso(usuario.getCurso());
 				semestre.setDataFinalSemestre(dataFinal);
-//				TurmaDAO turmaDAO = new TurmaDAO();
-//				turmaDAO.trocarSemestreTurmasCurso(semestre.getNomeSemestre(), titulo, usuario.getCurso());
 				semestre.setNomeSemestre(titulo);
 				semestre.setCurso(usuario.getCurso());
 				SemestreDAO semestreDAO = new SemestreDAO();
@@ -117,17 +115,13 @@ public class SemestresController extends GenericController {
 		}
 	}
 	
-	
-	@Command
-	public void editarSemestre()
-	{
-		
-	}
 
-	
+
 	public List<Semestre> getSemestres() {
-		if(semestres == null)
-			semestres = new ArrayList<Semestre>();
+		System.out.println(semestres);
+		System.out.println(semestres.size());
+		if(semestres.size()>0)
+		System.out.println(semestres.get(0));
 		return semestres;
 	}
 

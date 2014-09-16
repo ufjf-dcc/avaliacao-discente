@@ -382,13 +382,13 @@ public class ResultadosController extends GenericController implements
 	if(perguntaSelecionada!=null)
 	if(perguntaSelecionada.getTipoPergunta()!=0)
 	{
-		Grafico aux = new Grafico("3d-pie","pie","/Highcharts/examples/3d-pie/index.htm");
+		Grafico aux = new Grafico("Gráfico de pizza 3D","pie","/Highcharts/examples/3d-pie/index.htm");
 		graficos.add(aux);
-		aux = new Grafico("3d-pie-donut","pie","/Highcharts/examples/3d-pie-donut/index.htm");
+		aux = new Grafico("Gráfico de donut 3D","pie","/Highcharts/examples/3d-pie-donut/index.htm");
 		graficos.add(aux);
-		aux = new Grafico("pie-basic","pie","/Highcharts/examples/pie-basic/index.htm");
+		aux = new Grafico("Gráfico de pizza","pie","/Highcharts/examples/pie-basic/index.htm");
 		graficos.add(aux);
-		aux = new Grafico("pie-semi-circle","pie","/Highcharts/examples/pie-semi-circle/index.htm");
+		aux = new Grafico("Gráfico de meia pizza","pie","/Highcharts/examples/pie-semi-circle/index.htm");
 		graficos.add(aux);
 		
 //		for(int i=0;i<focos.size();i++){
@@ -695,7 +695,6 @@ public class ResultadosController extends GenericController implements
 			}
 		}
 		
-		System.out.println(grafico.getTipo());
 
 		//cada grafico é tratado de uma maneira diferente
 				if(grafico.getTipo()=="pie"){// se o tipo de grafico a ser exibido é do tipo pie
