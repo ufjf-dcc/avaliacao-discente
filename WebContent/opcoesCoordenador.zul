@@ -8,8 +8,8 @@
 		<include src="@load(vm.menu)" />
 
 		<div align="center">
-			<button label="Semestres..."
-				onClick="@command('semestres')" />
+			<button label="Historico de semestres"
+				onClick="@command('addEditaSemestres')" />
 		</div>
 
 	</div>

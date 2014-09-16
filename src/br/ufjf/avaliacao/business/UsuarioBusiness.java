@@ -29,8 +29,16 @@ public class UsuarioBusiness extends GenericBusiness {
 			UsuarioDAO usuarioDAO = new UsuarioDAO();
 			usuario = usuarioDAO.retornaUsuario(usuario.getEmail(),
 					usuario.getSenha());
-
-			if (usuario != null) {
+			
+			if (usuario != null)
+			if (usuario.getCurso()!=null)
+			if ((usuario.getCurso().getCoordenador().getIdUsuario() == usuario.getIdUsuario()
+					&& usuario.getTipoUsuario()==1)) {
+				return true;
+			}
+			
+			if (usuario != null) 
+				if (usuario.getTipoUsuario()==2 || usuario.getTipoUsuario()==3) {
 				return true;
 			}
 		}

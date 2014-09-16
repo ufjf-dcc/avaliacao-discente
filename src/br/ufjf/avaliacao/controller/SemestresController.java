@@ -37,6 +37,16 @@ public class SemestresController extends GenericController {
 		window.doModal();
 	}
 	
+	@Command
+	public void exibirAddOuEdita(@BindingParam("botao")  Button botao) //edita o label do botao
+	{
+		SemestreDAO semestreDAO = new SemestreDAO();
+		if(semestreDAO.getSemestreAtualCurso(usuario.getCurso())!=null)
+			botao.setLabel("Editar nome do semestre atual");
+		else
+			botao.setLabel("Adicionar novo semestre");
+
+	}
 
 	public Semestre getSemestre()
 	{

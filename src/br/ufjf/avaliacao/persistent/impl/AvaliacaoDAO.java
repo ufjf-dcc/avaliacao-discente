@@ -151,6 +151,17 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 		return false;
 	
 	}
+	
+	public boolean jaAvaliorQuestionario(Questionario questionario)// verifica se o questionario em quaestao ja foi avaliado alguma vez
+	{
+		List<PrazoQuestionario> prazos = questionario.getPrazos();
+		for(int i=0;i<prazos.size();i++)
+		{
+			if(prazoFoiUsado(prazos.get(i)))
+				return true;
+		}
+		return false;
+	}
 
 	// verifica se o coordenador ja foi avaliado nesse prazo
 	public boolean jaAvaliouCoordenadorDataAtual(Usuario aluno) {

@@ -26,6 +26,7 @@
 		
 		<space />
 		<button label="Adicionar / Editar"
+		 	onCreate="@command('exibirAddOuEdita',botao=self)"
 					onClick="@command('addOuEditarSemestre')"/>
 		
 	</div>

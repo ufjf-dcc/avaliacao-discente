@@ -7,7 +7,7 @@
 			viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
 			form="@id('fm') @load(vm.questSessao) @save(vm.questSessao, before='salvarQuest')"
 			id="form" >
-			<grid model="@load(vm.prazosSessao)">
+			<grid model="@load(vm.prazosSessao)" id="grid">
 				<auxhead>
 					<auxheader label="Título: ">
 						<label value="@load(fm.tituloQuestionario)" />
@@ -41,20 +41,20 @@
 						label="Perguntas">
 					</auxheader>
 				</auxhead>
-				<columns>
+				<columns id="colun">
 					<column align="center" label="Título da Pergunta" />
 					<column align="center" label="Tipo da Pergunta" />
 					<column align="center" label="Obrigatório" />
 					<column align="center" label="Opções" />
 				</columns>
-				<template name="model">
+				<template name="model" id="template">
 					<row>
 						<label value="@load(each.tituloPergunta)" />
 						<label value="@load(each.nomeTipoPergunta)" />
 						<checkbox checked="@load(each.obrigatorio)" disabled="true" />
 						<div>
 							<button image="/img/lupa.png" onClick="@command('exibirPergunta',pergunta=each,botao=self)" />
-							<button image="/img/delete.png" onClick="@command('excluirPerguntaExibir',pergunta=each,botao=self)" />
+							<button visible="false" image="/img/delete.png" onCreate="@command('exibirExcluir',botao=self)" onClick="@command('excluirPerguntaExibir',pergunta=each,botao=self)" />
 						</div>
 					</row>
 				</template>

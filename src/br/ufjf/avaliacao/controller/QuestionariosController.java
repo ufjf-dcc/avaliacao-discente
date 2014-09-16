@@ -592,6 +592,7 @@ public class QuestionariosController extends GenericController {
 		prazos.add(prazo);
 		prazo = new PrazoQuestionario();
 	}
+	
 
 	@Command
 	public void adcPrazo(@BindingParam("questionario") Questionario questionario) {
@@ -814,13 +815,6 @@ public class QuestionariosController extends GenericController {
 	}
 	
 	@Command
-	public void janelaQuestionario(@BindingParam("janela") Window janela)//salva a janela para dar refresh nela
-	{
-		Messagebox.show("teste");
-	}
-	
-	
-	@Command
 	public void salvarPerguntaExibir(@BindingParam("panel") Panel panel, //salva as mudanças da exibição do zul
 			@BindingParam("janela") Window janela)
 	{
@@ -916,11 +910,21 @@ public class QuestionariosController extends GenericController {
 		}
 	}
 	
+	
+	@Command
+	public void exibirExcluir(@BindingParam("botao") final Button botao)
+	{
+		AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
+		if(avaliacaoDAO.jaAvaliorQuestionario((Questionario)session.getAttribute("questionario")))
+			botao.setVisible(false);
+		else
+			botao.setVisible(true);
+	}
+	
 	@Command
 	public void excluirPerguntaExibir(@BindingParam("pergunta") Pergunta p, // excluir pergunta naa exibição
 			@BindingParam("botao") final Button botao)
 	{
-		if(questio)
 		this.pergunta = p;
 		Messagebox.show("Are you sure to save?", "Confirm Dialog", Messagebox.YES | Messagebox.NO, Messagebox.QUESTION, new org.zkoss.zk.ui.event.EventListener() {
 		    public void onEvent(Event evt) throws InterruptedException {

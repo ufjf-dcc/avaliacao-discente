@@ -54,15 +54,11 @@ public class LoginController {
 									usuario = (Usuario) session
 											.getAttribute("usuario");
 									switch (usuario.getTipoUsuario()) {
-									case 0:
-										Executions.sendRedirect("/home.zul");
-										break;
 									case 1:
-										Executions.sendRedirect("/home.zul");
+										Executions.sendRedirect("/questionarios.zul");
 										break;
 									case 2:
-										Executions
-												.sendRedirect("/homeAluno.zul");
+										Executions.sendRedirect("/homeAluno.zul");
 										break;
 									case 3:
 										Executions.sendRedirect("/home.zul");
