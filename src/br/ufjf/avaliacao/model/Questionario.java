@@ -175,9 +175,9 @@ public class Questionario implements Serializable {
 
 	public String getStatus() {
 		if (isAtivo()) {
-			return "Ativo";
+			return "Ativado";
 		}
-		return "Inativo";
+		return "Desativado";
 	}
 
 	public void setStatus(String status) {

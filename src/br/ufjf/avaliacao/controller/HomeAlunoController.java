@@ -194,7 +194,6 @@ public class HomeAlunoController extends GenericController {
 			}
 		}
 
-		System.out.println(((List<Window>) session.getAttribute("janelas")).size());
 		for(int i=0;i < ((List<Window>) session.getAttribute("janelas")).size();i++)
 		{
 			if(((List<Window>) session.getAttribute("janelas")).get(i)!=null)
@@ -245,73 +244,22 @@ public class HomeAlunoController extends GenericController {
 	}
 	
 	@Command
-	public void avaliacaoGeral()
-	{
-		escolherJanela(0);
-	}
-	
-	@Command
-	public void teste(@BindingParam("indice") String indice)
-	{
-		int indiceQ = Integer.parseInt(indice);
-		System.out.println(verificaAvaliado(indiceQ));
-	
-	}
-	
-	@Command
-	public void teste2()
-	{
-		List<Avaliacao> avaliacoes = avaliacaoDAO.avaliacoesDataAtual(usuario);
-		System.out.println(avaliacoes.size());
-		
-		for(int i=0;i<avaliacoes.size();i++)
-		{
-
-			System.out.println(avaliacoes.get(i));
-			System.out.println(avaliacoes.get(i).getPrazoQuestionario().getQuestionario());
-			System.out.println(avaliacoes.get(i).getPrazoQuestionario().getQuestionario().getNomeTipoQuestionario());
-
-
-			
-		}
-	}
-	
-
-	@Command
-	public void teste3()
+	public void avaliacaoGeral() // verifica se ha questionarios que devem ser avaliados agora. Se sim abre a avaliação
 	{
 		SemestreDAO semestreDAO = new SemestreDAO();
-
-		System.out.println(usuario);
-		System.out.println((Turma) session.getAttribute("turma"));
-		System.out.println( semestreDAO.getSemestreAtualCurso(usuario.getCurso()).getNomeSemestre());
-
+		if(questionarios.size()!=0 && semestreDAO.getSemestreAtualCurso(usuario.getCurso())!=null)	
+			escolherJanela(0);
+		else
+			Messagebox.show("Atualmente não há questionarios para serem avaliados agora");
 	}
 	
-	public void funcao(){
-		
-		List<Questionario> todosQuestionarios = questionariosDisponiveis();
-		
-		
-//		List<Window> todosQuestionarios = todosAsWindow;	
-//		int indiceDasWindows;
-		
-//		validar windows quando confirmar
-//			- cada window ou esta completamente preenchida ou nao está preenchida
-//			- vai ter q poder limpar as respostas
-//			- um botao pra passar pra proxima window com o proximo questionario tudo controlado
-		
-	}
-	
-	
+
 	public String getProfessorAvaliado()
 	{
 		if(session.getAttribute("professorAvaliado") != null)
 			return " - "+((Usuario) session.getAttribute("professorAvaliado")).getNome();
 		return "";
 	}
-	
-	
 	
 	@Command
 	public void terminarAvaliacao() {

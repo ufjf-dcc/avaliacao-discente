@@ -30,7 +30,7 @@
 									<button label="Ver"
 										onClick="@command('verQuest',questionario=each)" />
 									<button label="Ativar"
-										onClick="@command('ativa', questionario=each)" />
+										onClick="@command('ativa', questionario=each, botao=self)" />
 									<button label="Adicionar Prazo"
 										onClick="@command('adcPrazo',questionario=each)" />
 									<button label="Excluir"

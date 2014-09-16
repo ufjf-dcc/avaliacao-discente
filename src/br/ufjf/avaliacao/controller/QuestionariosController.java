@@ -761,7 +761,8 @@ public class QuestionariosController extends GenericController {
 
 	@Command
 	@NotifyChange("questionario")
-	public void ativa(@BindingParam("questionario") Questionario questionario) {
+	public void ativa(@BindingParam("questionario") Questionario questionario,
+			@BindingParam("botao") Button botao) {
 		if (!questionario.getPrazos().isEmpty()) {
 			boolean ativo = true;
 			for (Questionario q : listaQuestionarios(questionario
@@ -779,21 +780,14 @@ public class QuestionariosController extends GenericController {
 			}
 
 			if (ativo) {
-				Messagebox.show("Ativado", "Concluido", Messagebox.OK,
-						Messagebox.INFORMATION, new EventListener<Event>() {
-							@Override
-							public void onEvent(Event event) throws Exception {
-								Executions.sendRedirect(null);
-							}
-						});
+				Messagebox.show("Ativado");
+				Label label = (Label)(botao.getParent().getParent().getChildren().get(1));
+				label.setValue("Ativado");
 			} else {
-				Messagebox.show("Desativado", "Concluido", Messagebox.OK,
-						Messagebox.INFORMATION, new EventListener<Event>() {
-							@Override
-							public void onEvent(Event event) throws Exception {
-								Executions.sendRedirect(null);
-							}
-						});
+				Messagebox.show("Desativado");
+				Label label = (Label)(botao.getParent().getParent().getChildren().get(1));
+				label.setValue("Desativado");
+
 			}
 		} else
 			Messagebox.show("Questionário não possui prazo");
@@ -912,7 +906,7 @@ public class QuestionariosController extends GenericController {
 	
 	
 	@Command
-	public void exibirExcluir(@BindingParam("botao") final Button botao)
+	public void exibirExcluir(@BindingParam("botao") Button botao)
 	{
 		AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
 		if(avaliacaoDAO.jaAvaliorQuestionario((Questionario)session.getAttribute("questionario")))
