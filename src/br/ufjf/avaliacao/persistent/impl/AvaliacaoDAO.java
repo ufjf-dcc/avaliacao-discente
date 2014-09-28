@@ -297,6 +297,29 @@ public class AvaliacaoDAO extends GenericoDAO implements IAvalicaoDAO {
 		}
 		return true;
 	}
+	
+	public boolean jaAvaliouTurma(Turma turma) { // verifica se essa turma foi usada em alguma avaliação
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT a FROM Avaliacao AS a LEFT JOIN FETCH a.turma AS t WHERE t = :turma");
+			query.setParameter("turma", turma);
+	
+			@SuppressWarnings("unchecked")
+			List<Avaliacao> a = query.list();
+	
+			getSession().close();
+	
+			if (!a.isEmpty()) {// se sim retorna true
+				return true;
+			} else
+				// se nao retorna false
+				return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 
 	public boolean prazoFoiUsado(PrazoQuestionario prazo) { // verifica se esse prazo foi usado em alguma avaliação
 		try {

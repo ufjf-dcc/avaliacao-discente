@@ -283,11 +283,7 @@ public class ResultadosController extends GenericController implements
 	// carregando e filtrando os questionarios a serem escolhidos
 	public void carregarQuestionarios() {
 		questionarios = new ArrayList<Questionario>();
-		Questionario todos = new Questionario();
-		todos.setTituloQuestionario("Todos");
-		questionarios.add(todos);
 		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
-		questionario=todos;
 
 		if (Integer.parseInt(opcao) == 0)// coordenador
 			for (int i = 0; i < avaCoor.size(); i++)
@@ -1335,25 +1331,56 @@ public class ResultadosController extends GenericController implements
 		switch (opcao) {
 		case "0":// coordenador
 			row.getNextSibling().setVisible(false);// professor
+			
+		
+			
 			row.getNextSibling().getNextSibling().setVisible(true);// coordenador
+		
+			
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.setVisible(false);// aluno
+						
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().setVisible(true);// semestre para
 														// coordenador
+				
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().setVisible(false);// semestre
 																			// para
 																			// professor
+			
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling()
 					.setVisible(false);// turma
+			
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().setVisible(true);// questionario
+			
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().setVisible(true);// pergunta
+		
+			
+			((Combobox)(row.getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+			.getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			
 			radioProfessor.setVisible(false);
 			radioCoordenador.setVisible(true);
 			radioAluno.setVisible(false);
@@ -1382,6 +1409,28 @@ public class ResultadosController extends GenericController implements
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().setVisible(true);// pergunta
+			
+			((Combobox)(row.getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+			.getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			
+			
+			
 			radioProfessor.setVisible(true);
 			radioCoordenador.setVisible(false);
 			radioAluno.setVisible(false);
@@ -1410,6 +1459,27 @@ public class ResultadosController extends GenericController implements
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().setVisible(true);// pergunta
+			
+			
+			((Combobox)(row.getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+			.getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			
 			radioProfessor.setVisible(false);
 			radioCoordenador.setVisible(false);
 			radioAluno.setVisible(true);
@@ -1435,6 +1505,27 @@ public class ResultadosController extends GenericController implements
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().setVisible(true);// pergunta
+			
+			
+			((Combobox)(row.getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+			.getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			
 			radioProfessor.setVisible(false);
 			radioCoordenador.setVisible(false);
 			radioAluno.setVisible(false);

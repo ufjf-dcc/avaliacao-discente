@@ -156,6 +156,26 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Usuario> retornaUsuariosTurma(Turma turma) {
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT u FROM Turma AS t JOIN t.usuarios as u WHERE t = :turma");
+			query.setParameter("turma", turma);
+
+			List<Usuario> usuario = query.list();
+
+			getSession().close();
+
+			if (usuario != null)
+				return usuario;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	@Override
 	public Usuario retornaCoordAvaliado(Usuario usuario) {
 		try {
@@ -178,7 +198,7 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 	}
 
 
-	public List<Usuario> retornaProfessorCurso(Curso curso) {
+	public List<Usuario> retornaProfessorCurso(Curso curso) {//nao tenho certeza se está funcioando
 		try {
 			Query query = getSession()
 					.createQuery(

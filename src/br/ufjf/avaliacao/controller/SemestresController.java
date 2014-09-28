@@ -118,10 +118,6 @@ public class SemestresController extends GenericController {
 
 
 	public List<Semestre> getSemestres() {
-		System.out.println(semestres);
-		System.out.println(semestres.size());
-		if(semestres.size()>0)
-		System.out.println(semestres.get(0));
 		return semestres;
 	}
 

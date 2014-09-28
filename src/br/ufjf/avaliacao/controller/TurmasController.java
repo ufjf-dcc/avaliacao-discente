@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.poi.hssf.record.formula.functions.Rows;
 import org.hibernate.HibernateException;
 import org.zkoss.bind.BindUtils;
 import org.zkoss.bind.annotation.BindingParam;
@@ -13,19 +14,30 @@ import org.zkoss.bind.annotation.Init;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.util.media.Media;
 import org.zkoss.zhtml.Messagebox;
+import org.zkoss.zhtml.Object;
+import org.zkoss.zhtml.S;
+import org.zkoss.zk.ui.Component;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.UploadEvent;
+import org.zkoss.zul.Button;
+import org.zkoss.zul.Combobox;
+import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.Label;
+import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 import org.zkoss.zul.Messagebox.ClickEvent;
 
+import br.ufjf.avaliacao.business.GenericBusiness;
 import br.ufjf.avaliacao.business.TurmaBusiness;
 import br.ufjf.avaliacao.model.Curso;
 import br.ufjf.avaliacao.model.Disciplina;
+import br.ufjf.avaliacao.model.Semestre;
 import br.ufjf.avaliacao.model.Turma;
 import br.ufjf.avaliacao.model.Usuario;
+import br.ufjf.avaliacao.persistent.impl.AvaliacaoDAO;
 import br.ufjf.avaliacao.persistent.impl.CursoDAO;
 import br.ufjf.avaliacao.persistent.impl.DisciplinaDAO;
+import br.ufjf.avaliacao.persistent.impl.SemestreDAO;
 import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
 
@@ -36,10 +48,10 @@ public class TurmasController extends GenericController {
 	private List<Turma> turmas = (List<Turma>) turmaDAO.getTodasTurmas();
 	private DisciplinaDAO disciplinaDAO = new DisciplinaDAO();
 	private Disciplina disciplina = new Disciplina();
-	private List<Disciplina> disciplinas = (List<Disciplina>) disciplinaDAO
-			.getTodasDisciplinas();
+	private List<Curso> cursos = new ArrayList<Curso>(); 
+	private List<Disciplina> disciplinas = new ArrayList<Disciplina>();
 	private UsuarioDAO usuarioDAO = new UsuarioDAO();
-	private List<Usuario> professores = usuarioDAO.retornaProfessores();
+	private List<Usuario> professores = new ArrayList<Usuario>();
 	private Usuario professor = new Usuario();
 
 	@Init
@@ -48,19 +60,162 @@ public class TurmasController extends GenericController {
 	}
 
 	@Command
-	public void abreCadastro() {
+	public void teste() {// 
+
+		UsuarioDAO usuarioDAO = new UsuarioDAO();
+		List<Usuario> usuariosTurma = new ArrayList<Usuario>();
+		usuariosTurma = usuarioDAO.retornaUsuariosTurma(((Turma)session.getAttribute("turma_escolhida")));
+
+	}
+	
+	@Command
+	public void abrirCadastroTurmas() {// abre a janela de cadastrar turmas
+
+		session.setAttribute("curso",null);
+		session.setAttribute("letraTurma", "");
+		session.setAttribute("semestre","");
+
 		Window window = (Window) Executions.createComponents(
 				"/cadastrarTurma.zul", null, null);
 		window.doModal();
-		System.out.println();
+	}
+
+	
+	@Command
+	public void letraTurma(@BindingParam("letraTurma") String letraTurma)
+	{
+		session.setAttribute("letraTurma", letraTurma);
+	}
+	
+	@Command//seleciona o curso da turma nova para filtro
+	public void  cursoSelecionado(@BindingParam("indiceCurso") int indice,
+			@BindingParam("curso") Combobox curso,
+			@BindingParam("semestre") Textbox semestre,
+			@BindingParam("disciplina") Combobox disciplina)
+	{
+		SemestreDAO semestreDAO = new SemestreDAO();
+		
+		session.setAttribute("curso",cursos.get(indice));
+		
+		if(semestreDAO.getSemestreAtualCurso(cursos.get(indice))!=null)
+		{
+			semestre.setValue(semestreDAO.getSemestreAtualCurso(cursos.get(indice)).getNomeSemestre());
+			session.setAttribute("semestre", semestreDAO.getSemestreAtualCurso(cursos.get(indice)).getNomeSemestre());
+		}
+		else
+		{
+			Messagebox.show("Ainda não existe um semestre ativo para este curso");
+			curso.setValue(" ");
+			semestre.setValue(" ");
+		}
+		disciplina.setValue(" ");
+
+	}
+	
+	@Command//seleciona o curso da turma nova para filtro
+	public void  disciplinaSelecionada(@BindingParam("indiceDisciplina") int indice)
+	{
+		session.setAttribute("disciplina",disciplinas.get(indice));
+	}
+	
+	public Semestre getSemestreAtual()//retorna o semestre atual para a criação de turmas
+	{
+		return null;
 	}
 
 	@Command
-	public void abreCadastroTurma() {
+	public void salvarTurma()// salva uma turma com as informações guardadas em sessão
+	{
+		GenericBusiness gb = new GenericBusiness();
+		if(gb.campoStrValido(((String)session.getAttribute("letraTurma")))
+				&& gb.campoStrValido(((String)session.getAttribute("semestre")))
+				&& ((Disciplina)session.getAttribute("disciplina"))!=null)
+		{
+			Turma turma = new Turma();
+			turma.setLetraTurma(((String)session.getAttribute("letraTurma")));
+			turma.setDisciplina(((Disciplina)session.getAttribute("disciplina")));
+			turma.setSemestre(((String)session.getAttribute("semestre")));
+		
+			TurmaDAO turmaDAO  = new TurmaDAO();
+			if(turmaDAO.salvar(turma));
+			Messagebox.show("Turma cadastrada com sucesso", null,
+					new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
+						public void onEvent(ClickEvent e) {
+							if (e.getButton() == Messagebox.Button.OK)
+								Executions.sendRedirect(null);
+							else
+								Executions.sendRedirect(null);
+						}
+					});
+		
+		}
+		else
+			Messagebox.show("As informações a respeito da turma não foram preenchidas corretamente ");
+		
+	}
+	
+	@Command // verifica qual turma foi a escolhida e abre a janela de usuarios dessa turma
+	public void usuariosTurma(@BindingParam("botao") Button botao)
+	{
+		
+		Component rows = botao.getParent().getParent().getParent();
+		for(int i=0;i<rows.getChildren().size();i++)
+		{
+			if(rows.getChildren().get(i) == botao.getParent().getParent())
+			{
+				turma = turmas.get(i);
+				break;
+			}
+		}
+		
+		session.setAttribute("turma_escolhida", turma);
+		
+		Window window = (Window) Executions.createComponents(
+				"/turma.zul", null, null);
+		window.doModal();
+	}
+	
+	@Command
+	public void excluirUsuarioTurma(@BindingParam("usuario") Usuario usuario)
+	{
+		System.out.println(usuario);
+	}
+	
+	@Command
+	public void adicionaUsuarioTurma()//abre a janela de adição de usuarios a turma
+	{
+		Window window = (Window) Executions.createComponents(
+				"/usuariosTurma.zul", null, null);
+		window.doModal();
+	}
+	
+	
+	@Command //verifica a disponibilidade para ad
+	public void jaEstaAdicionado(@BindingParam("usuario") Usuario usuario,
+			@BindingParam("botao") Button botao)
+	{
+		UsuarioDAO usuarioDAO = new UsuarioDAO();
+		
+		botao.setVisible(false);
+		
+		List<Usuario> usuariosTurma = usuarioDAO.retornaUsuariosTurma(((Turma)session.getAttribute("turma_escolhida")));
+		
+		for(int i=0;i<usuariosTurma.size();i++)
+		{
+			if(usuariosTurma.get(i).getIdUsuario() == usuario.getIdUsuario())
+			{
+				botao.getParent().getChildren().get(0).setVisible(false);
+				botao.setVisible(true);
+			}
+		}
+		
+	}
+	
+	@Command
+	public void abreCadastroTurma() {//para o CSV
 		Window window = (Window) Executions.createComponents(
 				"/cadastrarTurmaCsv.zul", null, null);
 		window.doModal();
-		System.out.println();
 	}
 
 	@Command("uploadTurmas")
@@ -310,11 +465,19 @@ public class TurmasController extends GenericController {
 	}
 
 	@Command
-	@NotifyChange("turmas")
+	@NotifyChange("turmas")//exclui turmas que ainda não foram avaliadas e que não possuem usuarios cadastrados
 	public void exclui(@BindingParam("turma") Turma turma) {
-		turmaDAO.exclui(turma);
-		turmas.remove(turma);
-		Messagebox.show("Turma excluida com sucesso!");
+		AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
+		if(avaliacaoDAO.jaAvaliouTurma(turma))
+		{
+			Messagebox.show("Turma não pode ser excluida.");
+		}
+		else
+		{
+			turmaDAO.exclui(turma);
+			turmas.remove(turma);
+			Messagebox.show("Turma excluida com sucesso!");
+		}
 	}
 
 	@Command
@@ -344,11 +507,28 @@ public class TurmasController extends GenericController {
 
 	@Command
 	public void confirm(@BindingParam("turma") Turma turma)
-			throws HibernateException, Exception {
+	throws HibernateException, Exception {
+		
 		changeEditableStatus(turma);
-		TurmaDAO turmaDAO = new TurmaDAO();
-		turmaDAO.editar(turma);
-		refreshRowTemplate(turma);
+		if(turmaDAO.retornaTurma(turma.getLetraTurma(), turma.getSemestre(), turma.getDisciplina())!=null)
+		{
+			Messagebox.show("Turma ja cadastrada.", null,
+					new org.zkoss.zk.ui.event.EventListener<ClickEvent>() {
+						public void onEvent(ClickEvent e) {
+							if (e.getButton() == Messagebox.Button.OK)
+								Executions.sendRedirect(null);
+							else
+								Executions.sendRedirect(null);
+						}
+					});
+		}
+		else
+		{
+			TurmaDAO turmaDAO = new TurmaDAO();
+			turmaDAO.editar(turma);
+			refreshRowTemplate(turma);
+			Messagebox.show("Turma salva!");
+		}
 	}
 
 	public void refreshRowTemplate(Turma turma) {
@@ -379,15 +559,38 @@ public class TurmasController extends GenericController {
 		this.disciplina = disciplina;
 	}
 
-	public List<Usuario> getProfessores() {
+	public List<Usuario> getProfessoresCurso() {
+		
+		if(((Curso)session.getAttribute("curso"))!=null)
+		{
+			UsuarioDAO usuarioDAO = new UsuarioDAO();
+			List<Usuario> profs = usuarioDAO.retornaProfessores();
+			for(int i=0;i<profs.size();i++)
+			{
+				if(profs.get(i).getCurso().getIdCurso()!=((Curso)session.getAttribute("curso")).getIdCurso())
+				{
+					profs.remove(i);
+					i--;
+				}
+			}
+			professores = profs;
+		}
 		return professores;
 	}
 
 	public void setProfessores(List<Usuario> professores) {
 		this.professores = professores;
 	}
+	
+	public List<Curso> getCursos() {
+		CursoDAO cursoDAO = new CursoDAO();
+		cursos = cursoDAO.getTodosCursos();
+		return cursos;
+	} 
 
 	public List<Disciplina> getDisciplinas() {
+		DisciplinaDAO disciplinaDAO = new DisciplinaDAO();
+		disciplinas = disciplinaDAO.getTodasDisciplinas();
 		return disciplinas;
 	}
 
@@ -420,4 +623,21 @@ public class TurmasController extends GenericController {
 		this.professor = professor;
 	}
 
+	public List<Usuario> getUsuariosTurma()
+	{
+		if(turma!=null)
+		{
+			UsuarioDAO usuarioDAO = new UsuarioDAO();
+			List<Usuario> usuariosTurma = new ArrayList<Usuario>();
+			usuariosTurma = usuarioDAO.retornaUsuariosTurma(((Turma)session.getAttribute("turma_escolhida")));
+			return usuariosTurma;
+		}
+		return new ArrayList<Usuario>();
+	}
+	
+	public List<Usuario> getTodosUsuarios()
+	{
+		UsuarioDAO usuarioDAO = new UsuarioDAO();
+		return usuarioDAO.getTodosUsuarios();
+	}
 }
