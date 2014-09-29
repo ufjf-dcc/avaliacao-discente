@@ -66,31 +66,31 @@ tr.overseld,td.overseld,tr.z-listitem-over-seld {
 						</combobox>	
 						
 					</row>
-					<row visible="false">
-						<label value="Professor" />
+					<row visible="false" id="rowProfessor">
+						<label id="labelProfessor" value="Professor" />
 						<combobox width="98%"
 							model="@load(vm.professores)" selectedItem="@bind(vm.professor)"
-							onSelect="@command('carregarSemestres')">
+							onSelect="@command('carregarSemestres',row=rowProfessor,label=labelProfessor.value)">
 							<template name="model">
 								<comboitem label="@load(each.nome)" />
 							</template>
 						</combobox>
 					</row>
-					<row value="professor" visible="false">
-						<label value="Coordenador" />
+					<row value="coordenador" id="rowCoordenador" visible="false">
+						<label id="labelCoordenador" value="Coordenador" />
 						<combobox width="98%"
 							model="@load(vm.coordenadores)" selectedItem="@bind(vm.coordenador)"
-							onSelect="@command('carregarSemestres')">
+							onSelect="@command('carregarSemestres',row=rowCoordenador,label=labelCoordenador.value)">
 							<template name="model">
 								<comboitem label="@load(each.nome)" />
 							</template>
 						</combobox>
 					</row>
-					<row visible="false">
-						<label value="Aluno" />
+					<row visible="false" id="rowAluno">
+						<label id="labelAluno" value="Aluno" />
 						<combobox width="98%"
 							model="@load(vm.alunos)" selectedItem="@bind(vm.aluno)"
-							onSelect="@command('carregarSemestres')">
+							onSelect="@command('carregarSemestres',row=rowAluno,label=labelAluno.value)">
 							<template name="model">
 								<comboitem label="@load(each.nome)" />
 							</template>
@@ -128,17 +128,19 @@ tr.overseld,td.overseld,tr.z-listitem-over-seld {
 							</template>
 						</combobox>
 					</row>
-										<row visible="false">
+					
+					<row visible="false" id="rowQuestionarios">
 						<label value="Questionário" />
 						<combobox width="98%" model="@load(vm.questionarios)"
 							selectedItem="@bind(vm.questionario)"
-							onSelect="@command('carregarPerguntas')">
+							onSelect="@command('carregarPerguntas',row=rowQuestionarios)">
 							<template name="model">
 								<comboitem
 									label="@load(each.tituloQuestionario)" />
 							</template>
 						</combobox>
 					</row>
+					
 					<row visible="false">
 						<label value="Perguntas" />
 						<combobox width="98%"

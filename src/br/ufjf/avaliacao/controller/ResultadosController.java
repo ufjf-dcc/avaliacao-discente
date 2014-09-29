@@ -14,6 +14,7 @@ import org.hibernate.mapping.Column;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.NotifyChange;
+import org.zkoss.zhtml.Messagebox;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zul.CategoryModel;
 import org.zkoss.zul.Combobox;
@@ -168,11 +169,70 @@ public class ResultadosController extends GenericController implements
 	@Command
 	@NotifyChange("semestres")
 	// carregando e filtrando os semestres a serem escolhidos
-	public void carregarSemestres() {
+	public void carregarSemestres(@BindingParam("row") Row row,
+			@BindingParam("label") String label) {
 		semestres = new ArrayList<String>();
 		semestres.add("Todos");
 		TurmaDAO turmaDAO = new TurmaDAO();
 
+		
+		if(label.equals("Coordenador"))
+		{
+			((Combobox)(row.getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+			.getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+		
+			
+			
+		}
+		else if(label.equals("Aluno"))
+		{
+			((Combobox)(row.getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+			.getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			
+			
+		}
+		else if(label.equals("Professor"))
+		{
+			((Combobox)(row.getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+			.getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			
+		}
+		
+		
+		
+		
 		if (Integer.parseInt(opcao) == 0) {
 			AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
 			if (avaCoor != null) {
@@ -343,7 +403,11 @@ public class ResultadosController extends GenericController implements
 	@Command
 	@NotifyChange("perguntas")
 	// carregando e filtrando os semstres a serem escolhidos
-	public void carregarPerguntas() {
+	public void carregarPerguntas(@BindingParam("row") Row row) {
+		
+		((Combobox)(row.getNextSibling()
+				.getChildren().get(1))).setValue("");
+		
 		perguntas = new ArrayList<Pergunta>();
 		if(perguntas.size()>0)
 			perguntaSelecionada=perguntas.get(0);
@@ -417,25 +481,30 @@ public class ResultadosController extends GenericController implements
 	@Command
 	public void gerarGrafico(@BindingParam("frame") Iframe frame) {
 	
-		if (Integer.parseInt(opcao) == 0) {// coorednador
+		if(perguntaSelecionada==null)
+		{
+			Messagebox.show("A escolha de parametros não foi efetuada corretamente");
+		}
+		else
+		if (Integer.parseInt(opcao) == 0) {// coordenador
 			getGraficoCoordenador();
 			frame.setSrc(getUrl());
 			frame.invalidate();
 			
 		}
-		if (Integer.parseInt(opcao) == 1) {// professor
+		else if (Integer.parseInt(opcao) == 1) {// professor
 			getGraficoProfessor();
 			frame.setSrc(getUrl());
 			frame.invalidate();
 		
 		}
-		if (Integer.parseInt(opcao) == 2) {// autoavali��o
+		else if (Integer.parseInt(opcao) == 2) {// autoavalição
 			getGraficoAutoavaliacao();
 			frame.setSrc(getUrl());
 			frame.invalidate();
 			
 		}
-		if (Integer.parseInt(opcao) == 3) {// infraestrutura
+		else if (Integer.parseInt(opcao) == 3) {// infraestrutura
 			getGraficoInfraestrutura();
 			frame.setSrc(getUrl());
 			frame.invalidate();
@@ -469,7 +538,7 @@ public class ResultadosController extends GenericController implements
 	
 	public void getGraficoCoordenador() {
 		List<Resposta> respostas;
-
+	
 		RespostaDAO respostaDAO = new RespostaDAO();
 		if (coordenador.getNome() != "Todos") {
 			if (semestre != "Todos") {
@@ -659,6 +728,7 @@ public class ResultadosController extends GenericController implements
 
 	public void getGraficoProfessor() {
 		List<Resposta> respostas;
+		
 
 		RespostaDAO respostaDAO = new RespostaDAO();
 		if (professor.getNome() != "Todos") {
@@ -1380,6 +1450,8 @@ public class ResultadosController extends GenericController implements
 					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
 			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
 			
 			radioProfessor.setVisible(false);
 			radioCoordenador.setVisible(true);
@@ -1428,6 +1500,8 @@ public class ResultadosController extends GenericController implements
 					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
 			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
 			
 			
 			
@@ -1479,6 +1553,8 @@ public class ResultadosController extends GenericController implements
 					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
 			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
 			
 			radioProfessor.setVisible(false);
 			radioCoordenador.setVisible(false);
@@ -1525,6 +1601,8 @@ public class ResultadosController extends GenericController implements
 					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
 			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
 			
 			radioProfessor.setVisible(false);
 			radioCoordenador.setVisible(false);
