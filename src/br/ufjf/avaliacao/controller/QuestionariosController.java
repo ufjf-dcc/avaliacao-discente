@@ -615,8 +615,10 @@ public class QuestionariosController extends GenericController {
 
 	@Command
 	public void addPrazo(@BindingParam("window") Window w) {
+	
+		SemestreDAO semestreDAO = new SemestreDAO();
+
 		if (new QuestionariosBusiness().prazoValido(prazo)) {
-			SemestreDAO semestreDAO = new SemestreDAO();
 			if (validadaData(prazo) && semestreEscolhido!="") {
 				prazo.setQuestionario((Questionario) session
 						.getAttribute("questionario"));
@@ -626,10 +628,13 @@ public class QuestionariosController extends GenericController {
 				w.detach();
 				Messagebox.show("Prazo Adicionado!");
 			}
+			else
+				Messagebox.show("Prazo excede o semestre.");
+			
 		} else {
 			Messagebox.show("Data final e/ ou inicial invalida");
 		}
-		w.detach();
+		
 	}
 
 	@Command
