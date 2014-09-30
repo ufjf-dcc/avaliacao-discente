@@ -318,33 +318,20 @@ public class HomeAlunoController extends GenericController {
 						avaliacao.setAvaliado(avaliado);
 						avaliacao.setPrazoQuestionario(prazo);
 						avaliacao.setTurma(turmaUsada);
-						new AvaliacaoDAO().salvar(avaliacao);
-			
+						if(new AvaliacaoDAO().salvar(avaliacao))
+						{
 						for (Resposta r : respostas) {
 							r.setAvaliacao(avaliacao);
 						}
 						new RespostaDAO().salvarLista(respostas);
 						Clients.clearBusy();
 			
-						// se tiver mais de um professor a ser avaliado ou nao for uma
-						// avaliação de professor, ele verifica o que mais precisa ser
-						// avaliado
-						if (((Questionario) session.getAttribute("questionarioAtual"))
-								.getTipoQuestionario() != 1) {
-							Messagebox.show("Avaliação Salva com Sucesso");
-			
+						Messagebox.show("Avaliação Salva!");
 						}
-						// se acabar de avaliar a ultima coisa(que seria o ultimo professor
-						// da turma(ou o unico)) ele finaliza as avaliaçoes e da um refresh
-						// na pagina
-						else {
-							Messagebox.show("Problema ao salvar");
-						}
-
-					
+						else
+							Messagebox.show("Erro ao salvar avaliação.");
 			}
 				
-			
 			else
 			{
 				Messagebox.show("Preencha as perguntas obrigatórias(*)");
@@ -392,7 +379,7 @@ public class HomeAlunoController extends GenericController {
 		return false;
 	}
 		
-	public void reavaliar()
+	public void reavaliar()//exclui a avaliação anterior se houver para poder salvar a nova avaliação
 	{
 		AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
 		if(((Questionario) session.getAttribute("questionarioAtual")).getTipoQuestionario() == 0 //coordenação
@@ -435,9 +422,6 @@ public class HomeAlunoController extends GenericController {
 					{
 						List<Resposta> respostas = avaliacoes.get(i).getRespostas();
 						RespostaDAO respostaDAO = new RespostaDAO();
-						
-						for(int j=0;j<respostas.size();j++)
-							System.out.println(respostas.get(j));
 						
 						respostaDAO.excluiLista(respostas);
 						avaliacaoDAO.exclui(avaliacoes.get(i));
@@ -679,6 +663,16 @@ public class HomeAlunoController extends GenericController {
 								ordemProfessores.add(professoresTurma.get(i));
 								questionariosAAvaliar.add(questionarioProf);
 						}
+				}
+				
+				SemestreDAO semestreDAO = new SemestreDAO();
+				for(int i=0;i<questionariosAAvaliar.size();i++)
+				{
+					if(questionarioDAO.getPrazoSemestre(questionariosAAvaliar.get(i), semestreDAO.getSemestreAtualCurso(usuario.getCurso())) == null)
+					{
+						questionariosAAvaliar.remove(i);
+						i--;
+					}
 				}
 				return questionariosAAvaliar;
 	}

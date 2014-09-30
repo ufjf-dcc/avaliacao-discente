@@ -51,7 +51,7 @@ public class SemestreDAO extends GenericoDAO implements ISemestreDAO {
 			
 			getSession().close();
 
-			if(s.size()==0)
+			if(s == null)
 			{
 				s = new ArrayList<Semestre>();
 			}
@@ -65,7 +65,10 @@ public class SemestreDAO extends GenericoDAO implements ISemestreDAO {
 	
 	public Semestre getSemestreAtualCurso(Curso curso) {
 		List<Semestre> semestres = getSemestresCurso(curso);
+		
 		Date dataAtual = new Date();
+		dataAtual.setDate(dataAtual.getDate()-1);//prevenção do before
+				
 		for(int i=0;i<semestres.size();i++)
 		{
 			if(dataAtual.before(semestres.get(i).getDataFinalSemestre()))

@@ -15,8 +15,7 @@
 							
 			</columns>
 			<template name="model">
-				<row
-					onCreate="@command('questDisponivel', questionario=vm.questionarioProf, row=self)">
+				<row>
 						<label value="@load(each.prazoQuestionario.questionario.nomeTipoQuestionario)" />
 						<label value="@load(each.prazoQuestionario.questionario.tituloQuestionario)" />
 						<label value="@load(each.prazoQuestionario.dataInicialFormatada)" />

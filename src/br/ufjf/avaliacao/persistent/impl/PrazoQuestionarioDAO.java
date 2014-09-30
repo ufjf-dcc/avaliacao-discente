@@ -102,29 +102,30 @@ public class PrazoQuestionarioDAO extends GenericoDAO implements
 		return false;
 	}
 
-	public PrazoQuestionario getPrazoQuestionarioDisponivel(
-			Questionario questionario) {// dado um questionario, o prazodaquele
-										// questionario
-		try {
-			Query query = getSession()
-					.createQuery(
-							"SELECT p FROM PrazoQuestionario AS p LEFT JOIN FETCH p.questionario AS q WHERE q = :questionario AND :dataAtual BETWEEN p.dataInicial AND p.dataFinal");
-			query.setParameter("dataAtual", new Date());
-			query.setParameter("questionario", questionario);
-			
-			PrazoQuestionario prazo = (PrazoQuestionario) query.uniqueResult();
-
-			getSession().close();
-
-			return prazo;
-			
-		} catch (Exception e) {
-			e.printStackTrace();
+	public PrazoQuestionario getPrazoQuestionarioDisponivel(Questionario questionario)
+	{	
+		if(questionario!=null){
+			List<PrazoQuestionario> prazos = questionario.getPrazos();
+			if(prazos.size()>0)
+			{
+				PrazoQuestionario auxPrazo = prazos.get(0);
+				for(int i=0;i<prazos.size();i++)
+				{
+					if(prazos.get(i).getDataFinal().after(auxPrazo.getDataFinal()))
+						auxPrazo=prazos.get(i);
+				}
+				Date novaData = new Date();
+				novaData.setDate(novaData.getDate()-1);
+				Date novaData2 = new Date();
+				novaData2.setDate(novaData2.getDate()+1);
+				if(auxPrazo.getDataFinal().after(novaData) && auxPrazo.getDataInicial().before(novaData2))
+				return auxPrazo;
+			}
 		}
 		return null;
 	}
-
 	
+		
 	
 	public PrazoQuestionario getPrazoAvaliacao(Avaliacao avaliacao) {
 		try {
