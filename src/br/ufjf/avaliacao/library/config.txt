@@ -5,3 +5,4 @@ HIBERNATE.DIALECT = org.hibernate.dialect.MySQLDialect
 HIBERNATE.DB = jdbc:mysql://localhost/avaliacao2
 HIBERNATE.USER = root
 HIBERNATE.PASS = root
+INTEGRA.TOKEN = token
