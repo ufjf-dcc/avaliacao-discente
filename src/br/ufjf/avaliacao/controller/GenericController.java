@@ -5,11 +5,10 @@ import org.zkoss.bind.annotation.Command;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
-import org.zkoss.zul.Window;
+
 
 import br.ufjf.avaliacao.business.UsuarioBusiness;
 import br.ufjf.avaliacao.model.Usuario;
-import br.ufjf.avaliacao.persistent.impl.SemestreDAO;
 
 public class GenericController {
 

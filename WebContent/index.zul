@@ -17,13 +17,13 @@
 					<rows>
 						<row>
 							<label value="E-mail: " />
-							<textbox width="150px"
+							<textbox id="usuario" width="150px"
 								value="@bind(fx.email)"
 								onOK="@command('submit', panel=loginForm)" />
 						</row>
 						<row>
-							<label value="Senha: " />
-							<textbox width="150px" type="password"
+							<label value="Usuário: " />
+							<textbox id="senha" width="150px" type="password"
 								value="@bind(fx.senha)"
 								onOK="@command('submit', panel=loginForm)" />
 						</row>
@@ -31,6 +31,9 @@
 							<cell colspan="2">
 								<button label="Entrar"
 									onClick="@command('submit', panel=loginForm)" />
+									
+								<button label="Integra"
+									onClick="@command('getUsuarioIntegra',usuario=usuario.value,senha=senha.value)" />
 							</cell>
 						</row>
 					</rows>

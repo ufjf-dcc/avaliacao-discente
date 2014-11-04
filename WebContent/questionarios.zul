@@ -3,7 +3,7 @@
 <zk>
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')">
-		<include src="@load(vm.menu)" />
+		<include src="@load(vm.menu)" />		
 		<tabbox>
 			<tabs>
 				<tab label="Avaliação de Professores" />
@@ -130,6 +130,8 @@
 		<div align="center">
 			<button label="Criar novo questionário"
 				onClick="@command('criarQuest')" />
+
 		</div>
 	</div>
+
 </zk>

@@ -14,6 +14,7 @@ import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zk.ui.util.Clients;
 import org.zkoss.zul.Div;
 
+import br.ufjf.avaliacao.business.IntegraBusiness;
 import br.ufjf.avaliacao.business.UsuarioBusiness;
 import br.ufjf.avaliacao.model.Grafico;
 import br.ufjf.avaliacao.model.Usuario;
@@ -38,6 +39,16 @@ public class LoginController {
 		}
 	}
 
+	
+	@Command
+	public void getUsuarioIntegra(@BindingParam("usuario") String usuario,@BindingParam("senha") String senha)
+	{
+		this.usuario = IntegraBusiness.getusuarioIntegra(usuario,senha);
+
+	}
+	
+	
+	
 	@Command
 	public void submit(@BindingParam("panel") final Div page) {
 		Clients.showBusy("Autenticando usuário...");

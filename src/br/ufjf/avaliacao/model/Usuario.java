@@ -45,14 +45,6 @@ public class Usuario implements Serializable {
 	private Integer idUsuario;
 
 	/**
-	 * Campo com a senha do usuario. Relaciona com a coluna {@code senha} do
-	 * banco através da anotação
-	 * {@code @Column(name = "senha", length = 45, nullable = false)} .
-	 */
-	@Column(name = "senha", length = 100, nullable = false)
-	private String senha;
-
-	/**
 	 * Campo com o nome do usuário. Relaciona com a coluna {@code nome} do
 	 * banco através da anotação
 	 * {@code @Column(name = "nome", length = 45, nullable = false)}.
@@ -60,13 +52,7 @@ public class Usuario implements Serializable {
 	@Column(name = "nome", length = 500, nullable = false)
 	private String nome;
 
-	/**
-	 * Campo com o email do usuário. Relaciona com a coluna {@code email} do
-	 * banco através da anotação
-	 * {@code @Column(name = "email", length = 45, nullable = false)}.
-	 */
-	@Column(name = "email", length = 500, nullable = false)
-	private String email;
+	
 
 	/**
 	 * Relacionamento N para 1 entre usuário e curso. Mapeando {@link Curso} na
@@ -94,6 +80,10 @@ public class Usuario implements Serializable {
 	 * dado quando retornarmos o {@link Usuario} .
 	 * 
 	 */
+	
+	@Column(name = "cpf", length = 11, nullable = false)
+	private String cpf;
+	
 	@OneToMany(mappedBy = "avaliando")
 	private List<Avaliacao> avaliacoes = new ArrayList<Avaliacao>();
 
@@ -117,20 +107,16 @@ public class Usuario implements Serializable {
 
 	}
 
-	public Usuario(String nome, String email, String senha, Curso curso,
+	public Usuario(String nome, Curso curso,
 			Integer tipoUsuario) {
 		this.nome = nome;
-		this.email = email;
-		this.senha = senha;
 		this.curso = curso;
 		this.tipoUsuario = tipoUsuario;
 	}
 
-	public Usuario(String nome, String email, String senha) {// para professores
+	public Usuario(String nome) {// para professores
 
 		this.nome = nome;
-		this.email = email;
-		this.senha = senha;
 		this.curso = null;
 		this.tipoUsuario = PROFESSOR;
 
@@ -144,12 +130,12 @@ public class Usuario implements Serializable {
 		this.idUsuario = idUsuario;
 	}
 
-	public String getSenha() {
-		return senha;
+	public String getCPF() {
+		return cpf;
 	}
 
-	public void setSenha(String senha) {
-		this.senha = senha;
+	public void setCPF(String cpf) {
+		this.cpf = cpf;
 	}
 
 	public String getNome() {
@@ -158,14 +144,6 @@ public class Usuario implements Serializable {
 
 	public void setNome(String nome) {
 		this.nome = nome;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
 	}
 
 	public Curso getCurso() {

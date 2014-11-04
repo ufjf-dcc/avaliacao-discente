@@ -69,9 +69,6 @@ public class HomeAlunoController extends GenericController {
 	private Questionario[] vetorQuestionarios;
 	private int indiceQuestionario=0;
 	
-
-	
-
 	@Init
 	public void init() throws HibernateException, Exception {
 		testaPermissaoAluno();

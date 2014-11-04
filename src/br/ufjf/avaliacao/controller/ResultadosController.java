@@ -2,32 +2,22 @@ package br.ufjf.avaliacao.controller;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.plaf.basic.BasicBorders.RadioButtonBorder;
 
-import org.hibernate.mapping.Column;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zhtml.Messagebox;
-import org.zkoss.zk.ui.Executions;
-import org.zkoss.zul.CategoryModel;
 import org.zkoss.zul.Combobox;
-import org.zkoss.zul.Grid;
 import org.zkoss.zul.Iframe;
 import org.zkoss.zul.Image;
-import org.zkoss.zul.PieModel;
 import org.zkoss.zul.Radio;
-import org.zkoss.zul.Radiogroup;
 import org.zkoss.zul.Row;
-import org.zkoss.zul.SimpleCategoryModel;
-import org.zkoss.zul.SimplePieModel;
-import org.zkoss.zul.Window;
+
 
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Disciplina;
@@ -45,7 +35,6 @@ import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.RespostaDAO;
 import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
-import bsh.org.objectweb.asm.Label;
 
 public class ResultadosController extends GenericController implements
 		Serializable {

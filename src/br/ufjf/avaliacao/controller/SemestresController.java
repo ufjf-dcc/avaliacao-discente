@@ -1,13 +1,10 @@
 package br.ufjf.avaliacao.controller;
 
 import java.util.Date;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.HibernateException;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
-import org.zkoss.bind.annotation.Init;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.event.Event;
 import org.zkoss.zk.ui.event.EventListener;
@@ -17,10 +14,8 @@ import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
 import br.ufjf.avaliacao.business.GenericBusiness;
-import br.ufjf.avaliacao.model.Questionario;
 import br.ufjf.avaliacao.model.Semestre;
 import br.ufjf.avaliacao.persistent.impl.SemestreDAO;
-import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 
 public class SemestresController extends GenericController {
 

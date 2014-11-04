@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.text.TabableView;
 
 import org.hibernate.HibernateException;
 import org.zkoss.bind.annotation.BindingParam;
@@ -19,9 +18,7 @@ import org.zkoss.zk.ui.event.Events;
 import org.zkoss.zul.Button;
 import org.zkoss.zul.Checkbox;
 import org.zkoss.zul.Combobox;
-import org.zkoss.zul.Comboitem;
 import org.zkoss.zul.Div;
-import org.zkoss.zul.Iframe;
 import org.zkoss.zul.Label;
 import org.zkoss.zul.Listitem;
 import org.zkoss.zul.Messagebox;
@@ -29,8 +26,6 @@ import org.zkoss.zul.Panel;
 import org.zkoss.zul.Row;
 import org.zkoss.zul.Tab;
 import org.zkoss.zul.Tabbox;
-import org.zkoss.zul.Tabpanel;
-import org.zkoss.zul.Tabs;
 import org.zkoss.zul.Textbox;
 import org.zkoss.zul.Window;
 
@@ -101,6 +96,7 @@ public class QuestionariosController extends GenericController {
 	}
 
 	
+
 	
 	@Command
 	public void criarQuest() { // seta novos parametros para um novo questionario e abre a janela de questionario
