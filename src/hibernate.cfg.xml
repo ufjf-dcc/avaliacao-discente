@@ -12,6 +12,7 @@
 		<mapping class="br.ufjf.avaliacao.model.Avaliacao" />
 		<mapping class="br.ufjf.avaliacao.model.Curso" />
 		<mapping class="br.ufjf.avaliacao.model.Disciplina" />
+		<mapping class="br.ufjf.avaliacao.model.Matricula" ></mapping>
 		<mapping class="br.ufjf.avaliacao.model.Pergunta" />
 		<mapping class="br.ufjf.avaliacao.model.PrazoQuestionario" />
 		<mapping class="br.ufjf.avaliacao.model.Questionario" />

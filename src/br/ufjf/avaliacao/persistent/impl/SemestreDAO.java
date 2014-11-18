@@ -14,11 +14,6 @@ import br.ufjf.avaliacao.persistent.ISemestreDAO;
 public class SemestreDAO extends GenericoDAO implements ISemestreDAO {
 	
 	@Override
-	public Semestre getSemestreAtual() {
-		return null;
-	}
-	
-	@Override
 	public List<Semestre> getAllSemestres() {
 		try {
 			Query query = getSession()
@@ -91,9 +86,4 @@ public class SemestreDAO extends GenericoDAO implements ISemestreDAO {
 		return true;
 	}
 	
-	public void alterarSemestres()
-	{
-		
-	}
-
 }

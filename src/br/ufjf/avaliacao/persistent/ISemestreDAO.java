@@ -6,8 +6,6 @@ import br.ufjf.avaliacao.model.Semestre;
 
 public interface ISemestreDAO {
 	
-	public Semestre getSemestreAtual();
-	
 	public List<Semestre> getAllSemestres();
 
 }

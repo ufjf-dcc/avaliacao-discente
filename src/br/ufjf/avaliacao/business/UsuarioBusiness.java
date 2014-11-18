@@ -9,65 +9,59 @@ import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
 
 public class UsuarioBusiness extends GenericBusiness {
 
-	public boolean login(String email, String senha) throws HibernateException,
+	
+	public boolean login(String login, String senha) throws HibernateException,//recebe o usuario do integra e faz as devidas operações
 			Exception {
-		UsuarioDAO usuarioDAO = new UsuarioDAO();
-		Usuario usuario = usuarioDAO.retornaUsuario(email, senha);
-
-		if (usuario != null) {
-			Session session = Sessions.getCurrent();
-			session.setAttribute("usuario", usuario);
-			return true;
+		Usuario usuario = IntegraBusiness.getusuarioIntegra(login, senha);//pega informaçoes do usuario do integra
+		if(usuario!=null)
+		{
+						
+			UsuarioDAO uDAO = new UsuarioDAO();
+			Usuario usuarioAux = uDAO.retornaUsuarioCPF(login);//verifica se ja foi cadastrado
+			if(usuarioAux != null)
+			{
+				usuarioAux.setEmail(usuario.getEmail());
+				uDAO.editar(usuarioAux);//atualizando email, caso tenha mudado	
+	
+				Session session = Sessions.getCurrent();
+				session.setAttribute("usuario", usuarioAux);
+				return true;
+			}
 		}
 
 		return false;
 	}
-
+	
 	public boolean checaLogin(Usuario usuario) throws HibernateException,
 			Exception {
 		if (usuario != null) {
-			UsuarioDAO usuarioDAO = new UsuarioDAO();
-			usuario = usuarioDAO.retornaUsuario(usuario.getEmail(),
-					usuario.getSenha());
-			
-			if (usuario != null)
-			if (usuario.getCurso()!=null)
-			if ((usuario.getCurso().getCoordenador().getIdUsuario() == usuario.getIdUsuario()
-					&& usuario.getTipoUsuario()==1)) {
-				return true;
-			}
-			
-			if (usuario != null) 
-				if (usuario.getTipoUsuario()==2 || usuario.getTipoUsuario()==3) {
-				return true;
-			}
+			return true;
 		}
-
 		return false;
 	}
 
 	public boolean cadastrado(String email, String nome)
 			throws HibernateException, Exception {
 		UsuarioDAO usuarioDAO = new UsuarioDAO();
-		if (usuarioDAO.retornaUsuario(nome) != null
+		if (usuarioDAO.retornaUsuarioNome(nome) != null
 				|| usuarioDAO.retornaUsuarioEmail(email) != null) {
 			return true;
 		} else
 			return false;
 	}
 
-	public boolean cadastroValido(Usuario usuario) {
+	public boolean cadatroVlido(Usuario usuario) {
 		if (usuario.getTipoUsuario() != null)
 			if (usuario.getTipoUsuario() == 1)
 				if (campoStrValido(usuario.getNome())
-						&& campoStrValido(usuario.getEmail())
-						&& campoStrValido(usuario.getSenha()))
+						&& campoStrValido(usuario.getCPF())
+						&& campoStrValido(usuario.getMatriculaAtiva().getMatricula()))
 					return true;
 				else
 					return false;
 			else if (campoStrValido(usuario.getNome())
 					&& campoStrValido(usuario.getEmail())
-					&& campoStrValido(usuario.getSenha())
+					&& campoStrValido(usuario.getMatriculaAtiva().getMatricula())
 					&& (usuario.getCurso() != null))
 				return true;
 			else

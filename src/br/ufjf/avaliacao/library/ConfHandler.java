@@ -31,6 +31,7 @@ public class ConfHandler {
 		}
 	}
 	
+	
 	public static String getConf(String key) {
 		if (instance == null)
 			instance = new ConfHandler();

@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -65,35 +66,25 @@ public class Usuario implements Serializable {
 	@JoinColumn(name = "idCurso", nullable = true)
 	private Curso curso;
 
-	/**
-	 * Campo com o tipo de usuário (Coordenador = 0, Profesor = 1 , Aluno = 2).
-	 * Relaciona com a coluna {@code tipoUsuario} do banco através da
-	 * anotação {@code @Column(name = "tipoUsuario", nullable = false)}.
-	 */
 	@Column(name = "tipoUsuario", nullable = false)
 	private Integer tipoUsuario;
 
-	/**
-	 * Relacionamento 1 para N entre usuário e avaliação. Mapeada em
-	 * {@link Avaliacao} pela variável {@code avaliando} e retorno do tipo
-	 * {@code LAZY} que indica que não será carregado automáticamente este
-	 * dado quando retornarmos o {@link Usuario} .
-	 * 
-	 */
-	
 	@Column(name = "cpf", length = 11, nullable = false)
 	private String cpf;
 	
+	@Column(name = "email", length = 200, nullable = false)
+	private String email;
+	
 	@OneToMany(mappedBy = "avaliando")
 	private List<Avaliacao> avaliacoes = new ArrayList<Avaliacao>();
-
-	/**
-	 * Relacionamento N para N entre usuário e turma. Mapeada em {@link Turma}
-	 * pela variável {@code usuários} e retorno do tipo {@code LAZY} que
-	 * indica que não será carregado automáticamente este dado quando
-	 * retornarmos as {@link Usuario} .
-	 * 
-	 */
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario")
+	private List<Matricula> matriculas = new ArrayList<Matricula>();
+	
+	@OneToOne()
+	@JoinColumn(name = "idMatriculaAtiva", nullable = false)
+	private Matricula matriculaAtiva;
+	
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "usuarios")
 	private List<Turma> turmas = new ArrayList<Turma>();
 
@@ -130,6 +121,10 @@ public class Usuario implements Serializable {
 		this.idUsuario = idUsuario;
 	}
 
+	public void setIdUsuario(Integer idUsuario) {
+		this.idUsuario = idUsuario;
+	}
+	
 	public String getCPF() {
 		return cpf;
 	}
@@ -137,7 +132,7 @@ public class Usuario implements Serializable {
 	public void setCPF(String cpf) {
 		this.cpf = cpf;
 	}
-
+	
 	public String getNome() {
 		return nome;
 	}
@@ -170,6 +165,14 @@ public class Usuario implements Serializable {
 		this.avaliacoes = avaliacoes;
 	}
 
+	public List<Matricula> getMatriculas() {
+		return matriculas;
+	}
+
+	public void setMatriculas(List<Matricula> matriculas) {
+		this.matriculas = matriculas;
+	}
+	
 	public String getNomeTipoUsuario() {
 		if (tipoUsuario == COORDENADOR)
 			return "Coordenador";
@@ -206,8 +209,29 @@ public class Usuario implements Serializable {
 		this.turmas.add(turma);
 	}
 
-	public void setIdUsuario(Integer idUsuario) {
-		this.idUsuario = idUsuario;
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
+	public String getCpf() {
+		return cpf;
+	}
+
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
+	}
+
+	public Matricula getMatriculaAtiva() {
+		return matriculaAtiva;
+	}
+
+	public void setMatriculaAtiva(Matricula matriculaAtiva) {
+		this.matriculaAtiva = matriculaAtiva;
 	}
 
 }

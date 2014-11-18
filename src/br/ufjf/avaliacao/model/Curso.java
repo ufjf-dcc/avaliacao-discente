@@ -48,6 +48,12 @@ public class Curso implements Serializable {
 	@Column(name = "nomeCurso", length = 500, nullable = false)
 	private String nomeCurso;
 
+	@Column(name = "turno", length = 500, nullable = false)
+	private String turno;
+	
+	@Column(name = "modalidade", length = 500, nullable = false)
+	private String modalidade;
+	
 	/**
 	 * Relacionamento 1 para N entre curso e questionário. Mapeada em
 	 * {@link Questionario} pela variável {@code curso} e retorno do tipo
@@ -58,6 +64,8 @@ public class Curso implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "curso")
 	private List<Questionario> questionarios = new ArrayList<Questionario>();
 	
+	
+
 	/**
 	 * Relacionamento N para 1 entre usuário e curso. Mapeando {@link Curso} na
 	 * variável {@code curso} e retorno do tipo {@code LAZY} que indica que
@@ -106,6 +114,22 @@ public class Curso implements Serializable {
 		this.nomeCurso = nomeCurso;
 	}
 
+	public String getTurno() {
+		return turno;
+	}
+
+	public void setTurno(String turno) {
+		this.turno = turno;
+	}
+
+	public String getModalidade() {
+		return modalidade;
+	}
+
+	public void setModalidade(String modalidade) {
+		this.modalidade = modalidade;
+	}
+	
 	public List<Questionario> getQuestionarios() {
 		return questionarios;
 	}
