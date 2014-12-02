@@ -1,13 +1,16 @@
 package br.ufjf.avaliacao.persistent.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
 
 import br.ufjf.avaliacao.model.Curso;
 import br.ufjf.avaliacao.model.Pergunta;
+import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
+import br.ufjf.avaliacao.model.Semestre;
 import br.ufjf.avaliacao.model.Usuario;
 import br.ufjf.avaliacao.persistent.GenericoDAO;
 import br.ufjf.avaliacao.persistent.IQuestionarioDAO;
@@ -271,7 +274,7 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 
 	public List<Questionario> retornaQuestionariosSemestreAutoavaliacao(
 			String semestre, Curso curso) {// retornas os questionarios de um
-											// semestre para autoavaliação
+											// semestre para autoavaliaï¿½ï¿½o
 		List<Questionario> questionarios = retornaQuestionariosSemestre(semestre);
 		for (int j = questionarios.size() - 1; j >= 0; j--)
 			if (questionarios.get(j).getTipoQuestionario() != 2
@@ -306,4 +309,31 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 		return null;
 	}
 
+	public PrazoQuestionario getPrazoSemestre(Questionario questionario,Semestre semestre)//retorna o o prazo dentro do semestre
+	{
+		List<PrazoQuestionario> prazos = questionario.getPrazos();
+		if(prazos.size()>0 && semestre!=null)
+		{
+			PrazoQuestionario auxPrazo = prazos.get(0);
+			for(int i=0;i<prazos.size();i++)
+			{
+				if(prazos.get(i).getDataFinal().after(auxPrazo.getDataFinal()))
+					auxPrazo = prazos.get(i);
+			}
+			
+		
+			Date novaData = new Date();
+			novaData.setDate(novaData.getDate()-1);
+			
+			if(semestre.getDataFinalSemestre().after(auxPrazo.getDataFinal()))
+			{
+				if(auxPrazo.getDataFinal().after(novaData))
+				{
+					return auxPrazo;
+				}
+			}
+		}
+		return null;
+	}
+	
 }

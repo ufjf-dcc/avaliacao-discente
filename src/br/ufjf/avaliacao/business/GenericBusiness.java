@@ -1,5 +1,9 @@
 package br.ufjf.avaliacao.business;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class GenericBusiness {
 
 	// Verifica a validade de um campo string, não deixando valores nulos nem
@@ -12,4 +16,5 @@ public class GenericBusiness {
 		else
 			return true;
 	}
+
 }

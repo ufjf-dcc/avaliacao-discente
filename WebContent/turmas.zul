@@ -18,24 +18,17 @@
 						align="center" sort="auto(letraTurma)" />
 					<column label="Professor" align="center"
 						sort="auto(professor.nome)" />
-					<column style="width:100px;" label="Opções"
+					<column style="width:150px;" label="Opções"
 						align="center" />
 				</columns>
 				<template name="editable">
 					<row>
-						<combobox width="100%"
-							selectedItem="@load(each.semestre) @save(each.semestre, before='confirm')"
-							readonly="true">
-							<comboitem label="2013.1" value="2013.1" />
-							<comboitem label="2013.2" value="2013.2" />
-							<comboitem label="2013.3" value="2013.3" />
-							<comboitem label="2013.4" value="2013.4" />
-						</combobox>
+						<label value="@load(each.semestre)" />
 						<combobox width="100%"
 							model="@load(vm.disciplinas)"
-							value="@load(each.disciplina.nomeDisciplina)"
+							value="@load(each.disciplina.codNomeDisciplina)"
 							selectedItem="@load(each.disciplina) @save(each.disciplina, before='confirm')"
-							autodrop="true">
+							autodrop="true" readonly="true">
 							<template name="model">
 								<comboitem
 									label="@load(each.codNomeDisciplina)" />
@@ -44,14 +37,8 @@
 						<textbox
 							value="@load(each.letraTurma) @save(each.letraTurma, before='confirm')"
 							width="100%" />
-						<combobox model="@load(vm.professores)"
-							value="@load(each.professor)"
-							selectedItem="@load(each.professor) @save(each.professor, before='confirm')"
-							autodrop="true" width="100%">
-							<template name="model">
-								<comboitem label="@load(each.nome)" />
-							</template>
-						</combobox>
+						<label
+							onCreate="@command('getProfessores', turma=each, label=self)" />
 						<div>
 							<button image="/img/confirm.png"
 								onClick="@command('confirm', turma=each)" />
@@ -63,12 +50,12 @@
 				<template name="noneditable">
 					<row>
 						<label value="@load(each.semestre)" />
-						<label
-							value="@load(each.disciplina.codNomeDisciplina)" />
+						<label value="@load(each.disciplina.codNomeDisciplina)" />
 						<label value="@load(each.letraTurma)" />
-						<label
-							onCreate="@command('getProfessores', turma=each, label=self)" />
+						<label onCreate="@command('getProfessores', turma=each, label=self)" />
 						<div>
+							<button image="/img/lupa.png"
+								onClick="@command('usuariosTurma',botao=self)" />
 							<button image="/img/edit.png"
 								onClick="@command('changeEditableStatus', turma=each)" />
 							<button image="/img/delete.png"
@@ -78,12 +65,14 @@
 				</template>
 			</grid>
 			<div align="center">
-<!-- 				<button label="Cadastrar nova turma" -->
-<!-- 					onClick="@command('abreCadastro')" /> -->
+ 				<button label="Cadastrar nova turma" 
+ 					onClick="@command('abrirCadastroTurmas')" /> 
 					<button upload="true" label="Cadastrar nova turma via CSV"
 					onUpload="@command('uploadTurmas', evt=event)" />
 					<button upload="true" label="Cadastrar alunos na turma via CSV"
 					onUpload="@command('uploadAlunos', evt=event)" />
+					
+					
 					
 			</div>
 		</div>

@@ -11,9 +11,9 @@ public interface IUsuarioDAO {
 	public Usuario retornaUsuarioEmail(String email) throws HibernateException,
 			Exception;
 
-	public Usuario retornaUsuario(String email, String senha);
-
-	public Usuario retornaUsuario(String nome);
+	public Usuario retornaUsuarioNome(String nome);
+	
+	public Usuario retornaUsuarioCPF(String cpf);
 
 	public List<Usuario> retornaProfessores();
 

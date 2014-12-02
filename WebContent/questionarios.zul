@@ -3,7 +3,7 @@
 <zk>
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')">
-		<include src="@load(vm.menu)" />
+		<include src="@load(vm.menu)" />		
 		<tabbox>
 			<tabs>
 				<tab label="Avaliação de Professores" />
@@ -30,9 +30,11 @@
 									<button label="Ver"
 										onClick="@command('verQuest',questionario=each)" />
 									<button label="Ativar"
-										onClick="@command('ativa', questionario=each)" />
+										onClick="@command('ativa', questionario=each, botao=self)" />
 									<button label="Adicionar Prazo"
 										onClick="@command('adcPrazo',questionario=each)" />
+									<button label="Excluir"
+										onClick="@command('excluirQuestionario',questionario=each)" />
 								</div>
 							</row>
 						</template>
@@ -59,6 +61,8 @@
 										onClick="@command('ativa', questionario=each)" />
 									<button label="Adicionar Prazo"
 										onClick="@command('adcPrazo',questionario=each)" />
+									<button label="Excluir"
+										onClick="@command('excluirQuestionario',questionario=each)" />
 								</div>
 							</row>
 						</template>
@@ -86,6 +90,8 @@
 										onClick="@command('ativa', questionario=each)" />
 									<button label="Adicionar Prazo"
 										onClick="@command('adcPrazo',questionario=each)" />
+									<button label="Excluir"
+										onClick="@command('excluirQuestionario',questionario=each)" />
 								</div>
 							</row>
 						</template>
@@ -112,6 +118,8 @@
 										onClick="@command('ativa', questionario=each)" />
 									<button label="Adicionar Prazo"
 										onClick="@command('adcPrazo',questionario=each)" />
+									<button label="Excluir"
+										onClick="@command('excluirQuestionario',questionario=each)" />
 								</div>
 							</row>
 						</template>
@@ -122,6 +130,8 @@
 		<div align="center">
 			<button label="Criar novo questionário"
 				onClick="@command('criarQuest')" />
+
 		</div>
 	</div>
+
 </zk>

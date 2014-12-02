@@ -1,12 +1,13 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
 <zk>
 	<window title="Vizualização de Questionario" border="normal"
-		closable="true" width="80%">
+		closable="true" id="janelaQuestionario" width="80%"
+		onCreate="@command('janelaQuestionario',janela=self)">
 		<div apply="org.zkoss.bind.BindComposer" style="margin:5px;"
 			viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')"
 			form="@id('fm') @load(vm.questSessao) @save(vm.questSessao, before='salvarQuest')"
-			id="form">
-			<grid model="@load(vm.prazosSessao)">
+			id="form" >
+			<grid model="@load(vm.prazosSessao)" id="grid">
 				<auxhead>
 					<auxheader label="Título: ">
 						<label value="@load(fm.tituloQuestionario)" />
@@ -33,29 +34,36 @@
 					</row>
 				</template>
 			</grid>
+			<separator spacing="10px" />
 			<grid model="@load(vm.perguntasSessao)">
 				<auxhead>
 					<auxheader style="text-align:center" colspan="3"
 						label="Perguntas">
 					</auxheader>
 				</auxhead>
-				<columns>
+				<columns id="colun">
 					<column align="center" label="Título da Pergunta" />
-					<column align="center" label="Tipo de Resposta" />
+					<column align="center" label="Tipo da Pergunta" />
+					<column align="center" label="Obrigatório" />
+					<column align="center" label="Opções" />
 				</columns>
-				<template name="model">
+				<template name="model" id="template">
 					<row>
 						<label value="@load(each.tituloPergunta)" />
 						<label value="@load(each.nomeTipoPergunta)" />
+						<checkbox checked="@load(each.obrigatorio)" disabled="true" />
+						<div>
+							<button image="/img/lupa.png" onClick="@command('exibirPergunta',pergunta=each,botao=self)" />
+							<button visible="false" image="/img/delete.png" onCreate="@command('exibirExcluir',botao=self)" onClick="@command('excluirPerguntaExibir',pergunta=each,botao=self)" />
+						</div>
 					</row>
 				</template>
 			</grid>
 			<div align="center" style="margin-top:5px;">
-				<button image="/img/edit.png"
-					onClick="@command('editarQuest')" />
 				<button image="/img/delete.png"
 					onClick="@command('exclui')" />
 			</div>
 		</div>
+			
 	</window>
 </zk>

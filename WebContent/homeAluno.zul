@@ -5,33 +5,33 @@
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.HomeAlunoController')">
 		<include src="@load(vm.menu)" />
-		<grid model="@load(vm.turmasDoUsuario)">
+		<grid model="@load(vm.avaliacoes)" id="grid">
 			<columns>
-				<column label="Disciplina" align="center" />
+				<column label="Tipo de Questionário" align="center" />
+				<column label="Título do Questionário" align="center" />
 				<column label="Data Inicial" align="center" />
 				<column label="Data Final" align="center" />
 				<column label="Opções" align="center" />
 							
 			</columns>
 			<template name="model">
-				<row
-					onCreate="@command('questDisponivel', questionario=vm.questionarioProf, row=self)">
-					<label
-						value="@load(each.disciplina.codNomeDisciplina)" />
-					<label value="@load(vm.prazo.dataInicialFormatada)" />
-					<label value="@load(vm.prazo.dataFinalFormatada)" />
-					<div
-						onCreate="@command('jaAvaliou', div=self, turma=each)">
-						<label
-							style="font-size:16px;font-style:italic;font-weight:bold;"
-							value="Você já avaliou!" />
-						<button label="Avaliar"
-							onClick="@command('avaliar', questionario=vm.questionarioProf, turma=each)" />
+				<row>
+						<label value="@load(each.prazoQuestionario.questionario.nomeTipoQuestionario)" />
+						<label value="@load(each.prazoQuestionario.questionario.tituloQuestionario)" />
+						<label value="@load(each.prazoQuestionario.dataInicialFormatada)" />
+						<label value="@load(each.prazoQuestionario.dataFinalFormatada)" />
+					<div>
+						<button label="Reavaliar"
+							onClick="@command('avaliarQuestionario',butao=self ,grid=grid)" />
 					</div>
-				
 				</row>
 			</template>
 		</grid>
-
+	
+	<button label="Avaliar todos"
+			onClick="@command('avaliacaoGeral')" />
+			
+	
+			
 	</div>
 </zk>

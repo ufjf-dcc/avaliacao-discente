@@ -12,44 +12,47 @@
 				<column align="center" />
 			</columns>
 			<rows>
+			
+			<row>
+				<label value="Turma: " />
+				<textbox id="turma" onChange="@command('letraTurma',letraTurma=self.value)" width="165px" value="@bind(fm.letraTurma)" />
+			</row>
+			
+			<row>
+				<label value="Curso: " />
+					<combobox id="curso" model="@load(vm.cursos)" 
+						onSelect="@command('cursoSelecionado',indiceCurso=self.selectedIndex,curso=curso,semestre=semestre,
+						disciplina=disciplina)" >
+						<template name="model">
+							<comboitem
+								label="@load(each.nomeCurso)" />
+						</template>
+					</combobox>
+				</row>
+			
 				<row>
 					<label value="Semestre: " />
-					<combobox selectedItem="@bind(fm.semestre)"
-						readonly="true">
-						<comboitem label="2013.1" value="2013.1" />
-						<comboitem label="2013.2" value="2013.2" />
-						<comboitem label="2013.3" value="2013.3" />
-						<comboitem label="2013.4" value="2013.4" />
-					</combobox>
+					<textbox value=" "  width="165px" id="semestre" readonly="true"/>
+					
 				</row>
 				<row>
 					<label value="Disciplina: " />
-					<combobox model="@load(vm.disciplinas)"
-						selectedItem="@bind(fm.disciplina)" autodrop="true">
+					<combobox id="disciplina" model="@load(vm.disciplinas)"
+						onSelect="@command('disciplinaSelecionada',indiceDisciplina=self.selectedIndex)"
+						selectedItem="@bind(fm.disciplina)" autodrop="true" readonly="true">
 						<template name="model">
 							<comboitem
 								label="@load(each.codNomeDisciplina)" />
 						</template>
 					</combobox>
 				</row>
-				<row>
-					<label value="Turma: " />
-					<textbox value="@bind(fm.letraTurma)" />
-				</row>
-				<row>
-					<label value="Professor: " />
-					<combobox model="@load(vm.professores)"
-						selectedItem="@bind(fm.professor)" autodrop="true">
-						<template name="model">
-							<comboitem label="@load(each.nome)" />
-						</template>
-					</combobox>
-				</row>
+				
+				
 			</rows>
 		</grid>
 		<separator />
 		<div align="center">
-			<button label="Cadastrar" onClick="@command('cadastra')" />
+			<button label="Cadastrar" onClick="@command('salvarTurma')" />
 		</div>
 		<separator />
 	</div>

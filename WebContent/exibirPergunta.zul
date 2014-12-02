@@ -1,0 +1,203 @@
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+
+
+<window width="65%" id="janelaPergunta"
+		title="Adicionar Prazo de Questionário" border="normal"
+		closable="true">
+		
+		<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')">
+
+		
+		<div>
+				<div>
+				<label  value="Pergunta: " style="font-weight: bold"/>
+				<textbox id="titulo" onChange="@command('tituloPerguntaExibir',titulo=self.value)" value="@load(vm.tituloPerguntaExibir)" width="80%"  />
+				</div>
+				<separator />
+				<label value="Tipo de Pergunta:" style="font-weight: bold" />
+				
+				<textbox readonly="true" value="@load(vm.tipoPerguntaExibir)" id="comboValue" visible="false" />
+				
+				<combobox value="@load(vm.tipoPerguntaExibir)" id="combo" model="@load(vm.tiposPergunta)"
+							onChange="@command('tipoPerguntaExibir',tipo=self.selectedIndex)"	selectedItem="@load(vm.tipoPerguntaExibir)"
+							readonly="true" >
+							<template name="model">
+								<comboitem
+									label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Caixa de Seleção' : each eq 2 ? 'Múltipla Escolha' : 'Escala Numérica')" />
+							</template>
+							
+					<attribute name="onChange">
+						
+						if(combo.getSelectedIndex()==0)
+						{
+							si.setVisible(false);
+							sf.setVisible(false);
+							a.setVisible(false);
+							de.setVisible(false);
+							panel.setVisible(false);
+						}
+						else if(combo.getSelectedIndex()==1 || combo.getSelectedIndex()==2)
+						{
+							si.setVisible(false);
+							sf.setVisible(false);
+							a.setVisible(false);
+							de.setVisible(false);
+							panel.setVisible(true);
+						}
+						else if(combo.getSelectedIndex()==3)
+						{
+							si.setVisible(true);
+							sf.setVisible(true);
+							a.setVisible(true);
+							de.setVisible(true);
+							panel.setVisible(false);
+						}
+						
+					</attribute>
+				</combobox>
+				
+				<label value="   Obrigatoriedade:" style="font-weight: bold" />
+					<checkbox id="check" onCheck="@command('obrigatorioExibir',obrigatorio=self.checked)" checked="@load(vm.obrigatorioExibir)" value="@load('obrigatorio_inicio')" />
+						<separator />
+
+			<div	align="center"
+					form="@id('fr') @load(vm.resposta)">
+					<separator />
+					<div height="20px" id="spinner"
+						visible="true">
+						<label id="de" value="De: " />
+						<textbox width="60px" readonly="true" value="@load(vm.spinnerInicioExibir)" id="siValue" visible="false" />
+						<spinner onChange="@command('spinnerInicioExibir',valor=self.value)" id="si" value="@load(vm.spinnerInicioExibir)"
+							width="60px" readonly="true" constraint="min 0"  />
+						<label id="a" value=" à " />
+						<textbox width="60px" readonly="true" value="@load(vm.spinnerFinalExibir)" id="sfValue" visible="false" />
+						<spinner onChange="@command('spinnerFinalExibir',valor=self.value)" id="sf" value="@load(vm.spinnerFinalExibir)"
+						width="60px" readonly="true" constraint="min 0" />
+					</div>
+			</div>
+
+		<div style="padding: 10px;" id="addOpcao" visible="true">
+			<panel collapsible="false" id="panel">
+				<panelchildren>
+					<listbox fixedLayout="true" id="lstTimesheet"  >
+						<listhead>
+							<listheader label="Alternativas" />
+							<listheader width="150px" id="lh2">
+								<button label="Adicionar pergunta" id="addRecord" onClick="addRow()"/>
+							</listheader>
+						</listhead>
+
+						<listitem visible="false">
+							<listcell><textbox></textbox></listcell>
+							<listcell><button label="Remove" onClick="removeRow(self.getParent().getParent())"/></listcell>
+						</listitem>
+					</listbox>
+				</panelchildren>
+			</panel>
+	
+			<button label="Salvar" id="salvar" onClick="@command('salvarPerguntaExibir',panel=panel,janela=janelaPergunta)"></button>
+	
+
+			<zscript><![CDATA[
+ 			  import java.text.SimpleDateFormat; 
+			  
+				Listitem baseItem = lstTimesheet.getItemAtIndex(lstTimesheet.getItemCount()-1); 
+			
+
+				///ADICIONAR E DELETAR LINHA
+				void addRow() { 
+					Listitem listitem = (Listitem)baseItem.clone(); 
+					((Textbox)listitem.getChildren().get(0).getChildren().get(0)).setWidth("100%"); 
+					listitem.setVisible(true);
+					lstTimesheet.insertBefore(listitem, baseItem); 
+				}
+				
+				void addRow(String value) { 
+					Listitem listitem = (Listitem)baseItem.clone(); 
+					((Textbox)listitem.getChildren().get(0).getChildren().get(0)).setWidth("100%"); 
+					listitem.setVisible(true);
+					listitem.getChildren().get(0).getChildren().get(0).setValue(value);
+					lstTimesheet.insertBefore(listitem, baseItem); 
+				}
+				
+ 				void removeRow(Object object) { 
+					if(lstTimesheet.getItemCount() > 2 ) { 
+						lstTimesheet.removeChild((Listitem)object);
+ 					} 
+ 				}
+				
+				
+				///TORNAR VISIVEL APERNAS O NECESSARIO
+ 				
+ 				List opcoes = session.getAttribute("pergunta_exibida").getRespostasEspecificasBanco();
+ 				
+				if(opcoes.size()!=0 && session.getAttribute("pergunta_exibida").getTipoPergunta()!=3)
+	 				for(int i=0;i!=opcoes.size();i++) 
+	 				{
+	 					addRow(opcoes.get(i).getRespostaEspecifica());
+	 				}
+ 				else
+ 					addRow();
+			
+				if(session.getAttribute("pergunta_exibida").getTipoPergunta()==0)
+				{
+					si.setVisible(false);
+					sf.setVisible(false);
+					a.setVisible(false);
+					de.setVisible(false);
+					panel.setVisible(false);
+				}
+				else if(session.getAttribute("pergunta_exibida").getTipoPergunta()==1 || session.getAttribute("pergunta_exibida").getTipoPergunta()==2)
+				{
+					si.setVisible(false);
+					sf.setVisible(false);
+					a.setVisible(false);
+					de.setVisible(false);
+					panel.setVisible(true);
+				}
+				else if( session.getAttribute("pergunta_exibida").getTipoPergunta()==3)
+				{
+
+					si.setVisible(true);
+					sf.setVisible(true);
+					a.setVisible(true);
+					de.setVisible(true);
+					panel.setVisible(false);
+				}
+				
+				///TORNAR OU NÃO EDITAVEL 
+				
+				if(session.getAttribute("questionario").getPrazos().size()!=0)
+				{
+					titulo.setReadonly(true);
+					combo.setReadonly(true);
+					combo.setVisible(false);
+					comboValue.setVisible(true);
+					check.setDisabled(true);
+					lh2.setVisible(false);
+					salvar.setVisible(false);
+					
+					if(si.isVisible() && sf.isVisible())
+					{
+						si.setVisible(false);
+						sf.setVisible(false);
+						siValue.setVisible(true);
+						sfValue.setVisible(true);
+					}
+					
+					for(int i=1;i<panel.getChildren().get(0).getChildren().get(0).getChildren().size();i++)
+					{
+						panel.getChildren().get(0).getChildren().get(0).getChildren().get(i).getChildren().get(0).getChildren().get(0).setReadonly(true);
+					}
+					
+				}
+
+			]]></zscript> 
+		</div>
+	</div>
+	</div>
+	
+	
+	
+</window>

@@ -3,11 +3,11 @@ package br.ufjf.avaliacao.persistent.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Curso;
-import br.ufjf.avaliacao.model.Pergunta;
 import br.ufjf.avaliacao.model.PrazoQuestionario;
 import br.ufjf.avaliacao.model.Questionario;
 import br.ufjf.avaliacao.model.Turma;
@@ -15,28 +15,10 @@ import br.ufjf.avaliacao.model.Usuario;
 import br.ufjf.avaliacao.persistent.GenericoDAO;
 import br.ufjf.avaliacao.persistent.IUsuarioDAO;
 
+
+
 public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 
-	@Override
-	public Usuario retornaUsuario(String email, String senha) {
-		try {
-			Query query = getSession()
-					.createQuery(
-							"SELECT u FROM Usuario AS u LEFT JOIN FETCH u.curso WHERE u.email = :email AND u.senha = :senha");
-			query.setParameter("email", email);
-			query.setParameter("senha", senha);
-
-			Usuario usuario = (Usuario) query.uniqueResult();
-
-			getSession().close();
-
-			if (usuario != null)
-				return usuario;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -57,8 +39,45 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 		return null;
 	}
 
-	@Override
-	public Usuario retornaUsuario(String nome) {
+	public Usuario retornaUsuarioCPF(String cpf) {
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT u FROM Usuario AS u LEFT JOIN FETCH u.curso WHERE u.cpf = :cpf");
+			query.setParameter("cpf", cpf);
+
+			Usuario usuario = (Usuario) query.uniqueResult();
+			getSession().close();
+
+			if (usuario != null)
+				return usuario;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public List<Usuario> retornaUsuarioCPFCurso(Curso curso,String cpf) {
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT u FROM Usuario AS u WHERE u.curso = :curso AND u.cpf = :cpf");
+			query.setParameter("curso", curso);
+			query.setParameter("cpf", cpf);
+
+			List<Usuario> usuarios = query.list();
+
+			getSession().close();
+			if (usuarios != null) {
+				return usuarios;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public Usuario retornaUsuarioNome(String nome) {
 		try {
 			Query query = getSession()
 					.createQuery(
@@ -156,6 +175,26 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Usuario> retornaUsuariosTurma(Turma turma) {
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT u FROM Turma AS t JOIN t.usuarios as u WHERE t = :turma");
+			query.setParameter("turma", turma);
+
+			List<Usuario> usuario = query.list();
+
+			getSession().close();
+
+			if (usuario != null)
+				return usuario;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	@Override
 	public Usuario retornaCoordAvaliado(Usuario usuario) {
 		try {
@@ -177,27 +216,8 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 		return null;
 	}
 
-	public Usuario retornaCoordenadorCurso(Curso curso) {
-		try {
-			Query query = getSession()
-					.createQuery(
-							"SELECT u FROM Usuario AS u WHERE u.curso = :curso AND u.tipoUsuario = :tipoUsuario");
-			query.setParameter("curso", curso);
-			query.setParameter("tipoUsuario", 0);
 
-			Usuario u = (Usuario) query.uniqueResult();
-
-			getSession().close();
-			if (u != null) {
-				return u;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public List<Usuario> retornaProfessorCurso(Curso curso) {
+	public List<Usuario> retornaProfessorCurso(Curso curso) {//nao tenho certeza se estÃ¡ funcioando
 		try {
 			Query query = getSession()
 					.createQuery(
@@ -257,7 +277,7 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 			avaliacoes.addAll(avaliacaoDAO
 					.getAvaliacoesPrazoQuestionario(prazos.get(i))); // olha a
 																		// quais
-																		// avaliaçoes
+																		// avaliaï¿½oes
 																		// esse
 																		// quesntionario
 																		// pertence

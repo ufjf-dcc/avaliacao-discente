@@ -1,0 +1,38 @@
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<zk>
+	<window style="text-align:center;" width="700px"
+		title="Turma" border="normal"
+		closable="true">
+		
+	<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.TurmasController')">
+		
+		<div>
+			<grid model="@load(vm.usuariosTurma)">
+				<columns>
+					<column label="Nome" align="center" />
+					<column label="Curso" align="center" />
+					<column label="Tipo de usuário" align="center" />
+					<column label="Opções" align="center" />
+				</columns>
+					<template name="model">
+						<row>
+							<label value="@load(each.nome)" />
+							<label value="@load(each.curso.nomeCurso)" />
+							<label value="@load(each.nomeTipoUsuario)" />
+							<button image="/img/delete.png"
+								onClick="@command('excluirUsuarioTurma', usuario=each)" />
+						</row>
+						
+						
+					</template>
+			</grid>
+		</div>	
+		
+		<space />
+		<button label="Adicionar usuário"
+		 			onClick=""/>
+		
+	</div>
+	</window>
+</zk>

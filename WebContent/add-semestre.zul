@@ -1,0 +1,33 @@
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<zk>
+	<window style="text-align:center;" width="350px"
+		title="Adicionar / Editar Semestre" border="normal"
+		closable="true">
+		<div apply="org.zkoss.bind.BindComposer" style="margin:5px;"
+			viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.SemestresController')">
+			<grid>
+				<columns>
+					<column />
+					<column />
+				</columns>
+				<rows>
+					<row>
+						<label value="Titulo: " />
+						<textbox id="titulo" value="@load(vm.semestre.nomeSemestre)"  width="100%" />
+					</row>
+					<row>
+						<label value="Data Final: " />
+						<datebox id="dataFinal" value="@load(vm.semestre.dataFinalSemestre)" width="100%"
+							format="dd/MM/yyyy" constraint="no past" 
+							onCreate="@command('verificarSemestre',tb = titulo)"/>
+					</row>
+				
+				</rows>
+			</grid>
+			<div align="center" style="margin-top:5px;">
+				<button label="Adicionar Semestre"
+					onClick="@command('criarSemestre',titulo=titulo.value,dataFinal=dataFinal.value)" />
+			</div>
+		</div>
+	</window>
+</zk>

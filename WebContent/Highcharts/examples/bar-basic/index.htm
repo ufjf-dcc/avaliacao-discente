@@ -8,7 +8,7 @@
 		<script type="text/javascript">
 $(function () {
 
-//nome,quantidade semestres, semestre 1,semestre 2,... , quantidade de respostas, quantidade de valores das respostas, resposta 1, valor 1, valor 2,...,resposta 2, valor 2, valor 2...
+//Nome_do_questionarios&quantidade_de_divisoes(semestre)&semestre1&semestre2&semestre3&...&quantidade_de_itens(letras)&quantidade_de_divisoes(semestre)&primeira_opcao(a)&valor_primeira_divisao_opcao(a)&valor_segunda_divisao_opcao(a)&...&segunda_opcao(b)&valor_primeira_divisao_opcao(b)&valor_segunda_divisao_opcao(b)&....
 	var url   = window.location.search.replace("?", "");
 	var itens = url.split("&");
 	var uri_dec = decodeURIComponent(itens[0]);

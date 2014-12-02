@@ -46,13 +46,26 @@ public class Pergunta implements Serializable {
 	/**
 	 * Campo com o título da pergunta. Relaciona com a coluna {@code pergunta}
 	 * do banco através da anotação
-	 * {@code @Column(name = "pergunta", length = 45, nullable = false)}.
+	 * {@code @Column(name = "pergunta", length = 8000, nullable = false)}.
 	 */
 	@Column(name = "tituloPergunta", length = 8000, nullable = false)
 	private String tituloPergunta;
 
+	/**
+	 * Campo com o título da pergunta. Relaciona com a coluna {@code pergunta}
+	 * do banco através da anotação
+	 * {@code @Column(name = "pergunta", nullable = false)}.
+	 */
 	@Column(name = "tipoPergunta", nullable = false)
 	private Integer tipoPergunta;
+	
+	/**
+	 * Campo com a informação de obrigatorio. Relaciona com a coluna {@code obrigatorio}
+	 * do banco através da anotação
+	 * {@code @Column(name = "pergunta", nullable = false)}.
+	 */
+	@Column(name = "obrigatorio", nullable = false)
+	private boolean obrigatorio;
 
 	/**
 	 * Relacionamento N para 1 entre pergunta e questionário. Mapeando
@@ -73,6 +86,30 @@ public class Pergunta implements Serializable {
 
 	@Transient
 	private String nomeTipoPergunta;
+
+	public boolean isObrigatorio() {
+		return obrigatorio;
+	}
+
+	public void setObrigatorio(boolean obrigatorio) {
+		this.obrigatorio = obrigatorio;
+	}
+
+	public int getIdPergunta() {
+		return idPergunta;
+	}
+
+	public void setIdPergunta(int idPergunta) {
+		this.idPergunta = idPergunta;
+	}
+
+	public Questionario getQuestionario() {
+		return questionario;
+	}
+
+	public void setQuestionario(Questionario questionario) {
+		this.questionario = questionario;
+	}
 
 	public List<Resposta> getRespostas() {
 		return respostas;
@@ -96,18 +133,21 @@ public class Pergunta implements Serializable {
 		this.respostasEspecificas = respostasEspecificas;
 	}
 
-	public int getIdPergunta() {
-		return idPergunta;
-	}
-
-	public void setIdPergunta(int idPergunta) {
-		this.idPergunta = idPergunta;
-	}
-
 	public String getTituloPergunta() {
 		return tituloPergunta;
 	}
 
+	public String getTituloPerguntaObrigatoria() {// caso seja obrigatorio, adiciona um * sinalizando obrigatorio
+		if(this.isObrigatorio())
+		{
+			return tituloPergunta+" *";
+		}
+		else
+		{
+			return tituloPergunta;
+		}
+	}
+	
 	public void setTituloPergunta(String tituloPergunta) {
 		this.tituloPergunta = tituloPergunta;
 	}
@@ -118,14 +158,6 @@ public class Pergunta implements Serializable {
 
 	public void setTipoPergunta(Integer tipoPergunta) {
 		this.tipoPergunta = tipoPergunta;
-	}
-
-	public Questionario getQuestionario() {
-		return questionario;
-	}
-
-	public void setQuestionario(Questionario questionario) {
-		this.questionario = questionario;
 	}
 
 	public String getNomeTipoPergunta() {

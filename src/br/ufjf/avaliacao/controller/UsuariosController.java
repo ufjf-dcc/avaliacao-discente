@@ -38,6 +38,8 @@ public class UsuariosController extends GenericController {
 		return cmbCurso;
 	}
 
+	
+	
 	@Command
 	public void setCmbCurso(@BindingParam("cmbCurso") Combobox cmbCurso) {
 		this.cmbCurso = cmbCurso;

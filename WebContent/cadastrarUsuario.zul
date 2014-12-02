@@ -15,7 +15,7 @@
 				<row>
 					<label value="Tipo de Usuário: " />
 					<combobox selectedItem="@bind(fm.tipoUsuario)"
-						readonly="true"
+						readonly="true" form="@load(c.cursos)"
 						onSelect="@command('desabilita', combobox=self)">
 						<comboitem label="Aluno" value="2"></comboitem>
 						<comboitem label="Coordenador" value="0"></comboitem>

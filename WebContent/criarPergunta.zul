@@ -1,57 +1,152 @@
 <?init class="br.ufjf.avaliacao.controller.AuthController"?>
-<window onCreate="@command('initCriarPergunta', window=self)"
-	width="600px" border="normal" title="Criar Pergunta"
-	apply="org.zkoss.bind.BindComposer"
-	viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AddRespostaEspecificaController')"
-	form="@id('fm') @load(vm.pergunta) @save(vm.pergunta, before='finalizar')"
-	closable="true">
-	<grid>
-		<auxhead>
-			<auxheader align="center" label="Tipo de Pergunta: ">
-				<combobox model="@load(vm.tiposPergunta)"
-					selectedItem="@bind(fm.tipoPergunta)" readonly="true">
-					<template name="model">
-						<comboitem
-							label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Caixa de Seleção' : each eq 2 ? 'Múltipla Escolha' : 'Escala')" />
-					</template>
-				</combobox>
-			</auxheader>
-		</auxhead>
-		<columns></columns>
-	</grid>
-	<grid model="@load(vm.respostas)">
-		<columns>
-			<column align="center" label="Título" />
-			<column align="center" label="Opções" />
-		</columns>
-		<template name="model">
-			<row>
-				<textbox value="@bind(each.respostaEspecifica)" />
-				<div style="text-align:center">
-					<button image="/img/delete.png"
-						onClick="@command('excluiResposta', resposta=each)" />
-					<button image="/img/up.png"
-						onClick="@command('up', resposta=each)"
-						disabled="@load(not (forEachStatus.index eq forEachStatus.begin) ? 'false' : 'true')" />
-					<button image="/img/down.png"
-						onClick="@command('down', resposta=each)"
-						disabled="@load(not (forEachStatus.index + 1 eq forEachStatus.end) ? 'false' : 'true')" />
+<zk style="text-align:center;" title=""  >
+		<div apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.QuestionariosController')">
+
+		<!-- Criação da pergunta e de suas respostas -->
+		
+		<div>
+			<label visible="false" id="index" value="@load(vm.novoIndex)" />
+				<div>
+					<label  value="Pergunta: " style="font-weight: bold"/><textbox value="@load(vm.tituloPergunta)" width="80%" onChange="@command('mudancaTituloPergunta',titulo=self.value,index=index.value)"  />
 				</div>
-			</row>
-		</template>
-	</grid>
-	<div form="@id('fx') @load(vm.resposta) @save(vm.resposta, before='addNewResposta')">
-		<grid>
-			<columns>
-				<column align="center" />
-				<column align="center" />
-			</columns>
-			<rows>
-				<row>
-					<textbox value="@bind(fx.respostaEspecifica)" />
-					<button label="Adicionar" onClick="@command('addNewResposta')" />
-				</row>
-			</rows>
-		</grid>
+				<separator />
+				<label value="Tipo de Pergunta:" style="font-weight: bold" />
+				<combobox id="combo" model="@load(vm.tiposPergunta)"
+							selectedItem="@load(vm.tipoPergunta)"
+							onChange="@command('tipoPergunta', div=spinner, div2=addOpcao ,index=index.value,combo=combo)"
+							readonly="true" >
+							<template name="model">
+								<comboitem
+									label="@load(each eq 0 ? 'Texto' : each eq 1 ? 'Caixa de Seleção' : each eq 2 ? 'Múltipla Escolha' : 'Escala Numérica')" />
+							</template>
+						</combobox>
+					
+				<label value="   Obrigatoriedade:" style="font-weight: bold" />
+					<checkbox id="check" value="@load('obrigatorio_inicio')" onCheck="@command('obrigatorio',check=self,index=index.value)" />
+						<separator />
+						<div>
+							<button label="Duplicar" onClick="@command('duplicarPergunta',index=index.value)"/>
+							<button label="Deletar" onClick="@command('deletarPergunta',index=index.value)"/>
+						</div>
+						
+						
+		
+			<div	align="center"
+					form="@id('fr') @load(vm.resposta) @save(vm.resposta, before='addRespostaEspecifica')">
+					<separator />
+					<div height="20px" id="spinner"
+						visible="false">
+						<label value="De: " />
+						<spinner value="@load(vm.spinnerInicio)"
+							width="60px" readonly="true" constraint="min 0" onChange="@command('valorSpinnerInicio',valor=self.value,index=index.value)" />
+						<label value=" à " />
+						<spinner value="@load(vm.spinnerFinal)"
+						width="60px" readonly="true" constraint="min 0" onChange="@command('valorSpinnerFinal',valor=self.value,index=index.value)"/>
+					</div>
+			</div>
+
+
+
+		<div style="padding: 10px;" id="addOpcao" visible="false">
+			<panel collapsible="false" id="panel">
+				<panelchildren>
+					<listbox fixedLayout="true" id="lstTimesheet"  >
+						<listhead>
+							<listheader label="Alternativas" />
+							<listheader width="150px">
+								<button label="Adicionar pergunta" id="addRecord" onClick="addRow()"/>
+							</listheader>
+						</listhead>
+						<listitem onCreate="@command('novoListItem',li = self)">
+							<listcell><textbox onChange="@command('atualizar',txt = self.value)" width="100%" id="0" ></textbox></listcell>
+							<listcell><button label="Remove" onClick="removeRow(self.getParent().getParent())"/></listcell>
+						</listitem>
+						<listitem visible="false">
+							<listcell><textbox onChange="@command('atualizar',txt = self.value)"></textbox></listcell>
+							<listcell><button label="Remove" onClick="removeRow(self.getParent().getParent())"/></listcell>
+						</listitem>
+					</listbox>
+				</panelchildren>
+			</panel>
+	
+
+			<zscript><![CDATA[
+			  import java.text.SimpleDateFormat;
+			  
+				Listitem baseItem = lstTimesheet.getItemAtIndex(lstTimesheet.getItemCount()-1);
+				void addRow() {
+					Listitem listitem = (Listitem)baseItem.clone();
+					((Textbox)listitem.getChildren().get(0).getChildren().get(0)).setWidth("100%");
+					listitem.setVisible(true);
+					lstTimesheet.insertBefore(listitem, baseItem);
+				}
+				
+				void removeRow(Object object) {
+					if(lstTimesheet.getItemCount() > 2 ) {
+						lstTimesheet.removeChild((Listitem)object);
+					}
+				}
+				
+			
+			]]></zscript>
+		</div>
 	</div>
-</window>
+	</div>
+	
+	  <timer id="timer" delay="500" repeats="true">
+       <attribute name="onTimer">
+       
+        if((boolean) session.getAttribute("mudar_combo"))
+        if(Integer.parseInt(index.getValue()) == (-1 + session.getAttribute("titulos").size()))
+        {
+        	combo.setSelectedItem(combo.getChildren().get((session.getAttribute("tipo_pergunta")).get((session.getAttribute("indice_duplicar_pergunta")))));
+       		(session.getAttribute("tipo_pergunta")).set(Integer.parseInt(index.getValue()),session.getAttribute("tipo_pergunta").get((session.getAttribute("indice_duplicar_pergunta"))));
+       		session.setAttribute("mudar_combo",false);
+       		
+   		
+       		if (session.getAttribute("tipo_pergunta").get((session.getAttribute("indice_duplicar_pergunta"))) == 0) {
+				addOpcao.setVisible(false);
+				spinner.setVisible(false);
+			} else {
+			if (session.getAttribute("tipo_pergunta").get((session.getAttribute("indice_duplicar_pergunta"))) == 3) {
+				addOpcao.setVisible(false);
+				spinner.setVisible(true);
+	
+			} else {
+				addOpcao.setVisible(true);
+				spinner.setVisible(false);
+			}
+		}
+       		timer.setRepeats(false);
+       	
+       	// PARTE DE DUPLICAR AS OPÇÕES
+      		Listitem aux = (session.getAttribute("primeiro_listitem")).get((session.getAttribute("indice_duplicar_pergunta")));
+      		Listitem aux2 = (session.getAttribute("primeiro_listitem")).get(Integer.parseInt(index.getValue()));
+			while(aux.getNextSibling() != null)
+			{
+				if(aux.getNextSibling().getNextSibling() != null)//para não fazer a copia extra
+				{
+					addRow();
+				}
+				((Textbox) aux2.getChildren().get(0).getChildren().get(0)).setValue(((Textbox) aux.getChildren().get(0).getChildren().get(0)).getValue());	
+				aux=(Listitem) aux.getNextSibling();	
+				aux2=(Listitem) aux2.getNextSibling();	
+			
+			}
+		
+		//DUPLICAR OBRIGATORIO
+			check.setChecked((session.getAttribute("obrigatorio")).get((int) session.getAttribute("indice_duplicar_pergunta")));
+			(session.getAttribute("obrigatorio")).add((int) session.getAttribute("indice_duplicar_pergunta")+1,(session.getAttribute("obrigatorio")).get((int) session.getAttribute("indice_duplicar_pergunta")));
+       	}
+       	
+       	else
+       	{
+     	  	timer.setRepeats(false);
+       	}
+
+		</attribute>
+    </timer>
+	
+	
+</zk>

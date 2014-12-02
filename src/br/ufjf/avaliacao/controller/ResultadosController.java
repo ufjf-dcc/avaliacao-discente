@@ -2,31 +2,22 @@ package br.ufjf.avaliacao.controller;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.plaf.basic.BasicBorders.RadioButtonBorder;
 
-import org.hibernate.mapping.Column;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.NotifyChange;
-import org.zkoss.zk.ui.Executions;
-import org.zkoss.zul.CategoryModel;
+import org.zkoss.zhtml.Messagebox;
 import org.zkoss.zul.Combobox;
-import org.zkoss.zul.Grid;
 import org.zkoss.zul.Iframe;
 import org.zkoss.zul.Image;
-import org.zkoss.zul.PieModel;
 import org.zkoss.zul.Radio;
-import org.zkoss.zul.Radiogroup;
 import org.zkoss.zul.Row;
-import org.zkoss.zul.SimpleCategoryModel;
-import org.zkoss.zul.SimplePieModel;
-import org.zkoss.zul.Window;
+
 
 import br.ufjf.avaliacao.model.Avaliacao;
 import br.ufjf.avaliacao.model.Disciplina;
@@ -44,7 +35,6 @@ import br.ufjf.avaliacao.persistent.impl.QuestionarioDAO;
 import br.ufjf.avaliacao.persistent.impl.RespostaDAO;
 import br.ufjf.avaliacao.persistent.impl.TurmaDAO;
 import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
-import bsh.org.objectweb.asm.Label;
 
 public class ResultadosController extends GenericController implements
 		Serializable {
@@ -168,11 +158,70 @@ public class ResultadosController extends GenericController implements
 	@Command
 	@NotifyChange("semestres")
 	// carregando e filtrando os semestres a serem escolhidos
-	public void carregarSemestres() {
+	public void carregarSemestres(@BindingParam("row") Row row,
+			@BindingParam("label") String label) {
 		semestres = new ArrayList<String>();
 		semestres.add("Todos");
 		TurmaDAO turmaDAO = new TurmaDAO();
 
+		
+		if(label.equals("Coordenador"))
+		{
+			((Combobox)(row.getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+			.getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+		
+			
+			
+		}
+		else if(label.equals("Aluno"))
+		{
+			((Combobox)(row.getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+			.getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			
+			
+		}
+		else if(label.equals("Professor"))
+		{
+			((Combobox)(row.getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+			.getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			
+		}
+		
+		
+		
+		
 		if (Integer.parseInt(opcao) == 0) {
 			AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
 			if (avaCoor != null) {
@@ -274,8 +323,6 @@ public class ResultadosController extends GenericController implements
 			}
 		}
 		
-	
-		
 	}
 
 	
@@ -285,11 +332,7 @@ public class ResultadosController extends GenericController implements
 	// carregando e filtrando os questionarios a serem escolhidos
 	public void carregarQuestionarios() {
 		questionarios = new ArrayList<Questionario>();
-		Questionario todos = new Questionario();
-		todos.setTituloQuestionario("Todos");
-		questionarios.add(todos);
 		QuestionarioDAO questionarioDAO = new QuestionarioDAO();
-		questionario=todos;
 
 		if (Integer.parseInt(opcao) == 0)// coordenador
 			for (int i = 0; i < avaCoor.size(); i++)
@@ -349,7 +392,11 @@ public class ResultadosController extends GenericController implements
 	@Command
 	@NotifyChange("perguntas")
 	// carregando e filtrando os semstres a serem escolhidos
-	public void carregarPerguntas() {
+	public void carregarPerguntas(@BindingParam("row") Row row) {
+		
+		((Combobox)(row.getNextSibling()
+				.getChildren().get(1))).setValue("");
+		
 		perguntas = new ArrayList<Pergunta>();
 		if(perguntas.size()>0)
 			perguntaSelecionada=perguntas.get(0);
@@ -373,25 +420,24 @@ public class ResultadosController extends GenericController implements
 	public void carregarGraficos() {
 		
 		graficos = new ArrayList<Grafico>();
-		boolean texto=false;
-		
 		if(perguntaSelecionada!=null){
-			if(perguntaSelecionada.getRespostasEspecificasBanco().size()==0){
+			if(perguntaSelecionada.getTipoPergunta()==0){
 				Grafico aux = new Grafico("","/textos.zul");
 				aux.setNome("Texto");
 				graficos.add(aux);
-				texto=true;
 			}
 		}
 		
-		if(!texto){
-		Grafico aux = new Grafico("3d-pie","pie","/Highcharts/examples/3d-pie/index.htm");
+	if(perguntaSelecionada!=null)
+	if(perguntaSelecionada.getTipoPergunta()!=0)
+	{
+		Grafico aux = new Grafico("Gráfico de pizza 3D","pie","/Highcharts/examples/3d-pie/index.htm");
 		graficos.add(aux);
-		aux = new Grafico("3d-pie-donut","pie","/Highcharts/examples/3d-pie-donut/index.htm");
+		aux = new Grafico("Gráfico de donut 3D","pie","/Highcharts/examples/3d-pie-donut/index.htm");
 		graficos.add(aux);
-		aux = new Grafico("pie-basic","pie","/Highcharts/examples/pie-basic/index.htm");
+		aux = new Grafico("Gráfico de pizza","pie","/Highcharts/examples/pie-basic/index.htm");
 		graficos.add(aux);
-		aux = new Grafico("pie-semi-circle","pie","/Highcharts/examples/pie-semi-circle/index.htm");
+		aux = new Grafico("Gráfico de meia pizza","pie","/Highcharts/examples/pie-semi-circle/index.htm");
 		graficos.add(aux);
 		
 //		for(int i=0;i<focos.size();i++){
@@ -424,25 +470,30 @@ public class ResultadosController extends GenericController implements
 	@Command
 	public void gerarGrafico(@BindingParam("frame") Iframe frame) {
 	
-		if (Integer.parseInt(opcao) == 0) {// coorednador
+		if(perguntaSelecionada==null)
+		{
+			Messagebox.show("A escolha de parametros não foi efetuada corretamente");
+		}
+		else
+		if (Integer.parseInt(opcao) == 0) {// coordenador
 			getGraficoCoordenador();
 			frame.setSrc(getUrl());
 			frame.invalidate();
 			
 		}
-		if (Integer.parseInt(opcao) == 1) {// professor
+		else if (Integer.parseInt(opcao) == 1) {// professor
 			getGraficoProfessor();
 			frame.setSrc(getUrl());
 			frame.invalidate();
 		
 		}
-		if (Integer.parseInt(opcao) == 2) {// autoavali��o
+		else if (Integer.parseInt(opcao) == 2) {// autoavalição
 			getGraficoAutoavaliacao();
 			frame.setSrc(getUrl());
 			frame.invalidate();
 			
 		}
-		if (Integer.parseInt(opcao) == 3) {// infraestrutura
+		else if (Integer.parseInt(opcao) == 3) {// infraestrutura
 			getGraficoInfraestrutura();
 			frame.setSrc(getUrl());
 			frame.invalidate();
@@ -476,7 +527,7 @@ public class ResultadosController extends GenericController implements
 	
 	public void getGraficoCoordenador() {
 		List<Resposta> respostas;
-
+	
 		RespostaDAO respostaDAO = new RespostaDAO();
 		if (coordenador.getNome() != "Todos") {
 			if (semestre != "Todos") {
@@ -666,9 +717,9 @@ public class ResultadosController extends GenericController implements
 
 	public void getGraficoProfessor() {
 		List<Resposta> respostas;
+		
 
 		RespostaDAO respostaDAO = new RespostaDAO();
-		
 		if (professor.getNome() != "Todos") {
 			if (semestre != "Todos") {
 				if (turma.getDisciplina().getNomeDisciplina() != "Todas") {
@@ -698,6 +749,7 @@ public class ResultadosController extends GenericController implements
 				}
 			}
 		}
+		
 
 		//cada grafico é tratado de uma maneira diferente
 				if(grafico.getTipo()=="pie"){// se o tipo de grafico a ser exibido é do tipo pie
@@ -731,7 +783,8 @@ public class ResultadosController extends GenericController implements
 				}
 				
 				
-				if(grafico.getTipo()=="area" || grafico.getTipo()=="linha" || grafico.getTipo()=="barra" || grafico.getTipo()=="coluna"){
+				if(grafico.getTipo()=="area" || grafico.getTipo()=="linha" || grafico.getTipo()=="barra" || grafico.getTipo()=="coluna")
+				{
 					
 					
 					int quantItens=0;
@@ -940,9 +993,10 @@ public class ResultadosController extends GenericController implements
 					
 				}
 				
+				System.out.println(grafico.getURL());
 				session.setAttribute("grafico", grafico);
 				session.setAttribute("respostas", respostas);
-				if(perguntaSelecionada.getRespostasEspecificasBanco().size()==0)
+				if(perguntaSelecionada.getTipoPergunta()==0)
 					url="/texto.zul";
 				
 	}
@@ -1336,25 +1390,58 @@ public class ResultadosController extends GenericController implements
 		switch (opcao) {
 		case "0":// coordenador
 			row.getNextSibling().setVisible(false);// professor
+			
+		
+			
 			row.getNextSibling().getNextSibling().setVisible(true);// coordenador
+		
+			
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.setVisible(false);// aluno
+						
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().setVisible(true);// semestre para
 														// coordenador
+				
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().setVisible(false);// semestre
 																			// para
 																			// professor
+			
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling()
 					.setVisible(false);// turma
+			
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().setVisible(true);// questionario
+			
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().setVisible(true);// pergunta
+		
+			
+			((Combobox)(row.getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+			.getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			
 			radioProfessor.setVisible(false);
 			radioCoordenador.setVisible(true);
 			radioAluno.setVisible(false);
@@ -1383,6 +1470,30 @@ public class ResultadosController extends GenericController implements
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().setVisible(true);// pergunta
+			
+			((Combobox)(row.getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+			.getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			
+			
+			
 			radioProfessor.setVisible(true);
 			radioCoordenador.setVisible(false);
 			radioAluno.setVisible(false);
@@ -1411,6 +1522,29 @@ public class ResultadosController extends GenericController implements
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().setVisible(true);// pergunta
+			
+			
+			((Combobox)(row.getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+			.getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			
 			radioProfessor.setVisible(false);
 			radioCoordenador.setVisible(false);
 			radioAluno.setVisible(true);
@@ -1436,6 +1570,29 @@ public class ResultadosController extends GenericController implements
 			row.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().getNextSibling()
 					.getNextSibling().getNextSibling().setVisible(true);// pergunta
+			
+			
+			((Combobox)(row.getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+			.getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			((Combobox)(row.getNextSibling().getNextSibling().getNextSibling()
+					.getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getChildren().get(1))).setValue("");
+			
 			radioProfessor.setVisible(false);
 			radioCoordenador.setVisible(false);
 			radioAluno.setVisible(false);

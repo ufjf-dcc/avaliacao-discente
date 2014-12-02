@@ -9,7 +9,8 @@
 				href="/questionarios.zul" />
 			<menuitem label="Vizualizar Resultados"
 				href="/resultados.zul" />
-			<menuitem label="Opções" />
+			<menuitem label="Opções" 
+				href="/opcoesCoordenador.zul" />
 			<menuitem label="Sair" onClick="@command('exit')" />
 		</menubar>
 	</div>

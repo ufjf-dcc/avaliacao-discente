@@ -2,6 +2,7 @@ package br.ufjf.avaliacao.controller;
 
 import java.util.Map;
 
+import org.zkoss.bind.annotation.Command;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Page;
 import org.zkoss.zk.ui.Session;
@@ -25,5 +26,13 @@ public class AuthController implements Initiator {
 			return;
 		}
 		Clients.clearBusy();
+	}
+	
+	@Command
+	public void exit(){
+		System.out.println("testeAuthcontroller");
+		Session session = Sessions.getCurrent();
+		session.setAttribute("usuario",null);
+		Executions.sendRedirect("/index.zul");
 	}
 }

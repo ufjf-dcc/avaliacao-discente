@@ -4,7 +4,7 @@
 <zk>
 	<div apply="org.zkoss.bind.BindComposer"
 		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.LoginController')"
-		form="@id('fx') @load(vm.usuario) @save(vm.usuario, before='submit')"
+		form="@id('fx')"
 		id="loginForm"
 		style="position:absolute; top:30%; left:50%; margin-left:-150px;">
 		<panel style="text-align:center;" title="Login" border="normal"
@@ -16,23 +16,38 @@
 					</columns>
 					<rows>
 						<row>
-							<label value="E-mail: " />
-							<textbox width="150px"
-								value="@bind(fx.email)"
-								onOK="@command('submit', panel=loginForm)" />
+							<label value="Usuario: " />
+							<textbox id="login" width="150px"
+								/>
 						</row>
 						<row>
 							<label value="Senha: " />
-							<textbox width="150px" type="password"
-								value="@bind(fx.senha)"
-								onOK="@command('submit', panel=loginForm)" />
+							<textbox id="senha" width="150px" type="password"
+								/>
 						</row>
-						<row>
-							<cell colspan="2">
+						<row id="matricula" visible="false">
+							<label value="Matricula ativa: " />
+							<combobox id="combo" width="155px" readonly="true">
+							</combobox>	
+						</row>
+						
+						<row> <!-- 	botao para cadastro -->
+							<cell id="cadastro" colspan="2" visible="false">
 								<button label="Entrar"
-									onClick="@command('submit', panel=loginForm)" />
+									onClick="@command('cadastrar', panel=loginForm,row=matricula ,login=login.value,senha=senha.value,combo=combo.value)" />
+									
 							</cell>
 						</row>
+						
+						<row> <!-- 	botao para login -->
+							<cell colspan="2">
+								<button label="Entrar"
+									onClick="@command('submit', panel=loginForm,row=matricula ,login=login.value,senha=senha.value,botao=cadastro,botao2=self)" />
+									
+							</cell>
+						</row>
+						
+
 					</rows>
 				</grid>
 			</panelchildren>
