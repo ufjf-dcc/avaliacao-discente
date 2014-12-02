@@ -21,11 +21,12 @@ public class PrazoQuestionarioDAO extends GenericoDAO implements
 		try {
 			Query query = getSession()
 					.createQuery(
-							"SELECT p FROM PrazoQuestionario AS p LEFT JOIN FETCH p.questionario AS q WHERE q = :questionario");
+							"SELECT p FROM PrazoQuestionario AS p  WHERE p.questionario = :questionario");
 			query.setParameter("questionario", questionario);
 
 			@SuppressWarnings("unchecked")
-			List<PrazoQuestionario> prazos = query.list();
+			List<PrazoQuestionario> prazos = new ArrayList<PrazoQuestionario>();
+			prazos.addAll(query.list());
 
 			getSession().close();
 

@@ -66,7 +66,7 @@ public class UsuariosController extends GenericController {
 			usuarios.remove(usuario);
 		} else {
 			Messagebox
-					.show("Impossível excluir. O professor está associado a alguma turma.");
+					.show("ImpossÃ­vel excluir. O professor estÃ¡ associado a alguma turma.");
 		}
 	}
 
@@ -74,11 +74,11 @@ public class UsuariosController extends GenericController {
 	@NotifyChange({ "usuarios", "usuario" })
 	public void cadastra() throws HibernateException, Exception {
 		UsuarioBusiness usuarioBusiness = new UsuarioBusiness();
-		if (!usuarioBusiness.cadastroValido(usuario)) {
+		if (!usuarioBusiness.cadatroValido(usuario)) {
 			Messagebox.show("Preencha todos os campos!");
 		} else if (usuarioBusiness.cadastrado(usuario.getEmail(),
 				usuario.getNome())) {
-			Messagebox.show("Nome e/ou email já cadastrado!");
+			Messagebox.show("Nome e/ou email jÃ¡ cadastrado!");
 		} else {
 			if (usuario.getTipoUsuario() == 1)
 				usuario.setCurso(null);
@@ -104,13 +104,13 @@ public class UsuariosController extends GenericController {
 	public void confirm(@BindingParam("usuario") Usuario usuario)
 			throws HibernateException, Exception {
 		UsuarioBusiness business = new UsuarioBusiness();
-		if (business.cadastroValido(usuario)) {
+		if (business.cadatroValido(usuario)) {
 			changeEditableStatus(usuario);
 			UsuarioDAO usuarioDAO = new UsuarioDAO();
 			usuarioDAO.editar(usuario);
 			refreshRowTemplate(usuario);
 		} else {
-			Messagebox.show("Usuário já cadastrado ou inválido");
+			Messagebox.show("UsuÃ¡rio jÃ¡ cadastrado ou invÃ¡lido");
 		}
 	}
 
@@ -118,7 +118,7 @@ public class UsuariosController extends GenericController {
 	public void desabilita(@BindingParam("combobox") Combobox cmb) {
 		if (cmb.getValue().contains("Professor")) {
 			cmbCurso.setDisabled(true);
-			cmbCurso.setValue("Não se aplica");
+			cmbCurso.setValue("NÃ£o se aplica");
 		} else {
 			cmbCurso.setDisabled(false);
 			cmbCurso.setValue("");
@@ -137,7 +137,7 @@ public class UsuariosController extends GenericController {
 		Media media = evt.getMedia();
 		if (!media.getName().contains(".csv")) {
 			Messagebox
-					.show("Este não é um arquivo válido! Apenas CSV são aceitos.");
+					.show("Este nÃ£o Ã© um arquivo vÃ¡lido! Apenas CSV sÃ£o aceitos.");
 			return;
 		}
 		try {

@@ -1,5 +1,8 @@
 package br.ufjf.avaliacao.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.HibernateException;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.zk.ui.Executions;
@@ -8,7 +11,9 @@ import org.zkoss.zk.ui.Sessions;
 
 
 import br.ufjf.avaliacao.business.UsuarioBusiness;
+import br.ufjf.avaliacao.model.Curso;
 import br.ufjf.avaliacao.model.Usuario;
+import br.ufjf.avaliacao.persistent.impl.CursoDAO;
 
 public class GenericController {
 
@@ -84,12 +89,17 @@ public class GenericController {
 		usuario = (Usuario) session.getAttribute("usuario");
 		usuarioBusiness = new UsuarioBusiness();
 		if (usuarioBusiness.checaLogin(usuario)) {
-			if (usuario.getTipoUsuario() != Usuario.PROFESSOR
-					|| !(usuario.getCurso().getCoordenador()== usuario
-					|| usuario.getCurso().getViceCoordenador()== usuario)) {
-				
-				Executions.sendRedirect("/home.zul");
+			CursoDAO cDAO = new CursoDAO();
+			List<Curso> cursos = new ArrayList<Curso>();
+			for(int i=0;i<cursos.size();i++)
+			{
+				if (usuario.getTipoUsuario() != Usuario.PROFESSOR
+						|| cDAO.getCursoCoordenadorOuViceUsuario(usuario)!=null) {
+					
+					Executions.sendRedirect("/home.zul");
+				}
 			}
+			
 		} else {
 			Executions.sendRedirect("/index.zul");
 			usuario = new Usuario();
@@ -102,15 +112,21 @@ public class GenericController {
 			int tipoUsuario = usuario.getTipoUsuario();
 			if (tipoUsuario == Usuario.PROFESSOR)
 			{
-				if(usuario.getCurso().getCoordenador()==usuario || usuario.getCurso().getViceCoordenador()==usuario)
+				CursoDAO cDAO = new CursoDAO();
+				usuario.setCurso(cDAO.getCursoCoordenadorOuViceUsuario(usuario));
+				if(cDAO.getCursoCoordenadorOuViceUsuario(usuario)!=null)
 				{
 					return "/menuCoordenador.zul";
 				}
 				else 
+				{
 					return "/menuProfessor.zul";
+				}
 			}
 			if (tipoUsuario == Usuario.ALUNO)
+			{
 				return "/menuAluno.zul";
+			}
 			return "/menuAdministrador.zul";
 		}
 		return null;

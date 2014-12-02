@@ -11,11 +11,11 @@ import br.ufjf.avaliacao.persistent.IMatriculaDAO;
 
 public class MatriculaDAO extends GenericoDAO implements IMatriculaDAO{
 
-	public List<Matricula> getMatriculas(Usuario usuario) {
+	public List<Matricula> getMatriculasUsuario(Usuario usuario) {
 		try {
 			Query query = getSession().createQuery(
 					"SELECT m FROM Matricula AS m WHERE m.usuario = :usuario");
-			query.setParameter("usaurio", usuario);
+			query.setParameter("usuario", usuario);
 
 			List<Matricula> matriculas = query.list();
 			getSession().close();

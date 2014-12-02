@@ -100,8 +100,8 @@ public class QuestionariosController extends GenericController {
 	
 	@Command
 	public void criarQuest() { // seta novos parametros para um novo questionario e abre a janela de questionario
-		// a ideia é pegar todos os valores da pagina do zk, e ao final, quando pedir para salvar, faz a verificação dos valores se for o caso salva o uqestionario e as perguntas
-		//algumas funções foram alterados para se adaptarem ao zul mas d
+		// a ideia Ã© pegar todos os valores da pagina do zk, e ao final, quando pedir para salvar, faz a verificaÃ§Ã£o dos valores se for o caso salva o uqestionario e as perguntas
+		//algumas funÃ§Ãµes foram alterados para se adaptarem ao zul mas d
 		
 		session.setAttribute("indice_tab", 0);
 		session.setAttribute("lista_de_objetos",new ArrayList<ArrayList<String>>());
@@ -149,24 +149,24 @@ public class QuestionariosController extends GenericController {
 	{
 		if(tipo_questionario==-1)//verifica o tipo de questionario
 		{
-			Messagebox.show("Escolha o tipo de questionário");
+			Messagebox.show("Escolha o tipo de questionÃ¡rio");
 			return false;
 		}
 		GenericBusiness gb = new GenericBusiness();//verifica o titulo do questionario
 		if(!gb.campoStrValido(titulo_questionario))
 		{
-			Messagebox.show("Preencha corretamente o titulo do questionário");
+			Messagebox.show("Preencha corretamente o titulo do questionÃ¡rio");
 			return false;
 		}
 		for(int i=0;i<((List<String>)session.getAttribute("titulos")).size();i++)// verifica o titulo de cada pergunta
 		{
 			if(!gb.campoStrValido(((List<String>)session.getAttribute("titulos")).get(i)))
 			{
-				Messagebox.show("O titulo de alguma pergunta não está preenchido corretamente");
+				Messagebox.show("O titulo de alguma pergunta nÃ£o estÃ¡ preenchido corretamente");
 				return false;
 			}
 		}
-		for(int i=0;i<((List<Integer>) session.getAttribute("tipo_pergunta")).size();i++)// verifica as opções
+		for(int i=0;i<((List<Integer>) session.getAttribute("tipo_pergunta")).size();i++)// verifica as opÃ§Ãµes
 		{
 			if(((List<Integer>) session.getAttribute("tipo_pergunta")).get(i)==1 
 					|| ((List<Integer>) session.getAttribute("tipo_pergunta")).get(i)==2)
@@ -187,7 +187,7 @@ public class QuestionariosController extends GenericController {
 					
 					if(quantidade_validos == 0)
 					{
-						Messagebox.show("Existe alguma pergunta em que as opções não foram preenhidas corretamente");
+						Messagebox.show("Existe alguma pergunta em que as opÃ§Ãµes nÃ£o foram preenhidas corretamente");
 						return false;
 					}
 			}
@@ -197,7 +197,7 @@ public class QuestionariosController extends GenericController {
 			if(((List<Integer>) session.getAttribute("tipo_pergunta")).get(i)==3)
 			if(((List<Integer>)session.getAttribute("spinnerInicio")).get(i)>=((List<Integer>)session.getAttribute("spinnerFinal")).get(i))
 			{
-				Messagebox.show("Existe alguma pergunta em que os spinners não foram preenhidos corretamente");
+				Messagebox.show("Existe alguma pergunta em que os spinners nÃ£o foram preenhidos corretamente");
 				return false;
 			}
 		}
@@ -207,7 +207,7 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	public void salvarQuestionario()//salva o questionario e suas informações no banco de dados
+	public void salvarQuestionario()//salva o questionario e suas informaÃ§Ãµes no banco de dados
 	{
 		
 		if(questionarioValido())
@@ -264,7 +264,7 @@ public class QuestionariosController extends GenericController {
 					}
 				}	
 			}
-			Messagebox.show("Questionário salvo", "Concluído",
+			Messagebox.show("QuestionÃ¡rio salvo", "ConcluÃ­do",
 					Messagebox.OK, Messagebox.INFORMATION,
 					new EventListener<Event>() {
 						@Override
@@ -287,7 +287,7 @@ public class QuestionariosController extends GenericController {
 		}
 		else
 		{
-			Messagebox.show("O questionário não pode excluido pois possui prazos e alguem pode estar avaliando agora", "Concluido", Messagebox.OK,
+			Messagebox.show("O questionÃ¡rio nÃ£o pode excluido pois possui prazos e alguem pode estar avaliando agora", "Concluido", Messagebox.OK,
 					Messagebox.INFORMATION, new EventListener<Event>() {
 						@Override
 						public void onEvent(Event event) throws Exception {
@@ -312,7 +312,7 @@ public class QuestionariosController extends GenericController {
 	}
 	
 	@Command
-	public void novoListItem(@BindingParam("li") Listitem li) // para cada mudanca de algum valor de alguma linha no opcoes.zul aqui essa alteração tambem será computada
+	public void novoListItem(@BindingParam("li") Listitem li) // para cada mudanca de algum valor de alguma linha no opcoes.zul aqui essa alteraÃ§Ã£o tambem serÃ¡ computada
 	{
 		((List<Listitem>)session.getAttribute("primeiro_listitem")).add(li);
 	}
@@ -321,13 +321,13 @@ public class QuestionariosController extends GenericController {
 
 	@Command
 	public void tabInicial(@BindingParam("tab") Tab tab) 
-	{ // seta a tab inicial, que a partir dela é possivel chegar a todas as outras
+	{ // seta a tab inicial, que a partir dela Ã© possivel chegar a todas as outras
 		((List<Tab>) session.getAttribute("tabs")).add(tab);
 		session.setAttribute("inicial_tab", tab);
 	}
 
 
-	@Command //seta variaveis para dizer que é necessario duplicar os itens de uma pergunta
+	@Command //seta variaveis para dizer que Ã© necessario duplicar os itens de uma pergunta
 	public void duplicarPergunta(@BindingParam("index") String index) {
 		int indice = Integer.parseInt(index);
 		
@@ -345,7 +345,7 @@ public class QuestionariosController extends GenericController {
 
 
 	@Command
-	public void deletarPergunta(@BindingParam("index") String index)//deleta pergunta(apenas as informações relacionadas para a pergunta na hora de criar o questionario, não esta relacionado a banco de dados ou a edição de questionario)
+	public void deletarPergunta(@BindingParam("index") String index)//deleta pergunta(apenas as informaÃ§Ãµes relacionadas para a pergunta na hora de criar o questionario, nÃ£o esta relacionado a banco de dados ou a ediÃ§Ã£o de questionario)
 	{
 		int indice = Integer.parseInt(index);
 	
@@ -358,7 +358,7 @@ public class QuestionariosController extends GenericController {
 
 
 	@Command
-	public void tipoPergunta(@BindingParam("div") Div div, //seta no zul e no questionario na hora da criação os componentes que devem ficar visiveis e guarda informações sobre as mudaas de tipo de questionario
+	public void tipoPergunta(@BindingParam("div") Div div, //seta no zul e no questionario na hora da criaÃ§Ã£o os componentes que devem ficar visiveis e guarda informaÃ§Ãµes sobre as mudaas de tipo de questionario
 			@BindingParam("div2") Div div2, @BindingParam("index") String index,
 			@BindingParam("combo") Combobox combo) {
 		
@@ -376,17 +376,17 @@ public class QuestionariosController extends GenericController {
 		}
 		else if (combo.getSelectedIndex() == 1)
 		{
-			tipo = "Caixa de Seleção";
+			tipo = "Caixa de SeleÃ§Ã£o";
 			escolhido = 1;
 		}
 		else if (combo.getSelectedIndex() == 2)
 		{
-			tipo = "Múltipla Escolha";
+			tipo = "MÃºltipla Escolha";
 			escolhido = 2;
 		}
 		else
 		{
-			tipo = "Escala Numérica";	
+			tipo = "Escala NumÃ©rica";	
 			escolhido = 3;
 		}
 		
@@ -413,7 +413,7 @@ public class QuestionariosController extends GenericController {
 
 
 	
-	public String getTituloPergunta()// retorna um valor para o zul pegar como titulo da pergunta, caso seja uma duplicação, o valor passado sera a da pergunta a ser duplicada
+	public String getTituloPergunta()// retorna um valor para o zul pegar como titulo da pergunta, caso seja uma duplicaÃ§Ã£o, o valor passado sera a da pergunta a ser duplicada
 	{
 		if((boolean) session.getAttribute("duplicar_pergunta"))// usado para Duplicar os valores
 		{
@@ -429,7 +429,7 @@ public class QuestionariosController extends GenericController {
 		}
 	
 			
-		((List<String>) session.getAttribute("titulos")).add("");//add um novo espaço para fazer as operações
+		((List<String>) session.getAttribute("titulos")).add("");//add um novo espaÃ§o para fazer as operaÃ§Ãµes
 		return "";
 	}
 
@@ -440,10 +440,10 @@ public class QuestionariosController extends GenericController {
 	}
 
 	@Command
-	public void atualizar(@BindingParam("txt") String txt){} // usado para forçar a atualização dos valores das opções
+	public void atualizar(@BindingParam("txt") String txt){} // usado para forÃ§ar a atualizaÃ§Ã£o dos valores das opÃ§Ãµes
 	
-	@Command // salva nas informações a repeito do questionario as mudanças de titulo da pergunta, alem de setar variaveis para dizer para o zul mudar o titulo da tab
-	public void mudancaTituloPergunta(@BindingParam("titulo") String titulo,@BindingParam("index") String index)// para cada mudança no titulo da pergunta, ela será salva em seu respectivo lugar
+	@Command // salva nas informaÃ§Ãµes a repeito do questionario as mudanÃ§as de titulo da pergunta, alem de setar variaveis para dizer para o zul mudar o titulo da tab
+	public void mudancaTituloPergunta(@BindingParam("titulo") String titulo,@BindingParam("index") String index)// para cada mudanÃ§a no titulo da pergunta, ela serÃ¡ salva em seu respectivo lugar
 	{
 		int indice = Integer.parseInt(index);
 		((List<String>) session.getAttribute("titulos")).set(indice,titulo);
@@ -459,7 +459,7 @@ public class QuestionariosController extends GenericController {
 	}
 	
 	@Command
-	public int getNovoIndex() { // informa qual é o proximo valor de indice(usado para cada frame saber a qual pergunta pertence)
+	public int getNovoIndex() { // informa qual Ã© o proximo valor de indice(usado para cada frame saber a qual pergunta pertence)
 		session.setAttribute("indice_tab", 1 + (int) session.getAttribute("indice_tab"));
 		session.setAttribute("ultimo_indice_acessado",((int) session.getAttribute("indice_tab") - 1));
 		return ((int) session.getAttribute("indice_tab") - 1);
@@ -467,7 +467,7 @@ public class QuestionariosController extends GenericController {
 	
 
 	@Command
-	public int getIndex() {// retorna um idice que que é salvo no zul da pergunta como um label, para controlar a respeito de qual pergunta está havendo mudança
+	public int getIndex() {// retorna um idice que que Ã© salvo no zul da pergunta como um label, para controlar a respeito de qual pergunta estÃ¡ havendo mudanÃ§a
 		return ((int) session.getAttribute("indice_tab")-1);
 	}
 	
@@ -484,14 +484,14 @@ public class QuestionariosController extends GenericController {
 	}
 	
 	@Command
-	public void valorSpinnerInicio(@BindingParam("valor") int valor,@BindingParam("index") String index)// seta novos valores de spinner a cada vez que ele for modificado, o valor é guardado em seu devido lugar
+	public void valorSpinnerInicio(@BindingParam("valor") int valor,@BindingParam("index") String index)// seta novos valores de spinner a cada vez que ele for modificado, o valor Ã© guardado em seu devido lugar
 	{	
 		int indice = Integer.parseInt(index);
 		((List<Integer>) session.getAttribute("spinnerInicio")).set(indice,valor);
 	}
 	
 	@Command
-	public void valorSpinnerFinal(@BindingParam("valor") int valor,@BindingParam("index") String index)// seta novos valores de spinner a cada vez que ele for modificado, o valor é guardado em seu devido lugar
+	public void valorSpinnerFinal(@BindingParam("valor") int valor,@BindingParam("index") String index)// seta novos valores de spinner a cada vez que ele for modificado, o valor Ã© guardado em seu devido lugar
 	{	
 		int indice = Integer.parseInt(index);
 		((List<Integer>) session.getAttribute("spinnerFinal")).set(indice,valor);
@@ -510,7 +510,7 @@ public class QuestionariosController extends GenericController {
 		((List<Boolean>) session.getAttribute("obrigatorio")).set(indice,cbox.isChecked());
 	}
 	
-	public boolean getObrigatorio_inicio()// da um valor padrão para obrigatoriedade
+	public boolean getObrigatorio_inicio()// da um valor padrÃ£o para obrigatoriedade
 	{
 		if((boolean) session.getAttribute("duplicar_pergunta"))// usado para Duplicar os valores
 		{
@@ -520,7 +520,7 @@ public class QuestionariosController extends GenericController {
 		return false;
 	}
 	
-	public int getTipoPergunta() {// retorna o tipo da pergunta, se for uma duplicação ela carrega as informações para repassar
+	public int getTipoPergunta() {// retorna o tipo da pergunta, se for uma duplicaÃ§Ã£o ela carrega as informaÃ§Ãµes para repassar
 		if(((boolean) session.getAttribute("criando_tab_tipo_pergunta"))==true)
 		{
 			if((boolean) session.getAttribute("duplicar_pergunta"))// usado para Duplicar os valores
@@ -539,9 +539,9 @@ public class QuestionariosController extends GenericController {
 		session.setAttribute("tipoPergunta", valor);
 	}
 	
-	public Integer getSpinnerInicio() {// retorna o valor inicial do spinnerInicio, se for uma duplicação ela carrega as informações para repassar
+	public Integer getSpinnerInicio() {// retorna o valor inicial do spinnerInicio, se for uma duplicaÃ§Ã£o ela carrega as informaÃ§Ãµes para repassar
 		
-		if((boolean) session.getAttribute("duplicar_pergunta"))// usado para Duplicar os valores, se está duplicando pega um valor do que ele está duplicando, se não ele seta o valor padrão
+		if((boolean) session.getAttribute("duplicar_pergunta"))// usado para Duplicar os valores, se estÃ¡ duplicando pega um valor do que ele estÃ¡ duplicando, se nÃ£o ele seta o valor padrÃ£o
 		{
 			((List<Integer>) session.getAttribute("spinnerInicio")).add(((List<Integer>) session.getAttribute("spinnerInicio")).get((int)session.getAttribute("indice_duplicar_pergunta")));
 			return ((List<Integer>) session.getAttribute("spinnerInicio")).get((int)session.getAttribute("indice_duplicar_pergunta"));
@@ -550,9 +550,9 @@ public class QuestionariosController extends GenericController {
 		return ((List<Integer>) session.getAttribute("spinnerInicio")).get(getIndex());
 	}
 
-	public Integer getSpinnerFinal() {// retorna o valor inicial do spinnerFinal, se for uma duplicação ela carrega as informações para repassar
+	public Integer getSpinnerFinal() {// retorna o valor inicial do spinnerFinal, se for uma duplicaÃ§Ã£o ela carrega as informaÃ§Ãµes para repassar
 		
-		if((boolean) session.getAttribute("duplicar_pergunta"))// // usado para Duplicar os valores, se está duplicando pega um valor do que ele está duplicando, se não ele seta o valor padrão
+		if((boolean) session.getAttribute("duplicar_pergunta"))// // usado para Duplicar os valores, se estÃ¡ duplicando pega um valor do que ele estÃ¡ duplicando, se nÃ£o ele seta o valor padrÃ£o
 		{
 			((List<Integer>) session.getAttribute("spinnerFinal")).add(((List<Integer>) session.getAttribute("spinnerFinal")).get((int) session.getAttribute("indice_duplicar_pergunta")));
 			session.setAttribute("duplicar_pergunta", false);
@@ -573,7 +573,7 @@ public class QuestionariosController extends GenericController {
 		window.doModal();
 	}
 
-	@Command//exibi um questionario ja pronto, alem de outras informações e funçoes
+	@Command//exibi um questionario ja pronto, alem de outras informaÃ§Ãµes e funÃ§oes
 	public void verQuest(@BindingParam("questionario") Questionario questionario) {
 		session.setAttribute("questionario", questionario);
 		Window window = (Window) Executions.createComponents(
@@ -602,7 +602,7 @@ public class QuestionariosController extends GenericController {
 		}
 		else
 		{
-			Messagebox.show("O sistema não tem um semestre referente a data atual, favor adicionar");
+			Messagebox.show("O sistema nÃ£o tem um semestre referente a data atual, favor adicionar");
 			Window window = (Window) Executions.createComponents(
 					"/semestres.zul", null, null);
 			window.doModal();
@@ -678,7 +678,7 @@ public class QuestionariosController extends GenericController {
 						.after(prazo.getDataInicial()))
 					invalido = false;
 				if (invalido) {
-					Messagebox.show("Não pode criar nessa data");
+					Messagebox.show("NÃ£o pode criar nessa data");
 					return false;
 				}
 			}
@@ -694,9 +694,9 @@ public class QuestionariosController extends GenericController {
 	@Command
 	public void exclui() {
 		/*
-		 * Exclusão do questionario funcionando. Faltam apenas fazer as
-		 * verificicações para ver se não está em vigor o prazo e se o
-		 * questionario já foi avaliado por alguém, consequentemente, suas
+		 * ExclusÃ£o do questionario funcionando. Faltam apenas fazer as
+		 * verificicaÃ§Ãµes para ver se nÃ£o estÃ¡ em vigor o prazo e se o
+		 * questionario jÃ¡ foi avaliado por alguÃ©m, consequentemente, suas
 		 * perguntas, respostas, e respostas especificas estao todas ligados.
 		 */
 		questionario = (Questionario) session.getAttribute("questionario");
@@ -709,7 +709,7 @@ public class QuestionariosController extends GenericController {
 		if (perguntaDAO.excluiLista(perguntas)) {
 			prazoDAO.excluiLista(prazos);
 			if (questionarioDAO.exclui(questionario)) {
-				Messagebox.show("Questionário Excluído", "Concluído",
+				Messagebox.show("QuestionÃ¡rio ExcluÃ­do", "ConcluÃ­do",
 						Messagebox.OK, Messagebox.INFORMATION,
 						new EventListener<Event>() {
 							@Override
@@ -764,6 +764,7 @@ public class QuestionariosController extends GenericController {
 	@NotifyChange("questionario")
 	public void ativa(@BindingParam("questionario") Questionario questionario,
 			@BindingParam("botao") Button botao) {
+		try{
 		if (!questionario.getPrazos().isEmpty()) {
 			boolean ativo = true;
 			for (Questionario q : listaQuestionarios(questionario
@@ -790,8 +791,14 @@ public class QuestionariosController extends GenericController {
 				label.setValue("Desativado");
 
 			}
+			Executions.sendRedirect(null);
 		} else
-			Messagebox.show("Questionário não possui prazo");
+			Messagebox.show("QuestionÃ¡rio nÃ£o possui prazo");
+		}
+		catch(Exception e)
+		{
+			
+		}
 	}
 
 	@Command
@@ -810,7 +817,7 @@ public class QuestionariosController extends GenericController {
 	}
 	
 	@Command
-	public void salvarPerguntaExibir(@BindingParam("panel") Panel panel, //salva as mudanças da exibição do zul
+	public void salvarPerguntaExibir(@BindingParam("panel") Panel panel, //salva as mudanÃ§as da exibiÃ§Ã£o do zul
 			@BindingParam("janela") Window janela)
 	{
 		RespostaEspecificaDAO respostaEspecificaDAO = new RespostaEspecificaDAO();
@@ -866,7 +873,7 @@ public class QuestionariosController extends GenericController {
 			}
 			else
 			{
-				Messagebox.show("As opções estão preenchidas incorretamente");
+				Messagebox.show("As opÃ§Ãµes estÃ£o preenchidas incorretamente");
 			}
 		}
 		else if(((Pergunta)session.getAttribute("pergunta_exibida")).getTipoPergunta()==3)
@@ -900,7 +907,7 @@ public class QuestionariosController extends GenericController {
 			}
 			else
 			{
-				Messagebox.show("O intervalo está preenchido incorretamente");
+				Messagebox.show("O intervalo estÃ¡ preenchido incorretamente");
 			}
 		}
 	}
@@ -917,7 +924,7 @@ public class QuestionariosController extends GenericController {
 	}
 	
 	@Command
-	public void excluirPerguntaExibir(@BindingParam("pergunta") Pergunta p, // excluir pergunta naa exibição
+	public void excluirPerguntaExibir(@BindingParam("pergunta") Pergunta p, // excluir pergunta naa exibiÃ§Ã£o
 			@BindingParam("botao") final Button botao)
 	{
 		this.pergunta = p;
@@ -1020,7 +1027,7 @@ public class QuestionariosController extends GenericController {
 		((Pergunta) session.getAttribute("pergunta_exibida")).setObrigatorio(obrigatorio);
 	}
 	
-	public List<RespostaEspecifica> getOpcoesExibir() //retorna todas as opçoes de uma pergunta em formato de string
+	public List<RespostaEspecifica> getOpcoesExibir() //retorna todas as opÃ§oes de uma pergunta em formato de string
 	{
 		return ((Pergunta) session.getAttribute("pergunta_exibida")).getRespostasEspecificasBanco();
 	}

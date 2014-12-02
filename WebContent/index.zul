@@ -43,7 +43,9 @@
 							<cell colspan="2">
 								<button label="Entrar"
 									onClick="@command('submit', panel=loginForm,row=matricula ,login=login.value,senha=senha.value,botao=cadastro,botao2=self)" />
-									
+								
+<!-- 								<button label="teste" -->
+<!-- 									onClick="@command('teste',usuario=login.value)" />	 -->
 							</cell>
 						</row>
 						

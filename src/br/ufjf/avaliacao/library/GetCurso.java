@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 
 import br.ufjf.avaliacao.model.Curso;
+import br.ufjf.avaliacao.persistent.impl.CursoDAO;
 
 public class GetCurso {
 	private static GetCurso instance = null;
@@ -46,7 +47,7 @@ public class GetCurso {
 		return null;
 	}
 	
-	private static String getInfoCurso(String matricula)
+	public static String getInfoCurso(String matricula)
 	{
 		if(matricula!=null)
 		if(matricula.length() >= 9)
@@ -61,14 +62,13 @@ public class GetCurso {
 		return null;
 	}
 	
-	private static String removerNumeros(String matricula)//a especializa��o do curso � dada em caracteres ao final da matricula
+	private static String removerNumeros(String matricula)//a especializaÃƒÂ¯Ã‚Â¿Ã‚Â½ÃƒÂ¯Ã‚Â¿Ã‚Â½o do curso ÃƒÂ¯Ã‚Â¿Ã‚Â½ dada em caracteres ao final da matricula
 	{
 		String letras = "";
 		for(int i=0;i<matricula.length();i++)
 		{
 			letras=letras+excessaoInteiro(matricula.charAt(i));
 		}
-		System.out.println(letras);
 		return letras;
 	}
 	
@@ -82,9 +82,8 @@ public class GetCurso {
 		return ""+caracter;
 	}
 	
-	private static Curso getConf(String key) {
-		if (instance == null)
-		{
+	public static Curso getConf(String key) {
+
 			instance = new GetCurso();
 		
 			String infoCursoAux =  instance.confs.get(key);
@@ -99,9 +98,12 @@ public class GetCurso {
 			curso.setNomeCurso(infoCurso.get(1));
 			curso.setTurno(infoCurso.get(2));
 			curso.setModalidade(infoCurso.get(3));
+			curso.setIdentificador(key);
 			
+				
 			return curso;
-		}
-		return null;
+		
 	}
+	
+	
 }

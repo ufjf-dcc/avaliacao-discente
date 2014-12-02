@@ -9,7 +9,6 @@ import java.util.List;
 import br.ufjf.avaliacao.library.ConfHandler;
 import br.ufjf.avaliacao.model.Matricula;
 import br.ufjf.avaliacao.model.Usuario;
-import br.ufjf.avaliacao.persistent.impl.MatriculaDAO;
 import br.ufjf.ice.integra3.ws.login.interfaces.IWsLogin;
 import br.ufjf.ice.integra3.ws.login.interfaces.Profile;
 import br.ufjf.ice.integra3.ws.login.interfaces.WsLoginResponse;
@@ -52,7 +51,7 @@ public class IntegraBusiness {
 			
 			Usuario usuario = new Usuario();
 			usuario.setNome(user.getName());
-			WsUserInfoResponse infos = integra.getUserInformation(user.getToken()); // Pegando informações
+			WsUserInfoResponse infos = integra.getUserInformation(user.getToken()); // Pegando informaÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Âµes
 			usuario.setCPF(infos.getCpf());
 			usuario.setEmail(infos.getEmailSiga());
 			
@@ -67,14 +66,14 @@ public class IntegraBusiness {
 				matriculas.add(matricula);
 			}
 			usuario.setMatriculas(matriculas);
-			if(profiles.get(0).getTipo()=="Aluno")
+			if(profiles.get(0).getTipo().equals("Aluno"))
 				usuario.setTipoUsuario(2);
 			
 			return usuario;
 			
 		}  catch (Exception e) {
-			//Impressão de erros
-			System.out.println("Problemas ao receber informa��es do Integra");
+			//ImpressÃƒÆ’Ã‚Â£o de erros
+			System.out.println("Problemas ao receber informaÃƒÂ¯Ã‚Â¿Ã‚Â½ÃƒÂ¯Ã‚Â¿Ã‚Â½es do Integra");
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}

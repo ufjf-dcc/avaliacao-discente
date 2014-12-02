@@ -58,6 +58,24 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 		return null;
 	}
 
+	public List<Questionario> getAllQuestionario()
+	{
+		try {
+			Query query = getSession()
+					.createQuery(
+							"SELECT q FROM Questionario AS q");
+			List<Questionario> questionarios = query.list();
+
+			getSession().close();
+
+			return questionarios;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public Questionario retornaQuestinarioAtivo(Curso curso,
 			Integer tipoQuestionario) {
 		try {
@@ -102,26 +120,26 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 	}
 
 	public Questionario retornaQuestinarioParaUsuarioCoord(Usuario usuario) {
-		try {
-			Query query = getSession()
-					.createQuery(
-							"SELECT q FROM Questionario AS q LEFT JOIN FETCH q.prazos WHERE q.curso = :curso AND q.ativo = :ativo AND q.tipoQuestionario = :tipoQuestionario");
-			query.setParameter("curso", usuario.getCurso());
-			query.setParameter("ativo", true);
-			query.setParameter("tipoQuestionario", Questionario.COORD);
-
-			Questionario questionario = (Questionario) query.uniqueResult();
-
-			getSession().close();
-
-			if (questionario != null)
-				return questionario;
-		} catch (Exception e) {
-			e.printStackTrace();
+		List<Questionario> quetsCoordenador = getAllQuestionario();
+		for(int i=0;i<quetsCoordenador.size();i++)
+		{
+			if(quetsCoordenador.get(i).getTipoQuestionario() == Questionario.COORD)
+			{
+				if(quetsCoordenador.get(i).getCurso().getIdentificador().equals(usuario.getCurso().getIdentificador()))
+				{
+					if(quetsCoordenador.get(i).isAtivo())
+					{
+						return quetsCoordenador.get(i);
+					}
+						
+				}
+			}
 		}
 		return null;
 	}
-
+	
+		
+	
 	public Questionario retornaQuestinarioParaUsuarioAutoAvaliacao(
 			Usuario usuario) {
 		try {
@@ -274,7 +292,7 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 
 	public List<Questionario> retornaQuestionariosSemestreAutoavaliacao(
 			String semestre, Curso curso) {// retornas os questionarios de um
-											// semestre para autoavalia��o
+											// semestre para autoavaliaï¿½ï¿½o
 		List<Questionario> questionarios = retornaQuestionariosSemestre(semestre);
 		for (int j = questionarios.size() - 1; j >= 0; j--)
 			if (questionarios.get(j).getTipoQuestionario() != 2
@@ -311,7 +329,8 @@ public class QuestionarioDAO extends GenericoDAO implements IQuestionarioDAO {
 
 	public PrazoQuestionario getPrazoSemestre(Questionario questionario,Semestre semestre)//retorna o o prazo dentro do semestre
 	{
-		List<PrazoQuestionario> prazos = questionario.getPrazos();
+		PrazoQuestionarioDAO pqDAO = new PrazoQuestionarioDAO();
+		List<PrazoQuestionario> prazos = pqDAO.getPrazos(questionario);
 		if(prazos.size()>0 && semestre!=null)
 		{
 			PrazoQuestionario auxPrazo = prazos.get(0);
