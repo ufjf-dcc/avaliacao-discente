@@ -23,7 +23,7 @@ import br.ufjf.avaliacao.persistent.impl.PerguntaDAO;
 import br.ufjf.avaliacao.persistent.impl.PrazoQuestionarioDAO;
 
 /**
- * DTO da Tabela {@code Questionario} contém os atributos e relacionamentos da
+ * DTO da Tabela {@code Questionario} contÃ©m os atributos e relacionamentos da
  * mesma.
  * 
  */
@@ -35,9 +35,9 @@ public class Questionario implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Campo com ID do questionário. Relaciona com a coluna
-	 * {@code idQuestionario} do banco e é gerado por autoincrement do MySQL
-	 * através das anotações {@code @GeneratedValue(generator = "increment")}
+	 * Campo com ID do questionÃ¡rio. Relaciona com a coluna
+	 * {@code idQuestionario} do banco e Ã© gerado por autoincrement do MySQL
+	 * atravÃ©s das anotaÃ§Ãµes {@code @GeneratedValue(generator = "increment")}
 	 * e {@code @GenericGenerator(name = "increment", strategy = "increment")}
 	 * 
 	 */
@@ -54,17 +54,17 @@ public class Questionario implements Serializable {
 	private Integer tipoQuestionario;
 
 	/**
-	 * Campo com a situação do questionário(ativo ou inativo). Relaciona com
-	 * a coluna {@code ativo} do banco através da anotação
+	 * Campo com a situaÃ§Ã£o do questionÃ¡rio(ativo ou inativo). Relaciona com
+	 * a coluna {@code ativo} do banco atravÃ©s da anotaÃ§Ã£o
 	 * {@code @Column(name = "ativo", nullable = false)}.
 	 */
 	@Column(name = "ativo", nullable = false)
 	private boolean ativo;
 
 	/**
-	 * Relacionamento 1 para N entre questionário e pergunta. Mapeada em
-	 * {@link Pergunta} pela variável {@code questionario} e retorno do tipo
-	 * {@code EAGER} que indica que será carregado automáticamente este dado
+	 * Relacionamento 1 para N entre questionÃ¡rio e pergunta. Mapeada em
+	 * {@link Pergunta} pela variÃ¡vel {@code questionario} e retorno do tipo
+	 * {@code EAGER} que indica que serÃ¡ carregado automÃ¡ticamente este dado
 	 * quando retornarmos o {@link Questionario} .
 	 * 
 	 */
@@ -73,8 +73,8 @@ public class Questionario implements Serializable {
 
 	/**
 	 * Relacionamento N para 1 entre questionario e curso. Mapeando
-	 * {@link Curso} na variável {@code curso} e retorno do tipo {@code LAZY}
-	 * que indica que não será carregado automáticamente este dado quando
+	 * {@link Curso} na variÃ¡vel {@code curso} e retorno do tipo {@code LAZY}
+	 * que indica que nÃ£o serÃ¡ carregado automÃ¡ticamente este dado quando
 	 * retornarmos o {@link Questionario}.
 	 * 
 	 */
@@ -84,9 +84,9 @@ public class Questionario implements Serializable {
 
 	/**
 	 * Relacionamento 1 para N entre questionario e prazoQuestionario. Mapeada
-	 * em {@link PrazoQuestionario} pela variável {@code questionario} e
-	 * retorno do tipo {@code LAZY} que indica que não será carregado
-	 * automáticamente este dado quando retornarmos a {@link Questionario} .
+	 * em {@link PrazoQuestionario} pela variÃ¡vel {@code questionario} e
+	 * retorno do tipo {@code LAZY} que indica que nÃ£o serÃ¡ carregado
+	 * automÃ¡ticamente este dado quando retornarmos a {@link Questionario} .
 	 * 
 	 */
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "questionario")
@@ -151,13 +151,13 @@ public class Questionario implements Serializable {
 
 	public String getNomeTipoQuestionario() {
 		if (tipoQuestionario == 0)
-			return "Avaliação de Coordenação";
+			return "AvaliaÃ§Ã£o de CoordenaÃ§Ã£o";
 		else if (tipoQuestionario == 1)
-			return "Avaliação de Professor";
+			return "AvaliaÃ§Ã£o de Professor";
 		else if (tipoQuestionario == 2)
-			return "Auto-Avaliação";
+			return "Auto-AvaliaÃ§Ã£o";
 		else
-			return "Avaliação de Infraestrutura";
+			return "AvaliaÃ§Ã£o de Infraestrutura";
 	}
 	
 
@@ -185,9 +185,9 @@ public class Questionario implements Serializable {
 	}
 
 	public List<PrazoQuestionario> getPrazos() {
-		List<PrazoQuestionario> prazos = new PrazoQuestionarioDAO()
-				.getPrazos(this);
-		return prazos;
+		PrazoQuestionarioDAO pqDAO = new PrazoQuestionarioDAO();
+		List<PrazoQuestionario> prazos = pqDAO.getPrazos(this);
+		return pqDAO.getPrazos(this);
 	}
 
 	public void setPrazos(List<PrazoQuestionario> prazos) {

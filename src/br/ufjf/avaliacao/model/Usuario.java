@@ -20,7 +20,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
- * DTO da Tabela {@code Usuario} contém os atributos e relacionamentos da
+ * DTO da Tabela {@code Usuario} contÃƒÆ’Ã‚Â©m os atributos e relacionamentos da
  * mesma.
  * 
  */
@@ -32,36 +32,16 @@ public class Usuario implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Campo com ID do usuário. Relaciona com a coluna {@code idUsuario} do
-	 * banco e é gerado por autoincrement do MySQL através das anotações
-	 * {@code @GeneratedValue(generator = "increment")} e
-	 * {@code @GenericGenerator(name = "increment", strategy = "increment")}
-	 * 
-	 */
+
 	@Id
 	@Column(name = "idUsuario", unique = true, nullable = false)
 	@GeneratedValue(generator = "increment")
 	@GenericGenerator(name = "increment", strategy = "increment")
 	private Integer idUsuario;
 
-	/**
-	 * Campo com o nome do usuário. Relaciona com a coluna {@code nome} do
-	 * banco através da anotação
-	 * {@code @Column(name = "nome", length = 45, nullable = false)}.
-	 */
 	@Column(name = "nome", length = 500, nullable = false)
 	private String nome;
 
-	
-
-	/**
-	 * Relacionamento N para 1 entre usuário e curso. Mapeando {@link Curso} na
-	 * variável {@code curso} e retorno do tipo {@code LAZY} que indica que
-	 * não será carregado automáticamente este dado quando retornarmos o
-	 * {@link Usuario}.
-	 * 
-	 */
 	@ManyToOne()
 	@JoinColumn(name = "idCurso", nullable = true)
 	private Curso curso;
@@ -69,10 +49,10 @@ public class Usuario implements Serializable {
 	@Column(name = "tipoUsuario", nullable = false)
 	private Integer tipoUsuario;
 
-	@Column(name = "cpf", length = 11, nullable = false)
+	@Column(name = "cpf", length = 11, nullable = true)
 	private String cpf;
 	
-	@Column(name = "email", length = 200, nullable = false)
+	@Column(name = "email", length = 200, nullable = true)
 	private String email;
 	
 	@OneToMany(mappedBy = "avaliando")
@@ -82,7 +62,7 @@ public class Usuario implements Serializable {
 	private List<Matricula> matriculas = new ArrayList<Matricula>();
 	
 	@OneToOne()
-	@JoinColumn(name = "idMatriculaAtiva", nullable = false)
+	@JoinColumn(name = "idMatriculaAtiva", nullable = true)
 	private Matricula matriculaAtiva;
 	
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "usuarios")

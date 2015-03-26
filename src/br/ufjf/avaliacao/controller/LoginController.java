@@ -1,5 +1,7 @@
 package br.ufjf.avaliacao.controller;
 
+import java.util.List;
+
 import org.hibernate.HibernateException;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
@@ -21,9 +23,12 @@ import org.zkoss.zk.ui.util.Clients;
 
 import br.ufjf.avaliacao.business.IntegraBusiness;
 import br.ufjf.avaliacao.business.UsuarioBusiness;
+import br.ufjf.avaliacao.library.GetCurso;
+import br.ufjf.avaliacao.model.Curso;
 import br.ufjf.avaliacao.model.Grafico;
 import br.ufjf.avaliacao.model.Matricula;
 import br.ufjf.avaliacao.model.Usuario;
+import br.ufjf.avaliacao.persistent.impl.CursoDAO;
 import br.ufjf.avaliacao.persistent.impl.MatriculaDAO;
 import br.ufjf.avaliacao.persistent.impl.UsuarioDAO;
 
@@ -40,20 +45,30 @@ public class LoginController {
 		usuario = (Usuario) session.getAttribute("usuario");
 		Grafico grafico = new Grafico("grafico"," "," ");//pre processamento para funcionar os frames dos graficos
 		session.setAttribute("grafico", grafico);
-		session.setAttribute("problema_duplo_submit",0);//não sei por que quando há um submit a função ocorre 2x
-//		if (usuarioBusiness.checaLogin(usuario)) {
-//			Executions.sendRedirect("/home.zul");
-//		} else {
-//			usuario = new Usuario();
-//		}
+		session.setAttribute("problema_duplo_submit",0);//nÃƒÆ’Ã‚Â£o sei por que quando hÃƒÆ’Ã‚Â¡ um submit a funÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o ocorre 2x
+		if (usuarioBusiness.checaLogin(usuario)) {
+			Executions.sendRedirect("/home.zul");
+		} else {
+			usuario = new Usuario();
+		}
 	}
-
-		
+	
+	@Command 
+	public void teste(@BindingParam("usuario") String usuario)
+	{
+		UsuarioDAO uDAO = new UsuarioDAO();
+		Usuario usuarioAux = uDAO.retornaUsuarioCPF(usuario);
+		CursoDAO cDAO = new CursoDAO();
+		System.out.println(cDAO.getCursoCoordenadorOuViceUsuario(usuarioAux));
+	
+	}
+	
+	
 	@Command
 	public void submit(@BindingParam("panel") final Div page,@BindingParam("row") final Row row,
 			@BindingParam("login") final String login,@BindingParam("senha") final String senha,
 			@BindingParam("botao") final Cell botaoCadastro,@BindingParam("botao2") final Button botaoLogin) {
-//		Clients.showBusy("Autenticando usu�rio...");
+//		Clients.showBusy("Autenticando usuÃƒÆ’Ã‚Â¡rio...");
 		if (!submitListenerExists) {
 			submitListenerExists = true;
 			page.addEventListener(Events.ON_CLIENT_INFO,
@@ -66,13 +81,13 @@ public class LoginController {
 								{//verifica se existe e tem no banco de dados
 								
 									switch (((Usuario)session.getAttribute("usuario")).getTipoUsuario()) {
-									case 1:
-										Executions.sendRedirect("/questionarios.zul");
+									case 1://COORDENADOR E PROFESSOR
+										Executions.sendRedirect("/home.zul");
 										break;
-									case 2:
+									case 2://ALUNO
 										Executions.sendRedirect("/homeAluno.zul");
 										break;
-									case 3:
+									case 3://ADMIN
 										Executions.sendRedirect("/home.zul");
 										break;
 									default:
@@ -100,7 +115,7 @@ public class LoginController {
 									else{
 										Clients.clearBusy();
 										Messagebox.show(
-											"Usu�rio ou Senha inv�lidos!",
+											"UsuÃ¡rio ou Senha invÃ¡lidos!",
 											"Error", Messagebox.OK,
 											Messagebox.ERROR,
 											new EventListener<Event>() {
@@ -137,12 +152,13 @@ public class LoginController {
 			@BindingParam("login") final String login,@BindingParam("senha") final String senha,
 			@BindingParam("combo") final String combo)//realiza o cadastro de novos usuarios
 	{
-//		Clients.showBusy("Autenticando usu�rio...");
+//		Clients.showBusy("Autenticando usuÃƒÂ¯Ã‚Â¿Ã‚Â½rio...");
 		Usuario usuarioAux = IntegraBusiness.getusuarioIntegra(login, senha);
 		Matricula matriculaValida = null;
+		List<Matricula> matriculas = usuarioAux.getMatriculas();
 		for(int i=0;i<usuarioAux.getMatriculas().size();i++)
 		{
-			if(usuarioAux.getMatriculas().get(i).getMatricula()==combo)
+			if(matriculas.get(i).getMatricula().equals(combo))
 			{
 				matriculaValida = usuarioAux.getMatriculas().get(i);
 				break;
@@ -152,30 +168,41 @@ public class LoginController {
 		
 		if(matriculaValida!=null)
 		{
-			MatriculaDAO mDAO = new MatriculaDAO();
-			for(int i=0;i<usuarioAux.getMatriculas().size();i++)
-			{
-				usuarioAux.getMatriculas().get(i).setUsuario(usuarioAux);
-				mDAO.salvar(usuarioAux.getMatriculas().get(i));
-			}
-			usuario.setMatriculaAtiva(matriculaValida);
 			UsuarioDAO uDAO = new UsuarioDAO();
 			uDAO.salvar(usuarioAux);
-			///TEM QUE VER O PROBLEMA DA ZONA CRITICA E DAR UM REFRESH PRA LOGAR
-			//FINALMENTE, CRIAR UMA PARTE PARA MUDAR A MATRICULA ATIVA, TIPO O 
+			MatriculaDAO mDAO = new MatriculaDAO();
+			for(int i=0;i<matriculas.size();i++)
+			{
+				matriculas.get(i).setUsuario(usuarioAux);
+				mDAO.salvar(matriculas.get(i));
+			}
+			usuarioAux.setMatriculaAtiva(matriculaValida);
+			uDAO.editar(usuarioAux);
+			
+			
+			
+			String identificadorCurso = GetCurso.getInfoCurso(matriculaValida.getMatricula());
+						
+			CursoDAO cDAO = new CursoDAO();
+			Curso curso = cDAO.getCursoIdentificador(identificadorCurso);
+			
+	
+			if(curso==null)
+			{
+				curso = GetCurso.getCursoMatricula(matriculaValida.getMatricula());
+				cDAO.salvar(curso);
+			}
+			
+			usuarioAux.setCurso(curso);
+			uDAO.editar(usuarioAux);
+
+			Executions.sendRedirect(null);
 		}
 		
 		
+		
 	}
-	/*
-	 * @Command public void submit() throws HibernateException, Exception { if
-	 * (usuario != null && usuario.getEmail() != null && usuario.getSenha() !=
-	 * null) { if (usuarioBusiness.login(usuario.getEmail(),
-	 * usuario.getSenha())) { usuario = (Usuario)
-	 * session.getAttribute("usuario"); Executions.sendRedirect("/home.zul"); }
-	 * else { Messagebox.show("Usuário ou Senha inválidos!", "Error",
-	 * Messagebox.OK, Messagebox.ERROR); } } }
-	 */
+
 
 	public Session getSession() {
 		return session;

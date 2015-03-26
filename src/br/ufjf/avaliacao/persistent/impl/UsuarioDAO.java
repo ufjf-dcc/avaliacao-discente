@@ -217,7 +217,7 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 	}
 
 
-	public List<Usuario> retornaProfessorCurso(Curso curso) {//nao tenho certeza se está funcioando
+	public List<Usuario> retornaProfessorCurso(Curso curso) {//nao tenho certeza se estÃ¡ funcioando
 		try {
 			Query query = getSession()
 					.createQuery(
@@ -277,7 +277,7 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 			avaliacoes.addAll(avaliacaoDAO
 					.getAvaliacoesPrazoQuestionario(prazos.get(i))); // olha a
 																		// quais
-																		// avalia�oes
+																		// avaliaï¿½oes
 																		// esse
 																		// quesntionario
 																		// pertence
@@ -289,5 +289,6 @@ public class UsuarioDAO extends GenericoDAO implements IUsuarioDAO {
 		}
 		return null;
 	}
+	
 
 }

@@ -3,10 +3,12 @@
 <zk>
 
 	<style>.menubar{ border:1px; } .menu { margin-bottom:5px; }</style>
-	<div class="menu" align="center">
+	<div class="menu" align="center" apply="org.zkoss.bind.BindComposer"
+		viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AuthController')">
 		<menubar id="menubar" class="menubar" width="100%">
 			<menuitem label="Inicial" href="/homeAluno.zul" />
 			<menuitem label="Opções" />
+			<menuitem label="@load(vm.matricula)" onClick="@command('mudarMatricula')" />
 			<menuitem label="Sair" onClick="@command('exit')" />
 		</menubar>
 

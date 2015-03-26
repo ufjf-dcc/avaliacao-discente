@@ -1,0 +1,32 @@
+<?init class="br.ufjf.avaliacao.controller.AuthController"?>
+<zk>
+	<window style="text-align:center;" width="400px"
+		title="Mudar matricula" border="normal"
+		closable="true">
+		<div apply="org.zkoss.bind.BindComposer" style="margin:5px;"
+			viewModel="@id('vm') @init('br.ufjf.avaliacao.controller.AuthController')">
+			<grid>
+				<columns>
+					<column />
+					<column />
+				</columns>
+				<rows>
+					<row>
+						<label value="Matrícula: " />
+						<combobox  readonly="true" id="matricula"
+							model="@load(vm.matriculas)" >
+							<template name="model">
+								<comboitem label="@load(each.matricula)" />
+							</template>
+						</combobox>
+					</row>
+					
+				</rows>
+			</grid>
+			<div align="center" style="margin-top:5px;">
+				<button label="Salvar"
+					onClick="@command('salvarMatricula',matricula=matricula.value)" />
+			</div>
+		</div>
+	</window>
+</zk>
